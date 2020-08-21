@@ -1,0 +1,96 @@
+:root {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: url("../img/background.jpg") no-repeat fixed center;
+  min-height: 100%;
+  position: relative;
+}
+
+header {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 100;
+  opacity: 0.7;
+
+  .header-content {
+    opacity: 1;
+  }
+
+  blockquote {
+    p {
+      font-family: "Shadows Into Light", cursive;
+    }
+  }
+}
+
+ul {
+  list-style: none;
+}
+
+.welcome {
+  img {
+    height: 275px;
+  }
+}
+
+.container-custom {
+  width: 576px;
+  margin: 0 auto;
+}
+
+.middle-col {
+  width: 476px;
+}
+
+footer {
+  width: 100%;
+}
+
+.main-footer {
+  position: absolute;
+  bottom: 0;
+}
+
+@media (min-width: 993px) and (max-width: 1200px) {
+  nav {
+    max-height: 56px;
+
+    .nav-link {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    .header-content {
+      h1 {
+        font-size: 2.125rem;
+      }
+
+      h2 {
+        font-size: 1.625rem;
+      }
+    }
+  }
+
+  .container-custom {
+    width: 90vw;
+  }
+
+  .welcome {
+    img {
+      height: 200px;
+    }
+  }
+
+  .balance {
+    .row {
+      .period-choice {
+        margin-top: 5px;
+      }
+    }
+  }
+}

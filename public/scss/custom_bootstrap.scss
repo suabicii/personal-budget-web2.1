@@ -1,0 +1,12 @@
+// kustomizacja podstawowych stylów bootstrapa
+$theme-colors: (
+  "primary": #3f88c5,
+  "success": #52aa5e,
+  "some": #335145,
+  "other": #04724d,
+  "warning": #f49d37,
+  "danger": #d72638,
+);
+
+// import bootstrapa
+@import "../bootstrap-4.5.0/scss/bootstrap";
