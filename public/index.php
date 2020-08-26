@@ -34,6 +34,7 @@ $router = new Core\Router();
 
 // Dodawanie tras
 $router->add('', ['controller' => 'Start', 'action' => 'index']);
+$router->add('create', ['controller' => 'Signup', 'action' => 'create']);
 $router->add('{controller}/{action}');
 
 $router->dispatch($_SERVER['QUERY_STRING']);

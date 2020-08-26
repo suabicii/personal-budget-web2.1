@@ -110,16 +110,15 @@ class User extends \Core\Model
              * 
              */
 
-            $sql = 'INSERT INTO users VALUES (NULL, :name, :surname, :email_posted, :login_posted, :password)';
+            $sql = 'INSERT INTO users VALUES (NULL, :name, :login_posted, :password, :email_posted)';
 
             $db = static::getDB();
             $statement = $db->prepare($sql);
 
             $statement->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $statement->bindValue(':surname', $this->surname, PDO::PARAM_STR);
-            $statement->bindValue(':email_posted', $this->email, PDO::PARAM_STR);
-            $statement->bindValue(':login_posted', $this->login, PDO::PARAM_STR);
+            $statement->bindValue(':login_posted', $this->username, PDO::PARAM_STR);
             $statement->bindValue(':password', $password_hash, PDO::PARAM_STR);
+            $statement->bindValue(':email_posted', $this->email, PDO::PARAM_STR);
 
             return $statement->execute();
         }

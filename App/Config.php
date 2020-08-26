@@ -19,7 +19,7 @@ class Config
      * 
      * @var string
      */
-    const DB_NAME = 'personal-budget';
+    const DB_NAME = 'budget';
 
     /**
      * Admin bazy
