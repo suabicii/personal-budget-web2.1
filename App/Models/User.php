@@ -149,13 +149,13 @@ class User extends \Core\Model
              * 
              */
 
-            $sql = 'INSERT INTO users VALUES (NULL, :name, login, :password, :email)';
+            $sql = 'INSERT INTO users VALUES (NULL, :name, :login, :password, :email)';
 
             $db = static::getDB();
             $statement = $db->prepare($sql);
 
             $statement->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $statement->bindValue('login', $this->username, PDO::PARAM_STR);
+            $statement->bindValue(':login', $this->username, PDO::PARAM_STR);
             $statement->bindValue(':password', $password_hash, PDO::PARAM_STR);
             $statement->bindValue(':email', $this->email, PDO::PARAM_STR);
 
