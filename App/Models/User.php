@@ -51,6 +51,7 @@ class User extends \Core\Model
             if (strlen($this->password) < 6) $this->errors[] = 'Hasło musi składać się z co najmniej 6 znaków';
             if (preg_match('/.*[a-z]+.*/i', $this->password) == 0) $this->errors[] = 'Hasło musi posiadać co najmniej jedną literę';
             if (preg_match('/.*\d+.*/i', $this->password) == 0) $this->errors[] = 'Hasło musi składać się z co najmniej jednej cyfry';
+            if ($this->password != $this->passwordConfirmation) $this->errors[] = 'Hasła w obu polach muszą być takie same';
         }
     }
 
