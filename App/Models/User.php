@@ -134,6 +134,51 @@ class User extends \Core\Model
     }
 
     /**
+     * Oblicz ilość wierszy z tabeli
+     * 
+     * @param string $tableName
+     * 
+     * @return int  Ilość wierszy
+     */
+    public static function getAmountOfTableRows($tableName)
+    {
+        $sql = "SELECT * FROM {$tableName}";
+
+        $db = static::getDB();
+        $statement = $db->prepare($sql);
+        $statement->execute();
+
+        return $statement->rowCount();
+    }
+
+    /**
+     * Przypisuj kategorie przychodów/wydatków/metody płatności do nowo utworzonego konta
+     * 
+     * @param string $tableWithCategories  Tabela, w której znajdą się poszczególne kategorie/metody
+     * @param string $tableForAssign  Tabela z kategoriami przypisanymi do użytkownika
+     * @param string $username  Login
+     * @param int $amountOfTableRows  Ilość wierszy w tabeli z sufiksem "default"
+     * 
+     * @return void
+     */
+    public static function assignCategoriesToUser($tableWithCategories, $tableForAssign, $username, $amountOfTableRows)
+    {
+        for ($i = 1; $i <= $amountOfTableRows; $i++) {
+            $db = static::getDB();
+            $statement = $db->prepare("INSERT INTO {$tableForAssign}
+            VALUES (
+                NULL,
+                (SELECT id FROM users WHERE username = :username),
+                (SELECT name FROM {$tableWithCategories} WHERE id = :categoryId)
+            )");
+            $statement->execute([
+                ":username" => $username,
+                ":categoryId" => $i
+            ]);
+        }
+    }
+
+    /**
      * Zapisz model "user" z bieżącymi wartościami właściwości
      * 
      * @return boolean  True, jeśli użytkownik został zapisany, w przeciwnym wypadku false
@@ -160,7 +205,19 @@ class User extends \Core\Model
             $statement->bindValue(':password', $password_hash, PDO::PARAM_STR);
             $statement->bindValue(':email', $this->email, PDO::PARAM_STR);
 
-            return $statement->execute();
+            $userAdded = $statement->execute();
+
+            // Przypisanie kategorii do użytkownika
+            $amountOfTableRows = static::getAmountOfTableRows('incomes_category_default');
+            static::assignCategoriesToUser('incomes_category_default', 'incomes_category_assigned_to_users', $this->username, $amountOfTableRows);
+
+            $amountOfTableRows = static::getAmountOfTableRows('expenses_category_default');
+            static::assignCategoriesToUser('expenses_category_default', 'expenses_category_assigned_to_users', $this->username, $amountOfTableRows);
+
+            $amountOfTableRows = static::getAmountOfTableRows('payment_methods_default');
+            static::assignCategoriesToUser('payment_methods_default', 'payment_methods_assigned_to_users', $this->username, $amountOfTableRows);
+
+            return $userAdded;
         }
 
         return false;
