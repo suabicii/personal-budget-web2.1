@@ -18,7 +18,7 @@ class Signup extends \Core\Controller
 
         if ($user->save()) {
             # Miejsce na funkcję wysyłania maila aktywacyjnego
-            View::renderTemplate('Start/index.html');
+            $this->redirect('/');
         } else {
             View::renderTemplate('Start/index.html', [
                 'user' => $user
