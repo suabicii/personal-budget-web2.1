@@ -39,13 +39,16 @@ class User extends \Core\Model
         if ($this->name == '') $this->errors[] = 'Podaj imię';
         if ($this->surname == '') $this->errors[] = 'Podaj nazwisko';
 
+        // Walidacja loginu
+        if ($this->usernameExists($this->username)) $this->errors[] = 'Podany login już istnieje w bazie danych';
+
         // Walidacja adresu e-mail
         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) $this->errors[] = 'Niepoprawny format';
         if (static::emailExists($this->email, $this->id ?? null)) $this->errors[] = 'Podany adres e-mail już istnieje w bazie danych';
 
         // Walidacja hasła
         if (isset($this->password)) {
-            if (strlen($this->password) < 6) $this->errors[] = 'Hasło musi składać się co najmniej z 6 znaków';
+            if (strlen($this->password) < 6) $this->errors[] = 'Hasło musi składać się z co najmniej 6 znaków';
             if (preg_match('/.*[a-z]+.*/i', $this->password) == 0) $this->errors[] = 'Hasło musi posiadać co najmniej jedną literę';
             if (preg_match('/.*\d+.*/i', $this->password) == 0) $this->errors[] = 'Hasło musi składać się z co najmniej jednej cyfry';
         }
@@ -74,6 +77,22 @@ class User extends \Core\Model
     }
 
     /**
+     * Sprawdź, czy dany login już istnieje w bazie danych
+     * 
+     * @param string $username  Login
+     * 
+     * @return boolean  True, jeśli istnieje rekord z danym loginem, false w przeciwnym wypadku
+     */
+    public static function usernameExists($username)
+    {
+        $user = static::findByUsername($username);
+
+        if ($user) return true;
+
+        return false;
+    }
+
+    /**
      * Znajdź użytkownika po mailu
      * 
      * @return mixed  Objekt User, jeśli znaleziono, false w przeciwnym wypadku
@@ -85,6 +104,26 @@ class User extends \Core\Model
         $db = static::getDB();
         $statement = $db->prepare($sql);
         $statement->bindValue(':email', $email, PDO::PARAM_STR);
+
+        $statement->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $statement->execute();
+
+        return $statement->fetch();
+    }
+
+    /**
+     * Znajdź użytkownika po loginie
+     * 
+     * @return mixed  Objekt User, jeśli znaleziono, false w przeciwnym wypadku
+     */
+    public static function findByUsername($username)
+    {
+        $sql = 'SELECT * FROM users WHERE username = :username';
+
+        $db = static::getDB();
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':username', $username, PDO::PARAM_STR);
 
         $statement->setFetchMode(PDO::FETCH_CLASS, get_called_class());
 
@@ -110,15 +149,15 @@ class User extends \Core\Model
              * 
              */
 
-            $sql = 'INSERT INTO users VALUES (NULL, :name, :login_posted, :password, :email_posted)';
+            $sql = 'INSERT INTO users VALUES (NULL, :name, login, :password, :email)';
 
             $db = static::getDB();
             $statement = $db->prepare($sql);
 
             $statement->bindValue(':name', $this->name, PDO::PARAM_STR);
-            $statement->bindValue(':login_posted', $this->username, PDO::PARAM_STR);
+            $statement->bindValue('login', $this->username, PDO::PARAM_STR);
             $statement->bindValue(':password', $password_hash, PDO::PARAM_STR);
-            $statement->bindValue(':email_posted', $this->email, PDO::PARAM_STR);
+            $statement->bindValue(':email', $this->email, PDO::PARAM_STR);
 
             return $statement->execute();
         }
