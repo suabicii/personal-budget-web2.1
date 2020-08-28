@@ -222,4 +222,28 @@ class User extends \Core\Model
 
         return false;
     }
+
+    /**
+     * Autoryzacja użytkownika z użyciem loginu i hasła
+     * 
+     * @param string $username  Login
+     * @param string $password
+     * 
+     * @return mixed  Objekt user lub false, jeśli autoryzacja się nie powiedzie
+     */
+    public static function authenticate($username, $password)
+    {
+        $user = static::findByUsername($username);
+
+        if ($user) {
+            if (password_verify($password, $user->password)) {
+                if (isset($_SESSION['login_failed'])) unset($_SESSION['login_failed']);
+                return $user;
+            }
+        }
+
+        $_SESSION['login_failed'] = 'Nieprawidłowy login lub hasło';
+
+        return false;
+    }
 }

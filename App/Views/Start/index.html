@@ -264,6 +264,16 @@ Michael Slabikovsky{% endblock %} {% block body %}
               />
             </div>
           </div>
+          {% if session.login_failed %}
+          <script>
+            $(function () {
+              $("#loginModal").modal("show");
+            });
+          </script>
+          <div>
+            <p class="text-danger text-center">{{ session.login_failed }}</p>
+          </div>
+          {% endif %}
           <div class="modal-footer">
             <button
               type="button"
