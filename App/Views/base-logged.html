@@ -1,9 +1,9 @@
-{% extends base.html %} {% block title %}Personal Budget Manager 2.1 by Michael
-Slabikovsky{% endblock %}
+{% extends "base.html" %} {% block title %}Personal Budget Manager 2.1 by
+Michael Slabikovsky{% endblock %} {% block body %}
 <header class="text-white text-center bg-dark py-2">
   <div class="header-content py-2">
     <h1 class="display-4">Menedżer budżetu osobistego</h1>
-    <h2>Menu główne</h2>
+    <h2>{% block subtitle %}{% endblock %}</h2>
   </div>
 </header>
 
@@ -24,7 +24,7 @@ Slabikovsky{% endblock %}
     <ul class="navbar-nav m-auto">
       <li class="nav-item active m-auto">
         <a class="nav-link" href="main.php"
-          >Menu główne <i class="fas fa-home"></i>
+          >Strona główna <i class="fas fa-home"></i>
           <span class="sr-only">(aktualna opcja)</span></a
         >
       </li>
@@ -54,3 +54,4 @@ Slabikovsky{% endblock %}
     </ul>
   </div>
 </nav>
+{% block main %} {% endblock %} {% endblock %}

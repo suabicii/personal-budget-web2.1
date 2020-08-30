@@ -18,11 +18,22 @@ class Login extends \Core\Controller
 
         if ($user) {
             $_SESSION['user_id'] = $user->id;
-            $this->redirect('/');
+            $_SESSION['logged_name'] = $user->name;
+            $this->redirect('/home');
         } else {
             View::renderTemplate('Start/index.html', [
                 'user' => $user
             ]);
         }
+    }
+
+    /**
+     * Po zalogowaniu
+     * 
+     * @return void
+     */
+    public function successAction()
+    {
+        View::renderTemplate('Home/index.html');
     }
 }
