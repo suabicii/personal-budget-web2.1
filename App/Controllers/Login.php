@@ -28,26 +28,6 @@ class Login extends \Core\Controller
     }
 
     /**
-     * Wymagaj logowania przed dostępem do poniższych metod w kontrolerze
-     * 
-     * @return void
-     */
-    protected function before()
-    {
-        $this->requireLogin();
-    }
-
-    /**
-     * Po zalogowaniu
-     * 
-     * @return void
-     */
-    public function successAction()
-    {
-        View::renderTemplate('Home/index.html');
-    }
-
-    /**
      * Wyloguj użytkownika
      * 
      * @return void

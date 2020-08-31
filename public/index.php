@@ -37,7 +37,7 @@ $router->add('', ['controller' => 'Start', 'action' => 'index']);
 $router->add('create', ['controller' => 'Signup', 'action' => 'create']);
 $router->add('login', ['controller' => 'Login', 'action' => 'create']);
 $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);
-$router->add('home', ['controller' => 'Login', 'action' => 'success']);
+$router->add('home', ['controller' => 'Home', 'action' => 'index']);
 $router->add('{controller}/{action}');
 
 $router->dispatch($_SERVER['QUERY_STRING']);
