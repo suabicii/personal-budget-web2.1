@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Auth;
 use Core\View;
 
 class Login extends \Core\Controller
@@ -35,5 +36,16 @@ class Login extends \Core\Controller
     public function successAction()
     {
         View::renderTemplate('Home/index.html');
+    }
+
+    /**
+     * Wyloguj użytkownika
+     * 
+     * @return void
+     */
+    public function destroyAction()
+    {
+        Auth::logout();
+        $this->redirect('/');
     }
 }
