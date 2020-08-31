@@ -13,7 +13,7 @@ use App\Auth;
 class Start extends \Core\Controller
 {
     /**
-     * Wyświetl stronę index.html
+     * Wyświetl stronę startową (przed logowaniem)
      * 
      * @return void
      */
