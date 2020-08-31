@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\User;
+use App\Flash;
 use Core\View;
 
 class Signup extends \Core\Controller
@@ -18,6 +19,7 @@ class Signup extends \Core\Controller
 
         if ($user->save()) {
             # Miejsce na funkcję wysyłania maila aktywacyjnego
+            Flash::addMessage('Rejestracja zakończona sukcesem');
             $this->redirect('/');
         } else {
             View::renderTemplate('Start/index.html', [

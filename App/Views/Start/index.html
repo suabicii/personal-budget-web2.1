@@ -17,6 +17,9 @@ Michael Slabikovsky{% endblock %} {% block body %}
     <div
       class="container container-sm border rounded bg-white text-center pt-2"
     >
+      {% for message in flash_messages %}
+      <div class="alert alert-{{ message.type }}">{{ message.body }}</div>
+      {% endfor %}
       <h2>
         Chcesz zapanować nad własnymi finansami?
         <i class="fas fa-comment-dollar"></i>
