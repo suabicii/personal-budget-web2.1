@@ -263,6 +263,24 @@ Michael Slabikovsky{% endblock %} {% block body %}
                 required
               />
             </div>
+            <div class="form-check">
+              <label>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="remember_me"
+                  {%
+                  if
+                  remember_me
+                  %}
+                  checked="checked"
+                  {%
+                  endif
+                  %}
+                />
+                Zapamiętaj mnie
+              </label>
+            </div>
           </div>
           {% if session.login_failed %}
           <script>

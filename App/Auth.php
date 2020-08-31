@@ -5,7 +5,7 @@ namespace App;
 use App\Models\User;
 
 /**
- * Autoryzacja
+ * Uwierzytelnianie
  * 
  * PHP v 7+
  */
@@ -22,6 +22,11 @@ class Auth
     {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $user->id;
+        $_SESSION['logged_name'] = $user->name;
+
+        if ($remember_me) {
+            # code...
+        }
     }
 
     /**
@@ -53,5 +58,15 @@ class Auth
         session_destroy();
 
         // static::forgetLogin();
+    }
+
+    /**
+     * Pobierz aktualnie zalogowanego użytkownika z sesji lub cookie
+     * 
+     * @return mixed  Model "user" lub null, jeśli użytkownik nie jest zalogowany
+     */
+    public static function getUser()
+    {
+        if (isset($_SESSION['user_id'])) return User::findByID($_SESSION['user_id']);
     }
 }

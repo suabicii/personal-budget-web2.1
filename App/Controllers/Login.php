@@ -18,14 +18,23 @@ class Login extends \Core\Controller
         $user = User::authenticate($_POST['userLogin'], $_POST['authorization']);
 
         if ($user) {
-            $_SESSION['user_id'] = $user->id;
-            $_SESSION['logged_name'] = $user->name;
+            Auth::login($user, $_POST['remember_me']);
             $this->redirect('/home');
         } else {
             View::renderTemplate('Start/index.html', [
                 'user' => $user
             ]);
         }
+    }
+
+    /**
+     * Wymagaj logowania przed dostępem do poniższych metod w kontrolerze
+     * 
+     * @return void
+     */
+    protected function before()
+    {
+        $this->requireLogin();
     }
 
     /**

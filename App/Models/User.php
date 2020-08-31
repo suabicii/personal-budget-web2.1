@@ -134,6 +134,28 @@ class User extends \Core\Model
     }
 
     /**
+     * Znajdź użytkownika po ID
+     * 
+     * @param int $id  ID użytkownika
+     * 
+     * @return mixed  Objekt User, jeśli znaleziono, w przeciwnym wypadku - false
+     */
+    public static function findByID($id)
+    {
+        $sql = 'SELECT * FROM users WHERE id = :id';
+
+        $db = static::getDB();
+        $statement = $db->prepare($sql);
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+
+        $statement->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $statement->execute();
+
+        return $statement->fetch();
+    }
+
+    /**
      * Oblicz ilość wierszy z tabeli
      * 
      * @param string $tableName

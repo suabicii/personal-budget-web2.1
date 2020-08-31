@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use App\Auth;
+
 abstract class Controller
 {
     /**
@@ -76,5 +78,17 @@ abstract class Controller
     {
         header('Location: http://' . $_SERVER['HTTP_HOST'] . $url, true, 303);
         exit;
+    }
+
+    /**
+     * Żądanie logowania przed wejściem na daną podstronę
+     * 
+     * @return void
+     */
+    public function requireLogin()
+    {
+        if (!Auth::getUser()) {
+            $this->redirect('/');
+        }
     }
 }
