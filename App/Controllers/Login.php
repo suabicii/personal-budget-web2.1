@@ -23,7 +23,8 @@ class Login extends \Core\Controller
             $this->redirect('/home');
         } else {
             View::renderTemplate('Start/index.html', [
-                'user' => $user
+                'user' => $user,
+                'remember_me' => $remember_me
             ]);
         }
     }

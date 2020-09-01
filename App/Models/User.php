@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use PDO;
+use App\Token;
 
 class User extends \Core\Model
 {
@@ -267,5 +268,31 @@ class User extends \Core\Model
         $_SESSION['login_failed'] = 'Nieprawidłowy login lub hasło';
 
         return false;
+    }
+
+    /**
+     * Zapamiętaj logowanie porzez wstawienie unikalnego tokena do tabeli
+     * remembered_logins dla danego rekordu z użytkownikiem
+     * 
+     * @return boolean  True, jeśli logowanie zostało zapamiętane z powodzeniem,
+     * false w przeciwnym wypadku
+     */
+    public function rememberLogin()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+
+        $expiry_timestamp = time() + 60 * 60 * 24 * 30; // 30 dni od teraz
+
+        $sql = 'INSERT INTO remembered_logins VALUES (:token_hash, :user_id, :expires_at)';
+
+        $db = static::getDB();
+        $statement = $db->prepare($sql);
+
+        $statement->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $statement->bindValue(':user_id', $this->id, PDO::PARAM_INT);
+        $statement->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+
+        return $statement->execute();
     }
 }

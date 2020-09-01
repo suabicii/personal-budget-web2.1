@@ -25,7 +25,7 @@ class Auth
         $_SESSION['logged_name'] = $user->name;
 
         if ($remember_me) {
-            # code...
+            $user->rememberLogin();
         }
     }
 

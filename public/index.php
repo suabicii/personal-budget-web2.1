@@ -6,7 +6,7 @@
  * PHP v. 7+
  */
 
-ini_set('session.cookie_lifetime', '864000');
+ini_set('session.cookie_lifetime', '864000'); // 10 dni w sekundach
 
 /**
  * Composer
@@ -15,11 +15,6 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 /**
  * Obsługa błędów i wyjątków
- */
-
-/**
- * Miejsce na obsługę błędów
- * 
  */
 error_reporting(E_ALL);
 set_error_handler('Core\Error::errorHandler');

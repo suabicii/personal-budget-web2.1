@@ -272,6 +272,14 @@ Michael Slabikovsky{% endblock %} {% block body %}
                   class="form-check-input"
                   type="checkbox"
                   name="remember_me"
+                  {%
+                  if
+                  remember_me
+                  %}
+                  checked="checked"
+                  {%
+                  endif
+                  %}
                 />
                 Zapamiętaj mnie
               </label>
