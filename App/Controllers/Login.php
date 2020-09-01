@@ -16,9 +16,10 @@ class Login extends \Core\Controller
     public function createAction()
     {
         $user = User::authenticate($_POST['userLogin'], $_POST['authorization']);
+        $remember_me = isset($_POST['remember_me']);
 
         if ($user) {
-            Auth::login($user, $_POST['remember_me']);
+            Auth::login($user, $remember_me);
             $this->redirect('/home');
         } else {
             View::renderTemplate('Start/index.html', [
