@@ -281,8 +281,9 @@ class User extends \Core\Model
     {
         $token = new Token();
         $hashed_token = $token->getHash();
+        $this->remember_token = $token->getValue();
 
-        $expiry_timestamp = time() + 60 * 60 * 24 * 30; // 30 dni od teraz
+        $this->expiry_timestamp = time() + 60 * 60 * 24 * 30; // 30 dni od teraz
 
         $sql = 'INSERT INTO remembered_logins VALUES (:token_hash, :user_id, :expires_at)';
 
@@ -291,7 +292,7 @@ class User extends \Core\Model
 
         $statement->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
         $statement->bindValue(':user_id', $this->id, PDO::PARAM_INT);
-        $statement->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+        $statement->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expiry_timestamp), PDO::PARAM_STR);
 
         return $statement->execute();
     }
