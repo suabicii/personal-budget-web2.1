@@ -21,7 +21,7 @@ class RememberedLogin extends \Core\Model
      */
     public static function findByToken($token)
     {
-        $token = new Token();
+        $token = new Token($token);
         $token_hash = $token->getHash();
 
         $sql = 'SELECT * FROM remembered_logins WHERE token_hash = :token_hash';
