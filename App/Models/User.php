@@ -4,6 +4,8 @@ namespace App\Models;
 
 use PDO;
 use App\Token;
+use Core\View;
+use App\Mail;
 
 class User extends \Core\Model
 {
@@ -213,12 +215,11 @@ class User extends \Core\Model
         if (empty($this->errors)) {
             $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
 
-            /**
-             * Miejsce na token
-             * 
-             */
+            $token = new Token();
+            $hashed_token = $token->getHash();
+            $this->activation_token = $token->getValue();
 
-            $sql = 'INSERT INTO users VALUES (NULL, :name, :login, :password, :email)';
+            $sql = 'INSERT INTO users (name, username, password, email, activation_hash) VALUES (:name, :login, :password, :email, :activation_hash)';
 
             $db = static::getDB();
             $statement = $db->prepare($sql);
@@ -227,6 +228,7 @@ class User extends \Core\Model
             $statement->bindValue(':login', $this->username, PDO::PARAM_STR);
             $statement->bindValue(':password', $password_hash, PDO::PARAM_STR);
             $statement->bindValue(':email', $this->email, PDO::PARAM_STR);
+            $statement->bindValue(':activation_hash', $hashed_token, PDO::PARAM_STR);
 
             $userAdded = $statement->execute();
 
@@ -295,5 +297,21 @@ class User extends \Core\Model
         $statement->bindValue(':expires_at', date('Y-m-d H:i:s', $this->expiry_timestamp), PDO::PARAM_STR);
 
         return $statement->execute();
+    }
+
+    /**
+     * Wyślij e-maila zawierającego link aktywacyjny
+     * 
+     * @return void
+     */
+    public function sendActivationEmail()
+    {
+        $url = "http://{$_SERVER['HTTP_HOST']}/activate/{$this->activation_token}";
+
+        // Treść wiadomości - zwykły tekst i HTML
+        $text = View::getTemplate('Signup/activation_email.txt', ['url' => $url]);
+        $html = View::getTemplate('Signup/activation_email.html', ['url' => $url]);
+
+        Mail::send($this->email, 'Aktywacja konta na Personal Budget Manager by Michael Slabikovsky', $text, $html);
     }
 }

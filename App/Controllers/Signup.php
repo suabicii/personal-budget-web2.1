@@ -18,13 +18,23 @@ class Signup extends \Core\Controller
         $user = new User($_POST);
 
         if ($user->save()) {
-            # Miejsce na funkcję wysyłania maila aktywacyjnego
-            Flash::addMessage('Rejestracja zakończona sukcesem');
-            $this->redirect('/');
+            $user->sendActivationEmail();
+            Flash::addMessage('Sprawdź swoją skrzynkę odbiorczą na koncie pocztowym', Flash::INFO);
+            View::renderTemplate('Mail/activate.html');
         } else {
             View::renderTemplate('Start/index.html', [
                 'user' => $user
             ]);
         }
+    }
+
+    /**
+     * Informacja o wysłaniu linka aktywacyjnego
+     * 
+     * @return void
+     */
+    public function activateAction()
+    {
+        View::renderTemplate('Mail/activate.html');
     }
 }
