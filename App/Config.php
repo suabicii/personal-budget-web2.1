@@ -39,5 +39,5 @@ class Config
      * Sekretny klucz do hashowania
      * @var string
      */
-    const SECRET_KEY = '';
+    const SECRET_KEY = 'cWIBlFLUOj2vAT0aL16yLk2RIwaJNt16';
 }

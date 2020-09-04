@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use \Core\View;
+use App\Auth;
 
 /**
  * Kontroler strony startowej - strony wyświetlającej się na początku, przed logowaniem
@@ -12,12 +13,13 @@ use \Core\View;
 class Start extends \Core\Controller
 {
     /**
-     * Wyświetl stronę index.html
+     * Wyświetl stronę startową (przed logowaniem)
      * 
      * @return void
      */
     public function indexAction()
     {
-        View::renderTemplate('Start/index.html');
+        if (Auth::getUser()) $this->redirect('/home');
+        else View::renderTemplate('Start/index.html');
     }
 }

@@ -1,14 +1,14 @@
-{% extends base.html %} {% block title %}Personal Budget Manager 2.1 by Michael
-Slabikovsky{% endblock %}
+{% extends "base.html" %} {% block title %}Personal Budget Manager 2.1 by
+Michael Slabikovsky{% endblock %} {% block body %}
 <header class="text-white text-center bg-dark py-2">
   <div class="header-content py-2">
     <h1 class="display-4">Menedżer budżetu osobistego</h1>
-    <h2>Menu główne</h2>
+    <h2>{% block subtitle %}{% endblock %}</h2>
   </div>
 </header>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="main.php"><i class="fas fa-piggy-bank"></i></a>
+  <a class="navbar-brand" href="home"><i class="fas fa-piggy-bank"></i></a>
   <button
     class="navbar-toggler"
     type="button"
@@ -23,8 +23,8 @@ Slabikovsky{% endblock %}
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav m-auto">
       <li class="nav-item active m-auto">
-        <a class="nav-link" href="main.php"
-          >Menu główne <i class="fas fa-home"></i>
+        <a class="nav-link" href="home"
+          >Strona główna <i class="fas fa-home"></i>
           <span class="sr-only">(aktualna opcja)</span></a
         >
       </li>
@@ -47,10 +47,11 @@ Slabikovsky{% endblock %}
         <a class="nav-link" href="#">Ustawienia <i class="fas fa-cog"></i></a>
       </li>
       <li class="nav-item ml-lg-5 m-auto">
-        <a class="nav-link" href="logout.php"
+        <a class="nav-link" href="logout"
           >Wyloguj się <i class="fas fa-sign-out-alt"></i
         ></a>
       </li>
     </ul>
   </div>
 </nav>
+{% block main %} {% endblock %} {% endblock %}
