@@ -3,7 +3,7 @@
 /**
  * Front controller
  * 
- * PHP v. 7+
+ * PHP v. 7.4
  */
 
 ini_set('session.cookie_lifetime', '864000'); // 10 dni w sekundach
@@ -37,6 +37,7 @@ $router->add('activate', ['controller' => 'Signup', 'action' => 'activate']);
 $router->add('login', ['controller' => 'Login', 'action' => 'create']);
 $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);
 $router->add('home', ['controller' => 'Home', 'action' => 'index']);
+$router->add('add-income', ['controller' => 'Income', 'action' => 'index']);
 $router->add('{controller}/{action}');
 
 $router->dispatch($_SERVER['QUERY_STRING']);
