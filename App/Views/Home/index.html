@@ -1,8 +1,12 @@
 {% extends "base-logged.html" %} {% block title %}Strona główna{% endblock %} {%
-block subtitle %}Strona główna{% endblock %}{% block main %}
+block subtitle %}Strona główna{% endblock %}{% block firstOption %}active{%
+endblock %}{% block main %}
 <main>
   <section class="welcome">
     <div class="container-custom border rounded bg-white text-center mt-2 py-2">
+      {% for message in flash_messages %}
+      <div class="alert alert-{{ message.type }}">{{ message.body }}</div>
+      {% endfor %}
       <h3>Witaj, {{ session.logged_name }}! <i class="far fa-smile"></i></h3>
       <p class="text-muted lead">
         Co zamierzasz teraz zrobić? <i class="far fa-lightbulb"></i>

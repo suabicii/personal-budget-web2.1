@@ -159,6 +159,20 @@ class User extends \Core\Model
     }
 
     /**
+     * Pobierz listę błędów
+     * 
+     * @return array  Tablica, zawierająca błędy
+     */
+    public static function getErrors()
+    {
+        if (isset($_SESSION['errors'])) {
+            $errors = $_SESSION['errors'];
+            unset($_SESSION['errors']);
+            return $errors;
+        }
+    }
+
+    /**
      * Oblicz ilość wierszy z tabeli
      * 
      * @param string $tableName
@@ -313,5 +327,75 @@ class User extends \Core\Model
         $html = View::getTemplate('Signup/activation_email.html', ['url' => $url]);
 
         Mail::send($this->email, 'Aktywacja konta na Personal Budget Manager by Michael Slabikovsky', $text, $html);
+    }
+
+    /**
+     * Sprawdź poprawność wprowadzonych danych przychodu/wydatku
+     * @param float $amount  Kwota
+     * @param string $category  Kategoria przychodu/wydatku
+     * @param string $date  Data przychodu/wydatku
+     * @param string $payment  Sposób płatności (jeśli to wydatek)
+     * 
+     * @return boolean  True, jeśli wszytkie dane zostały wprowadzone prawidłowo, false w przeciwnym wypadku
+     */
+    protected function validateIncomeOrExpenseData($amount, $category, $date, $payment = null)
+    {
+        $today = date('Y-m-d');
+
+        if ($amount < 0) $this->errors[] = 'Podaj liczbę dodatnią';
+        if ($date > $today) $this->errors[] = 'Data nie może być późniejsza od dzisiejszej!';
+        if ($category == null) $this->errors[] = 'Kategoria nie została wybrana';
+        if (isset($_SESSION['adding_expenses'])) {
+            if ($payment == null) $this->errors[] = 'Sposób płatności nie został wybrany';
+        }
+
+        if (empty($this->errors)) {
+            return true;
+        } else {
+            $_SESSION['errors'] = $this->errors;
+            return false;
+        }
+    }
+
+    /**
+     * Dodaj przychód do bazy danych
+     * 
+     * @param float $amount  Kwota
+     * @param string $category  Kategoria przychodu
+     * @param string $date  Data otrzymania przychodu
+     * @param string $comment  Komentarz (opcjonalnie)
+     * 
+     * @return boolean  True, jeśli dodanie się powiodło, false w przeciwnym wypadku
+     */
+    public function addIncomeToDatabase($amount, $category, $date, $comment = '')
+    {
+        if ($this->validateIncomeOrExpenseData($amount, $category, $date)) {
+            $db = static::getDB();
+
+            $query = $db->prepare("SELECT id FROM incomes_category_assigned_to_users WHERE user_id = :user_id AND name = :name");
+            $query->execute([
+                ":user_id" => $this->id,
+                ":name" => $category
+            ]);
+            $category_id = $query->fetch();
+
+            $query = $db->prepare("INSERT INTO incomes VALUES (
+                NULL,
+                :user_id,
+                :category_assigned_to_user_id,
+                :amount,
+                :date,
+                :comment
+            )");
+            return $query->execute([
+                ":user_id" => $this->id,
+                ":category_assigned_to_user_id" => $category_id['id'],
+                ":amount" => $amount,
+                ":date" => $date,
+                ":comment" => $comment
+            ]);
+        }
+
+        return false;
     }
 }

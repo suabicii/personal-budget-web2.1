@@ -1,0 +1,86 @@
+{% extends "base-logged.html" %} {% block title %}Dodawanie przychodu{% endblock
+%} {% block subtitle %}Dodaj przychód{% endblock %}{% block secondOption
+%}active{% endblock %}{% block main %}
+<main>
+  <section class="adding-incomes">
+    <div class="container-custom border rounded bg-white mt-2 py-2">
+      {% for message in flash_messages %}
+      <div class="alert alert-{{ message.type }}">{{ message.body }}</div>
+      {% endfor %}
+      <div class="row justify-content-center">
+        <form action="income/add" method="post">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-3">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="amount">Kwota</label>
+            <input
+              type="number"
+              name="amount"
+              id="amount"
+              class="form-control"
+              placeholder="Kwota"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-2">
+                <i class="fas fa-money-check"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="category">Kategoria</label>
+            <select name="category" id="category" class="form-control" required>
+              <option selected disabled>Wybierz kategorię</option>
+              <option value="Salary">Wynagrodzenie</option>
+              <option value="Interest">Odsetki</option>
+              <option value="Allegro">Sprzedaż na allegro</option>
+              <option value="Another">Inne</option>
+            </select>
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="far fa-calendar-alt"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="date">Data</label>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="input-group mt-2 mb-2">
+            <label class="sr-only" for="comment">Komentarz (opcjonalnie)</label>
+            <textarea
+              name="comment"
+              id="comment"
+              rows="2"
+              class="form-control"
+              placeholder="Komentarz (opcjonalnie)"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-some">Dodaj</button>
+          <a href="home" class="btn btn-danger">Anuluj</a>
+        </form>
+        {% if errors is not empty %}
+        <div>
+          <p class="text-danger text-center mt-2 mb-0">Lista błędów:</p>
+          <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
