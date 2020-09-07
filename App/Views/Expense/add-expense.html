@@ -4,6 +4,9 @@
 <main>
   <section class="adding-expenses">
     <div class="container-custom border rounded bg-white mt-2 py-2">
+      {% for message in flash_messages %}
+      <div class="alert alert-{{ message.type }}">{{ message.body }}</div>
+      {% endfor %}
       <div class="row justify-content-center">
         <form action="expense/add" method="post">
           <div class="input-group">
@@ -95,6 +98,16 @@
           <button type="submit" class="btn btn-some">Dodaj</button>
           <a href="/home" class="btn btn-danger">Anuluj</a>
         </form>
+        {% if errors is not empty %}
+        <div>
+          <p class="text-danger text-center mt-2 mb-0">Lista błędów:</p>
+          <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
       </div>
     </div>
   </section>
