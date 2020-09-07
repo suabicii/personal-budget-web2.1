@@ -398,4 +398,62 @@ class User extends \Core\Model
 
         return false;
     }
+
+    /**
+     * Dodaj wydatek do bazy danych
+     * 
+     * @param float $amount  Kwota
+     * @param string $payment  Sposób płatności
+     * @param string $category  Kategoria wydatku
+     * @param string $date  Data wydanej kwoty
+     * @param string $comment  Komentarz (opcjonalnie)
+     * 
+     * @return boolean  True, jeśli dodanie się powiodło, false w przeciwnym wypadku
+     */
+    public function addExpenseToDatabase($amount, $payment, $category, $date, $comment = '')
+    {
+        $_SESSION['adding_expenses'] = true;
+
+        if ($this->validateIncomeOrExpenseData($amount, $category, $date, $payment)) {
+            unset($_SESSION['adding_expenses']);
+
+            $db = static::getDB();
+
+            $query = $db->prepare("SELECT id FROM expenses_category_assigned_to_users WHERE user_id = :user_id AND name = :name");
+            $query->execute([
+                ":user_id" => $this->id,
+                ":name" => $category
+            ]);
+            $category_id = $query->fetch();
+
+            $query = $db->prepare("SELECT id FROM payment_methods_assigned_to_users WHERE user_id = :user_id AND name = :name");
+            $query->execute([
+                ":user_id" => $this->id,
+                ":name" => $payment
+            ]);
+            $payment_id = $query->fetch();
+
+            $query = $db->prepare("INSERT INTO expenses VALUES (
+                NULL,
+                :user_id,
+                :category_assigned_to_user_id,
+                :payment_assigned_to_user_id,
+                :amount,
+                :date,
+                :comment
+            )");
+            return $query->execute([
+                ":user_id" => $this->id,
+                ":category_assigned_to_user_id" => $category_id['id'],
+                "payment_assigned_to_user_id" => $payment_id['id'],
+                ":amount" => $amount,
+                ":date" => $date,
+                ":comment" => $comment
+            ]);
+        }
+
+        unset($_SESSION['adding_expenses']);
+
+        return false;
+    }
 }
