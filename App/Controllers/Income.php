@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use Core\View;
+use App\Models\User;
+use App\Flash;
 
 /**
  * Kontroler do dodawania przychodów
@@ -24,15 +26,18 @@ class Income extends \Core\Controller
     /**
      * Dodaj przychód
      * 
-     * @param int $user_id  Id użytkownika
-     * @param int $amount  Kwota
-     * @param string $category  Kategoria przychodu
-     * @param string $date  Data otrzymania przychodu
-     * @param string $comment  Komentarz (opcjonalnie)
-     * 
      * @return void
      */
     public function AddAction()
     {
+        $user = User::findByID($_SESSION['user_id']);
+
+        if ($user->addIncomeToDatabase($_POST['amount'], $_POST['category'], $_POST['date'], $_POST['comment'])) {
+            Flash::addMessage('Przychód został dodany');
+            $this->redirect('/home');
+        } else {
+            Flash::addMessage('Nie udało się dodać przychodu', Flash::WARNING);
+            $this->redirect('/add-income');
+        }
     }
 }

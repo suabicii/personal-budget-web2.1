@@ -22,28 +22,32 @@ Michael Slabikovsky{% endblock %} {% block body %}
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav m-auto">
-      <li class="nav-item active m-auto">
+      <li class="nav-item {% block firstOption %}{% endblock %} m-auto">
         <a class="nav-link" href="home"
           >Strona główna <i class="fas fa-home"></i>
           <span class="sr-only">(aktualna opcja)</span></a
         >
       </li>
-      <li class="nav-item ml-lg-5 m-auto">
+      <li
+        class="nav-item {% block secondOption %}{% endblock %} ml-lg-5 m-auto"
+      >
         <a class="nav-link" href="add-income"
           >Dodaj przychód <i class="fas fa-hand-holding-usd"></i
         ></a>
       </li>
-      <li class="nav-item ml-lg-5 m-auto">
+      <li class="nav-item {% block thirdOption %}{% endblock %} ml-lg-5 m-auto">
         <a class="nav-link" href="add-expense.php"
           >Dodaj wydatek <i class="fas fa-wallet"></i
         ></a>
       </li>
-      <li class="nav-item ml-lg-5 m-auto">
+      <li
+        class="nav-item {% block fourthOption %}{% endblock %} ml-lg-5 m-auto"
+      >
         <a class="nav-link" href="balance.php"
           >Przeglądaj bilans <i class="fas fa-chart-line"></i
         ></a>
       </li>
-      <li class="nav-item ml-lg-5 m-auto">
+      <li class="nav-item {% block fifthOption %}{% endblock %} ml-lg-5 m-auto">
         <a class="nav-link" href="#">Ustawienia <i class="fas fa-cog"></i></a>
       </li>
       <li class="nav-item ml-lg-5 m-auto">
