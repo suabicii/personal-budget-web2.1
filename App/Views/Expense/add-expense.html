@@ -1,0 +1,102 @@
+{% extends "base-logged.html" %} {% block title %}Dodawanie wydatku{% endblock
+%} {% block subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption
+%}active{% endblock %}{% block main %}
+<main>
+  <section class="adding-expenses">
+    <div class="container-custom border rounded bg-white mt-2 py-2">
+      <div class="row justify-content-center">
+        <form action="expense/add" method="post">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-2">
+                <i class="far fa-credit-card"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="payment">Sposób płatności</label>
+            <select name="payment" id="payment" class="form-control">
+              <option selected disabled>Wybierz sposób płatności</option>
+              <option value="Cash">Gotówka</option>
+              <option value="Debit Card">Karta debetowa</option>
+              <option value="Credit Card">Karta kredytowa</option>
+            </select>
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-3">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="amount">Kwota</label>
+            <input
+              type="number"
+              name="amount"
+              id="amount"
+              class="form-control"
+              placeholder="Kwota"
+              step="0.01"
+              required
+            />
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-2">
+                <i class="fas fa-money-check"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="category">Kategoria</label>
+            <select name="category" id="category" class="form-control" required>
+              <option selected disabled>Wybierz kategorię</option>
+              <option value="Food">Jedzenie</option>
+              <option value="Apartments">Mieszkanie</option>
+              <option value="Transport">Transport</option>
+              <option value="Telecommunication">Telekomunikacja</option>
+              <option value="Health">Opieka zdrowotna</option>
+              <option value="Clothes">Ubranie</option>
+              <option value="Hygiene">Higiena</option>
+              <option value="Kids">Dzieci</option>
+              <option value="Recreation">Rozrywka</option>
+              <option value="Trip">Wycieczka</option>
+              <option value="Courses">Szkolenia</option>
+              <option value="Books">Książki</option>
+              <option value="Savings">Oszczędności</option>
+              <option value="For Retirement">
+                Na złotą jesień, czyli emeryturę
+              </option>
+              <option value="Debt Repayment">Spłata długów</option>
+              <option value="Gift">Darowizna</option>
+              <option value="Another">Inne wydatki</option>
+            </select>
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="far fa-calendar-alt"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="date">Data</label>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="input-group mt-2 mb-2">
+            <label class="sr-only" for="comment">Komentarz (opcjonalnie)</label>
+            <textarea
+              name="comment"
+              id="comment"
+              rows="2"
+              class="form-control"
+              placeholder="Komentarz (opcjonalnie)"
+            ></textarea>
+          </div>
+          <button type="submit" class="btn btn-some">Dodaj</button>
+          <a href="/home" class="btn btn-danger">Anuluj</a>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}
