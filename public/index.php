@@ -39,6 +39,7 @@ $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);
 $router->add('home', ['controller' => 'Home', 'action' => 'index']);
 $router->add('add-income', ['controller' => 'Income', 'action' => 'index']);
 $router->add('add-expense', ['controller' => 'Expense', 'action' => 'index']);
+$router->add('balance', ['controller' => 'Balance', 'action' => 'index']);
 $router->add('{controller}/{action}');
 
 $router->dispatch($_SERVER['QUERY_STRING']);

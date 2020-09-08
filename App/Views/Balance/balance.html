@@ -1,0 +1,172 @@
+{% extends "base-logged.html" %} {% block title %}Przegląd bilansu{% endblock %}
+{% block subtitle %}Bilans z [data]{% endblock %}{% block fourthOption
+%}active{% endblock %}{% block main %}
+<main>
+  <div class="container border rounded bg-white mt-2 pt-3">
+    <section class="balance">
+      <div class="row mb-2">
+        <div class="col-md-6">
+          <button
+            type="button"
+            class="btn btn-other btn-lg btn-block dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Wybierz widok
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a
+              class="dropdown-item"
+              id="current-month"
+              href="./view/general.php"
+              >Ogólny</a
+            >
+            <a
+              class="dropdown-item"
+              id="previous-month"
+              href="./view/particular.php"
+              >Szczegółowy</a
+            >
+          </div>
+        </div>
+        <div class="col-md-6 period-choice">
+          <button
+            type="button"
+            class="btn btn-info btn-lg btn-block dropdown-toggle"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+          >
+            Wybierz okres
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a
+              class="dropdown-item"
+              id="current-month"
+              href="./date-choice/current-month.php"
+              >Bieżący miesiąc</a
+            >
+            <a
+              class="dropdown-item"
+              id="previous-month"
+              href="./date-choice/previous-month.php"
+              >Poprzedni miesiąc</a
+            >
+            <a
+              class="dropdown-item"
+              id="current-year"
+              href="./date-choice/current-year.php"
+              >Bieżący rok</a
+            >
+            <button
+              class="dropdown-item"
+              id="custom-date"
+              data-toggle="modal"
+              data-target="#customDateModal"
+            >
+              Niestandardowy
+            </button>
+          </div>
+        </div>
+      </div>
+      <script>
+        var particularView = false;
+      </script>
+      <div class="feedback text-center">
+        <div class="onPlus">
+          <h4>
+            <span class="text-success">Gratulacje. </span>Świetnie zarządzasz
+            finansami!
+            <i class="far fa-smile"></i>
+          </h4>
+        </div>
+        <div class="onMinus">
+          <h4>
+            <span class="text-danger">Uważaj! </span>Wpadasz w długi
+            <i class="far fa-frown"></i>
+          </h4>
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- Modal do wyboru niestandardowego okresu -->
+  <div
+    class="modal fade"
+    id="customDateModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="customDateModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="customDateModalLabel">
+            Podaj daty początku i końca okresu
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="./date-choice/custom.php" method="post">
+          <div class="modal-body">
+            <div class="input-group mr-2 mb-2">
+              <label for="start-date" class="mr-2">Od </label>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="far fa-calendar-alt"></i>
+                </div>
+              </div>
+              <input
+                type="date"
+                name="start-date"
+                id="start-date"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="input-group mr-2 mb-2">
+              <label for="end-date" class="mr-2">Do </label>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="far fa-calendar-alt"></i>
+                </div>
+              </div>
+              <input
+                type="date"
+                name="end-date"
+                id="end-date"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Anuluj
+            </button>
+            <button type="submit" class="btn btn-some">Wybierz</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+<!-- Skrypt do wyświetlania wykresów kołowych -->
+<script
+  type="text/javascript"
+  src="https://www.gstatic.com/charts/loader.js"
+></script>
+<!-- Skrypt do prawidłowego wyświetlania bilansu -->
+<script src="/js/balance.js"></script>
+{% endblock %}
