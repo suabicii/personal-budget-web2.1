@@ -16,10 +16,7 @@
             Wybierz widok
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-            <a
-              class="dropdown-item"
-              id="current-month"
-              href="./view/general.php"
+            <a class="dropdown-item" id="current-month" href="balance/general"
               >Ogólny</a
             >
             <a
@@ -73,18 +70,99 @@
       <script>
         var particularView = false;
       </script>
+      <div class="row justify-content-between">
+        <div class="col">
+          <h3 class="text-center">Przychody</h3>
+          <table class="table table-bordered">
+            <thead class="bg-success text-white">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col" class="middle-col">Kategoria</th>
+                <th scope="col">Łączna kwota</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set i = 0 %} {% set sumOfIncomes = 0 %} {% for income in
+              session.summed_incomes %}
+              <tr>
+                {% set i = i + 1 %}
+                <th scope="row">{{ i }}</th>
+                <td>{{ income.name }}</td>
+                <td id="{{ income.name }}">{{ income.amount }}</td>
+                {% set sumOfIncomes = sumOfIncomes + income.amount %}
+              </tr>
+              {% endfor %}
+              <tr>
+                <th scope="row">Razem</th>
+                <td class="text-center">-</td>
+                <th id="incomes">{{ sumOfIncomes }}</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="row justify-content-between">
+        <div class="col">
+          <h3 class="text-center">Wydatki</h3>
+          <table class="table table-bordered">
+            <thead class="bg-warning text-white">
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col" class="middle-col">Kategoria</th>
+                <th scope="col">Łączna kwota</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set i = 0 %} {% set sumOfExpenses = 0 %} {% for expense in
+              session.summed_expenses %}
+              <tr>
+                {% set i = i + 1 %}
+                <th scope="row">{{ i }}</th>
+                <td>{{ expense.name }}</td>
+                <td id="{{ expense.name }}">{{ expense.amount }}</td>
+                {% set sumOfExpenses = sumOfExpenses + expense.amount %}
+              </tr>
+              {% endfor %}
+              <tr>
+                <th scope="row">Razem</th>
+                <td class="text-center">-</td>
+                <th id="expenses">{{ sumOfExpenses }}</th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="charts">
+      <div class="row justify-content-center">
+        <div class="col-lg-6">
+          <div id="piechart-incomes"></div>
+        </div>
+        <div class="col-lg-6">
+          <div id="piechart-expenses"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="difference py-3">
+      <table class="table table-bordered">
+        <tr>
+          <th scope="col">Różnica</th>
+          <td id="difference" class="text-white"></td>
+        </tr>
+      </table>
       <div class="feedback text-center">
         <div class="onPlus">
           <h4>
             <span class="text-success">Gratulacje. </span>Świetnie zarządzasz
-            finansami!
-            <i class="far fa-smile"></i>
+            finansami! <i class="far fa-smile-beam"></i>
           </h4>
         </div>
         <div class="onMinus">
           <h4>
             <span class="text-danger">Uważaj! </span>Wpadasz w długi
-            <i class="far fa-frown"></i>
+            <i class="far fa-sad-tear"></i>
           </h4>
         </div>
       </div>
