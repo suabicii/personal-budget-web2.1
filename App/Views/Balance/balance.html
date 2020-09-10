@@ -1,6 +1,6 @@
 {% extends "base-logged.html" %} {% block title %}Przegląd bilansu{% endblock %}
-{% block subtitle %}Bilans z [data]{% endblock %}{% block fourthOption
-%}active{% endblock %}{% block main %}
+{% block subtitle %}Bilans z {{ session.which_date }}{% endblock %}{% block
+fourthOption %}active{% endblock %}{% block main %}
 <main>
   <div class="container border rounded bg-white mt-2 pt-3">
     <section class="balance">
@@ -41,19 +41,19 @@
             <a
               class="dropdown-item"
               id="current-month"
-              href="./date-choice/current-month.php"
+              href="/balance/current-month"
               >Bieżący miesiąc</a
             >
             <a
               class="dropdown-item"
               id="previous-month"
-              href="./date-choice/previous-month.php"
+              href="/balance/previous-month"
               >Poprzedni miesiąc</a
             >
             <a
               class="dropdown-item"
               id="current-year"
-              href="./date-choice/current-year.php"
+              href="/balance/current-year"
               >Bieżący rok</a
             >
             <button
@@ -192,7 +192,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="./date-choice/custom.php" method="post">
+        <form action="/balance/custom-date" method="post">
           <div class="modal-body">
             <div class="input-group mr-2 mb-2">
               <label for="start-date" class="mr-2">Od </label>
