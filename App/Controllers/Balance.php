@@ -21,7 +21,7 @@ class Balance extends \Core\Controller
     public function indexAction()
     {
         // Ustaw domyślny widok i okres po pierwszym wejściu na stronę tuż po logowaniu
-        if (!isset($_SESSION['summed_incomes']) && !isset($_SESSION['summed_expenses'])) {
+        if (!isset($_SESSION['general_view']) && !isset($_SESSION['particular_view'])) {
             $_SESSION['general_view'] = true;
             $this->redirect('/balance/current-month');
         } else {
@@ -38,7 +38,7 @@ class Balance extends \Core\Controller
     {
         $user = User::findByID($_SESSION['user_id']);
 
-        if (isset($_SESSION['particural_view'])) unset($_SESSION['particural_view']);
+        if (isset($_SESSION['particular_view'])) unset($_SESSION['particular_view']);
         $_SESSION['general_view'] = true;
 
         $startDate = $_SESSION['start_date'];
@@ -54,6 +54,35 @@ class Balance extends \Core\Controller
 
         $_SESSION['summed_incomes'] = $user->getSummedIncomes($startDateForQuery, $endDateForQuery);
         $_SESSION['summed_expenses'] = $user->getSummedExpenses($startDateForQuery, $endDateForQuery);
+
+        $this->redirect('/balance');
+    }
+
+    /**
+     * Wyświetl bilans w widoku szczegółowym
+     * 
+     * @return void
+     */
+    public function particularAction()
+    {
+        $user = User::findByID($_SESSION['user_id']);
+
+        if (isset($_SESSION['general_view'])) unset($_SESSION['general_view']);
+        $_SESSION['particular_view'] = true;
+
+        $startDate = $_SESSION['start_date'];
+        $endDate = $_SESSION['end_date'];
+
+        if (isset($_SESSION['custom_period'])) {
+            $startDateForQuery = $startDate;
+            $endDateForQuery = $endDate;
+        } else {
+            $startDateForQuery = $startDate->format('Y-m-d');
+            $endDateForQuery = $endDate->format('Y-m-d');
+        }
+
+        $_SESSION['all_incomes'] = $user->getAllIncomes($startDateForQuery, $endDateForQuery);
+        $_SESSION['all_expenses'] = $user->getAllExpenses($startDateForQuery, $endDateForQuery);
 
         $this->redirect('/balance');
     }

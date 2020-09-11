@@ -501,4 +501,44 @@ class User extends \Core\Model
 
         return $query->fetchAll();
     }
+
+    /**
+     * Pobierz WSZYSTKIE przychody
+     * 
+     * @param string $startDate  Data początku okresu
+     * @param string $endDate  Data końca okresu
+     * 
+     * @return array  Tablica asocjacyjna ze wszystkimi przychodami
+     */
+    public function getAllIncomes($startDate, $endDate)
+    {
+        $db = static::getDB();
+
+        $income_category = 'income_category_assigned_to_user_id';
+
+        $query =  $db->prepare("SELECT incomes.user_id, income_category_assigned_to_user_id, name, amount, date_of_income, income_comment FROM incomes, incomes_category_assigned_to_users WHERE incomes_category_assigned_to_users.id = incomes.{$income_category} AND incomes.user_id = {$this->id} AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    /**
+     * Pobierz WSZYSTKIE wydatki
+     * 
+     * @param string $startDate  Data początku okresu
+     * @param string $endDate  Data końca okresu
+     * 
+     * @return array  Tablica asocjacyjna ze wszystkimi wydatkami
+     */
+    public function getAllExpenses($startDate, $endDate)
+    {
+        $db = static::getDB();
+
+        $expense_category = 'expense_category_assigned_to_user_id';
+
+        $query =  $db->prepare("SELECT expenses.user_id, expense_category_assigned_to_user_id, name, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} AND expenses.user_id = {$this->id} AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
+        $query->execute();
+
+        return $query->fetchAll();
+    }
 }
