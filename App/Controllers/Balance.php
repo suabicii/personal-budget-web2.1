@@ -20,16 +20,13 @@ class Balance extends \Core\Controller
      */
     public function indexAction()
     {
-        View::renderTemplate('Balance/balance.html');
-    }
-
-    /**
-     * Ustaw domyślny widok i okres po pierwszym wejściu na stronę tuż po logowaniu
-     * 
-     * @return void
-     */
-    public function firstRunAction()
-    {
+        // Ustaw domyślny widok i okres po pierwszym wejściu na stronę tuż po logowaniu
+        if (!isset($_SESSION['summed_incomes']) && !isset($_SESSION['summed_expenses'])) {
+            $_SESSION['general_view'] = true;
+            $this->redirect('/balance/current-month');
+        } else {
+            View::renderTemplate('Balance/balance.html');
+        }
     }
 
     /**
