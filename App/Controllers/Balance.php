@@ -41,16 +41,8 @@ class Balance extends \Core\Controller
         if (isset($_SESSION['particular_view'])) unset($_SESSION['particular_view']);
         $_SESSION['general_view'] = true;
 
-        $startDate = $_SESSION['start_date'];
-        $endDate = $_SESSION['end_date'];
-
-        if (isset($_SESSION['custom_period'])) {
-            $startDateForQuery = $startDate;
-            $endDateForQuery = $endDate;
-        } else {
-            $startDateForQuery = $startDate->format('Y-m-d');
-            $endDateForQuery = $endDate->format('Y-m-d');
-        }
+        $startDateForQuery = static::getDateForQuery($_SESSION['start_date']);
+        $endDateForQuery = static::getDateForQuery($_SESSION['end_date']);
 
         $_SESSION['summed_incomes'] = $user->getSummedIncomes($startDateForQuery, $endDateForQuery);
         $_SESSION['summed_expenses'] = $user->getSummedExpenses($startDateForQuery, $endDateForQuery);
@@ -70,16 +62,8 @@ class Balance extends \Core\Controller
         if (isset($_SESSION['general_view'])) unset($_SESSION['general_view']);
         $_SESSION['particular_view'] = true;
 
-        $startDate = $_SESSION['start_date'];
-        $endDate = $_SESSION['end_date'];
-
-        if (isset($_SESSION['custom_period'])) {
-            $startDateForQuery = $startDate;
-            $endDateForQuery = $endDate;
-        } else {
-            $startDateForQuery = $startDate->format('Y-m-d');
-            $endDateForQuery = $endDate->format('Y-m-d');
-        }
+        $startDateForQuery = static::getDateForQuery($_SESSION['start_date']);
+        $endDateForQuery = static::getDateForQuery($_SESSION['end_date']);
 
         $_SESSION['all_incomes'] = $user->getAllIncomes($startDateForQuery, $endDateForQuery);
         $_SESSION['all_expenses'] = $user->getAllExpenses($startDateForQuery, $endDateForQuery);
@@ -202,6 +186,23 @@ class Balance extends \Core\Controller
             unset($_SESSION['current_year']);
         } elseif (isset($_SESSION['custom_period']) && $_SESSION['custom_period'] != $period) {
             unset($_SESSION['custom_period']);
+        }
+    }
+
+    /**
+     * Przekształć datę początkową/końcową na odpowiedni format do wykonania
+     * kwerendy pobierającej przychody/wydatki
+     * 
+     * @param Object $date  Data początkowa/końcowa
+     * 
+     * @return mixed  Data po przekształceniu 
+     */
+    private static function getDateForQuery($date)
+    {
+        if (isset($_SESSION['custom_period'])) {
+            return $date;
+        } else {
+            return $date->format('Y-m-d');
         }
     }
 }
