@@ -18,7 +18,7 @@ class Categories
         'Salary' => 'Wynagrodzenie',
         'Interest' => 'Odsetki bankowe',
         'Allegro' => 'Sprzedaż na allegro',
-        'Another' => 'Inne'
+        'Another-Incomes' => 'Inne'
     ];
 
     /**
@@ -39,10 +39,10 @@ class Categories
         'Recreation' => 'Rozrywka',
         'Trip' => 'Wycieczka',
         'Savings' => 'Oszczędności',
-        'For Retirement' => 'Na złotą jesień, czyli emeryturę',
-        'Debt Repayment' => 'Spłata długów',
+        'For-Retirement' => 'Na złotą jesień, czyli emeryturę',
+        'Debt-Repayment' => 'Spłata długów',
         'Gift' => 'Darowizna',
-        'Another' => 'Inne wydatki',
+        'Another-Expenses' => 'Inne wydatki',
         'Courses' => 'Szkolenia'
     ];
 }

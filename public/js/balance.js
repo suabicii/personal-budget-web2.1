@@ -78,17 +78,20 @@ if (!particularView) {
   allegro = document.querySelector("#Allegro")
     ? document.querySelector("#Allegro").textContent
     : 0;
-  anotherIncomes = document.querySelector("#another-incomes")
-    ? document.querySelector("#another-incomes").textContent
+  anotherIncomes = document.querySelector("#Another-Incomes")
+    ? document.querySelector("#Another-Incomes").textContent
     : 0;
 } else {
   const salaries = document.querySelectorAll(".Salary");
   salary = sumIncomes(salaries);
+
   const interests = document.querySelectorAll(".Interest");
   interest = sumIncomes(interests);
+
   const allegroIncomes = document.querySelectorAll(".Allegro");
   allegro = sumIncomes(allegroIncomes);
-  const anotherIncomesAll = document.querySelectorAll(".another-incomes");
+
+  const anotherIncomesAll = document.querySelectorAll(".Another-Incomes");
   anotherIncomes = sumIncomes(anotherIncomesAll);
 }
 
@@ -168,52 +171,68 @@ if (!particularView) {
   savings = document.querySelector("#Savings")
     ? document.querySelector("#Savings").textContent
     : 0;
-  retirement = document.querySelector("#retirement")
-    ? document.querySelector("#retirement").textContent
+  retirement = document.querySelector("#For-Retirement")
+    ? document.querySelector("#For-Retirement").textContent
     : 0;
-  debts = document.querySelector("#debt-repayment")
-    ? document.querySelector("#debt-repayment").textContent
+  debts = document.querySelector("#Debt-Repayment")
+    ? document.querySelector("#Debt-Repayment").textContent
     : 0;
   gift = document.querySelector("#Gift")
     ? document.querySelector("#Gift").textContent
     : 0;
-  anotherExpenses = document.querySelector("#another-expenses")
-    ? document.querySelector("#another-expenses").textContent
+  anotherExpenses = document.querySelector("#Another-Expenses")
+    ? document.querySelector("#Another-Expenses").textContent
     : 0;
 } else {
   const foodAll = document.querySelectorAll(".Food");
   food = sumExpenses(foodAll);
+
   const apartmentsAll = document.querySelectorAll(".Apartments");
   apartments = sumExpenses(apartmentsAll);
+
   const transportAll = document.querySelectorAll(".Transport");
   transport = sumExpenses(transportAll);
+
   const telecommunicationAll = document.querySelectorAll(".Telecommunication");
   telecommunication = sumExpenses(telecommunicationAll);
+
   const healthAll = document.querySelectorAll(".Health");
   health = sumExpenses(healthAll);
+
   const clothesAll = document.querySelectorAll(".Clothes");
   clothes = sumExpenses(clothesAll);
+
   const hygieneAll = document.querySelectorAll(".Hygiene");
   hygiene = sumExpenses(hygieneAll);
+
   const kidsAll = document.querySelectorAll(".Kids");
   kids = sumExpenses(kidsAll);
+
   const recreationAll = document.querySelectorAll(".Recreation");
   recreation = sumExpenses(recreationAll);
+
   const tripAll = document.querySelectorAll(".Trip");
   trip = sumExpenses(tripAll);
+
   const coursesAll = document.querySelectorAll(".Courses");
   courses = sumExpenses(coursesAll);
+
   const booksAll = document.querySelectorAll(".Books");
   books = sumExpenses(booksAll);
+
   const savingsAll = document.querySelectorAll(".Savings");
   savings = sumExpenses(savingsAll);
-  const retirementAll = document.querySelectorAll(".retirement");
+
+  const retirementAll = document.querySelectorAll(".For-Retirement");
   retirement = sumExpenses(retirementAll);
-  const debtsAll = document.querySelectorAll(".debt-repayment");
+
+  const debtsAll = document.querySelectorAll(".Debt-Repayment");
   debts = sumExpenses(debtsAll);
+
   const giftAll = document.querySelectorAll(".Gift");
   gift = sumExpenses(giftAll);
-  const anotherExpensesAll = document.querySelectorAll(".another-expenses");
+
+  const anotherExpensesAll = document.querySelectorAll(".Another-Expenses");
   anotherExpenses = sumExpenses(anotherExpensesAll);
 }
 

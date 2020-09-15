@@ -97,7 +97,7 @@ class Balance extends \Core\Controller
         $today = new DateTime();
         $firstDayOfMonth = new DateTime($today->format('Y-m') . "-01");
 
-        $_SESSION['current_month'] = 'Current month was chosen, my master';
+        $_SESSION['current_month'] = 'Current month has been selected, my master';
         static::unsetOtherPeriods($_SESSION['current_month']);
 
         $_SESSION['start_date'] = $firstDayOfMonth;
@@ -118,7 +118,7 @@ class Balance extends \Core\Controller
         $baseDate = new DateTime();
         $baseDate->modify('-1 month');
 
-        $_SESSION['previous_month'] = 'Previous month was chosen, my master';
+        $_SESSION['previous_month'] = 'Previous month has been selected, my master';
         static::unsetOtherPeriods($_SESSION['previous_month']);
 
         $beginningOfMonth = new DateTime($baseDate->format('Y-m') . '-01');
@@ -145,7 +145,7 @@ class Balance extends \Core\Controller
         $beginningOfYear = new DateTime('first day of January');
         $today = new DateTime();
 
-        $_SESSION['current_year'] = 'Current year was chosen, my master';
+        $_SESSION['current_year'] = 'Current year has been selected, my master';
         static::unsetOtherPeriods($_SESSION['current_year']);
 
         $_SESSION['start_date'] = $beginningOfYear;
@@ -166,7 +166,7 @@ class Balance extends \Core\Controller
         $_SESSION['start_date'] = $_POST['start-date'];
         $_SESSION['end_date'] = $_POST['end-date'];
 
-        $_SESSION['custom_period'] = 'Custom period was chosen, my master';
+        $_SESSION['custom_period'] = 'Custom period has been selected, my master';
         static::unsetOtherPeriods($_SESSION['custom_period']);
 
         $_SESSION['which_date'] = "okresu od {$_SESSION['start_date']} do {$_SESSION['end_date']}";
