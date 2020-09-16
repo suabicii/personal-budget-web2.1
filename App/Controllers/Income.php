@@ -20,6 +20,13 @@ class Income extends \Core\Controller
      */
     public function IndexAction()
     {
+        // Jeśli ostatnio przeglądaną stroną jest strona z bilansem
+        if (isset($_SESSION['general_view'])) {
+            unset($_SESSION['general_view']);
+        } elseif (isset($_SESSION['particular_view'])) {
+            unset($_SESSION['particular_view']);
+        }
+
         View::renderTemplate('Income/add-income.html');
     }
 
