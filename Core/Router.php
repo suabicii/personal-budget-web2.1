@@ -78,7 +78,7 @@ class Router
     }
 
     /**
-     * "Zdispatchuj" trasę (routing = pytania o kierunki; dispatching = podążanie tymi kierunkami), metoda tworzenia objektu kontrolera i uruchamiania akcji
+     * "Zdispatchuj" trasę (routing = pytania o kierunki; dispatching = podążanie tymi kierunkami), metoda tworzenia obiektu kontrolera i uruchamiania akcji
      * 
      * @param string $url  URL trasy
      * 
