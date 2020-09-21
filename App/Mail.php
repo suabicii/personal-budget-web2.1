@@ -6,6 +6,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
+$dotenv = \Dotenv\Dotenv::createUnsafeImmutable(dirname(__DIR__));
+$dotenv->load();
+
 /**
  * Wysyłanie maili do aktywacji kont lub resetowania haseł
  * 
@@ -23,7 +26,7 @@ class Mail
             $mail->Host       = 'smtp.gmail.com';                    // Ustaw serwer SMTP do przesyłania
             $mail->SMTPAuth   = true;                                   // Włącz uwierzytelnianie SMTP
             $mail->Username   = 'personal.budget.slabikovsky@gmail.com';                     // nazwa użytkownika SMTP
-            $mail->Password   = 'Ubuntu2020!';                               // SMTP hasło
+            $mail->Password   = getenv('SMTP_PASSWORD');
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;         // Włącz szyfrowanie SMTP; 
             $mail->Port       = 465;                                    // Port TCP do połączenia
 
