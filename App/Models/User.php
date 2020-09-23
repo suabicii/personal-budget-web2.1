@@ -276,7 +276,16 @@ class User extends \Core\Model
 
         if ($user) {
             if (password_verify($password, $user->password)) {
+                if (!$user->is_active) {
+                    $_SESSION['login_failed'] = 'Aby móc korzystać z konta, musisz je aktywować';
+                    $_SESSION['account_unactive'] = true;
+
+                    return false;
+                }
+
                 if (isset($_SESSION['login_failed'])) unset($_SESSION['login_failed']);
+                if (isset($_SESSION['account_unactive'])) unset($_SESSION['account_unactive']);
+
                 return $user;
             }
         }
@@ -320,6 +329,20 @@ class User extends \Core\Model
      */
     public function sendActivationEmail()
     {
+        if (isset($_SESSION['resenend_activation_email'])) {
+            $token = new Token();
+            $hashed_token = $token->getHash();
+            $this->activation_token = $token->getValue();
+
+            $db = static::getDB();
+            $query = $db->prepare('UPDATE users SET activation_hash = :hashed_token WHERE id = :id');
+            $query->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $query->execute();
+
+            unset($_SESSION['resenend_activation_email']);
+        }
+
         $url = 'http://' . $_SERVER['HTTP_HOST'] . '/signup/activate/' . $this->activation_token;
 
         // Treść wiadomości - zwykły tekst i HTML
@@ -327,6 +350,29 @@ class User extends \Core\Model
         $html = View::getTemplate('Signup/activation_email.html', ['url' => $url]);
 
         Mail::send($this->email, 'Aktywacja konta na Personal Budget Manager by Michael Slabikovsky', $text, $html);
+    }
+
+    /**
+     * Aktywuj konto użytkownika z określonym tokenem aktywacyjnym
+     * 
+     * @param string $value  Token aktywacyjny z URL-a
+     * 
+     * @return void
+     */
+    public static function activate($value)
+    {
+        $token = new Token($value);
+        $hashed_token = $token->getHash();
+
+        $db = static::getDB();
+
+        $query = $db->prepare('
+            UPDATE users
+            SET is_active = 1, activation_hash = null
+            WHERE activation_hash = :hashed_token
+        ');
+        $query->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
+        $query->execute();
     }
 
     /**

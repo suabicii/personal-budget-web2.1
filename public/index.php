@@ -33,7 +33,7 @@ $router = new Core\Router();
 // Dodawanie tras
 $router->add('', ['controller' => 'Start', 'action' => 'index']);
 $router->add('create', ['controller' => 'Signup', 'action' => 'create']);
-$router->add('activate', ['controller' => 'Signup', 'action' => 'activate']);
+$router->add('signup/activate/{token:[\da-f]+}', ['controller' => 'Signup', 'action' => 'activate']);
 $router->add('login', ['controller' => 'Login', 'action' => 'create']);
 $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);
 $router->add('home', ['controller' => 'Home', 'action' => 'index']);
