@@ -43,7 +43,7 @@ class User extends \Core\Model
         if ($this->surname == '') $this->errors[] = 'Podaj nazwisko';
 
         // Walidacja loginu
-        if ($this->usernameExists($this->username)) $this->errors[] = 'Podany login już istnieje w bazie danych';
+        if ($this->usernameExists($this->username, $this->id ?? null)) $this->errors[] = 'Podany login już istnieje w bazie danych';
 
         // Walidacja adresu e-mail
         if (filter_var($this->email, FILTER_VALIDATE_EMAIL) === false) $this->errors[] = 'Niepoprawny format';
@@ -84,14 +84,20 @@ class User extends \Core\Model
      * Sprawdź, czy dany login już istnieje w bazie danych
      * 
      * @param string $username  Login
+     * @param int $ignore_id  Id użytkownika, przy którym wyszukiwanie loginu będzie
+     * ignorowane w trybie edycji danych
      * 
      * @return boolean  True, jeśli istnieje rekord z danym loginem, false w przeciwnym wypadku
      */
-    public static function usernameExists($username)
+    public static function usernameExists($username, $ignore_id = null)
     {
         $user = static::findByUsername($username);
 
-        if ($user) return true;
+        if ($user) {
+            if ($user->id != $ignore_id) {
+                return true;
+            }
+        }
 
         return false;
     }
@@ -323,6 +329,134 @@ class User extends \Core\Model
     }
 
     /**
+     * Rozpocznij proces resetowania hasła poprzez wygenerowanie nowego tokena
+     * i czasu wygaśnięcia tej opcji
+     * 
+     * @return boolean  True, jeśli generowanie się powiodło, false w przeciwnym wypadku
+     */
+    protected function startPasswordReset()
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $this->password_reset_token = $token->getValue();
+
+        $expiry_timestamp = time() + 60 * 60 * 2; // 2 godziny od teraz
+
+        $db = static::getDB();
+
+        $query = $db->prepare('UPDATE users
+                SET password_reset_hash = :token_hash,
+                    password_reset_expires_at = :expires_at
+                WHERE id = :id');
+        $query->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+        $query->bindValue(':expires_at', date('Y-m-d H:i:s', $expiry_timestamp), PDO::PARAM_STR);
+        $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+
+        return $query->execute();
+    }
+
+    /**
+     * Wyślij instrukcje resetowania hasła w mailu do użytkownika
+     * 
+     * @return void
+     */
+    protected function sendPasswordResetEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/password/reset/' . $this->password_reset_token;
+
+        $text = View::getTemplate('Password/reset_email.txt', ['url' => $url]);
+        $html = View::getTemplate('Password/reset_email.html', ['url' => $url]);
+
+        Mail::send($this->email, 'Reset hasła w Personal Budget Manager by Michael Slabikovsky', $text, $html);
+    }
+
+    /**
+     * Wyślij instrukcje resetowania hasła do konkretnego użytkownika
+     * 
+     * @param string $email  Adres email użytkownika
+     * 
+     * @return void
+     */
+    public static function sendPasswordReset($email)
+    {
+        $user = static::findByEmail($email);
+
+        if ($user) {
+            if ($user->startPasswordReset()) {
+                $user->sendPasswordResetEmail();
+            }
+        }
+    }
+
+    /**
+     * Znajdź model user przy pomocy tokena resetu hasła i czasu wygaśnięcia
+     * 
+     * @param string $token  Token resetu hasła wysłany do użytkownika
+     * 
+     * @return mixed  Obiekt User, jeśli znaleziono i token nie wygasł, null w przeciwnym
+     * wypadku
+     */
+    public static function findByPasswordReset($token)
+    {
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $db = static::getDB();
+
+        $query = $db->prepare('SELECT * FROM users
+                WHERE password_reset_hash = :token_hash');
+
+        $query->bindValue(':token_hash', $hashed_token, PDO::PARAM_STR);
+
+        $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $query->execute();
+
+        $user = $query->fetch();
+
+        if ($user) {
+            // Sprawdź czy token nie wygasł
+            if (strtotime($user->password_reset_expires_at) > time()) {
+                return $user;
+            }
+        }
+    }
+
+    /**
+     * Zresetuj hasło
+     * 
+     * @param string $password  Nowe hasło
+     * 
+     * @return boolean  True, jeśli pomyślnie zaktualizowano hasło, w przeciwnym wypadku - false
+     */
+    public function resetPassword($password, $passwordConfirmation)
+    {
+        $this->password = $password;
+        $this->passwordConfirmation = $passwordConfirmation;
+        $this->surname = 'To dla zmylenia "przeciwnika" :)';
+
+        $this->validate();
+
+        if (empty($this->errors)) {
+            $password_hash = password_hash($this->password, PASSWORD_DEFAULT);
+
+            $db = static::getDB();
+
+            $query = $db->prepare('UPDATE users
+                    SET password = :password_hash,
+                        password_reset_hash = NULL,
+                        password_reset_expires_at = NULL
+                    WHERE id = :id');
+            $query->bindValue(':id', $this->id, PDO::PARAM_INT);
+            $query->bindValue(':password_hash', $password_hash, PDO::PARAM_STR);
+
+            return $query->execute();
+        }
+
+        return false;
+    }
+
+    /**
      * Wyślij e-maila zawierającego link aktywacyjny
      * 
      * @return void
@@ -491,7 +625,7 @@ class User extends \Core\Model
             return $query->execute([
                 ":user_id" => $this->id,
                 ":category_assigned_to_user_id" => $category_id['id'],
-                "payment_assigned_to_user_id" => $payment_id['id'],
+                ":payment_assigned_to_user_id" => $payment_id['id'],
                 ":amount" => $amount,
                 ":date" => $date,
                 ":comment" => $comment

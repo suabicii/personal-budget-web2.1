@@ -1,0 +1,52 @@
+{% extends 'base.html' %} {% block title %}Zmiana hasła{% endblock %} {% block
+body %}
+<div
+  class="container-custom border rounded bg-white text-center py-2 mt-2 px-2"
+>
+  <h1>Podaj nowe hasło</h1>
+  <form id="reset" method="post" action="reset-password">
+    <input type="hidden" name="token" value="{{ token }}" />
+    <div class="input-group mr-2 mt-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fas fa-key"></i></div>
+      </div>
+      <label class="sr-only" for="password">Nowe hasło</label>
+      <input
+        type="password"
+        name="password"
+        id="password"
+        class="form-control"
+        placeholder="Nowe hasło"
+        required
+      />
+    </div>
+    <div class="input-group mr-2 mt-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fas fa-key"></i></div>
+      </div>
+      <label class="sr-only" for="passwordConfirmation">Potwierdź hasło</label>
+      <input
+        type="password"
+        name="passwordConfirmation"
+        id="passwordConfirmation"
+        class="form-control"
+        placeholder="Powtórz hasło"
+        required
+      />
+    </div>
+    {% if user.errors is not empty %}
+    <div class="mt-2">
+      <p class="text-danger">Lista błędów:</p>
+      <ul>
+        {% for error in user.errors %}
+        <li>{{ error }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <button type="submit" class="btn btn-success mt-2">
+      Zmień hasło <i class="far fa-envelope"></i>
+    </button>
+  </form>
+</div>
+{% endblock %}

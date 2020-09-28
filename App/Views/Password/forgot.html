@@ -1,0 +1,28 @@
+{% extends 'base.html' %} {% block title %}Nie pamiętam hasła{% endblock %} {%
+block body %}
+<div
+  class="container-custom border rounded bg-white text-center py-2 mt-2 px-2"
+>
+  <h1>Podaj adres e-mail w celu ustawienia nowego hasła</h1>
+  <form id="reset" method="post" action="request-reset">
+    <div class="input-group mr-2 mt-2">
+      <div class="input-group-prepend">
+        <div class="input-group-text"><i class="fas fa-at"></i></div>
+      </div>
+      <label class="sr-only" for="email">E-mail</label>
+      <input
+        type="email"
+        name="email"
+        id="email"
+        class="form-control"
+        placeholder="E-mail"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-success mt-2">
+      Resetuj hasło <i class="far fa-envelope"></i>
+    </button>
+    <a class="btn btn-secondary mt-2" href="/">Anuluj</a>
+  </form>
+</div>
+{% endblock %}
