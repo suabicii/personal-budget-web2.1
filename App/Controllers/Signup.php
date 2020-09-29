@@ -29,12 +29,23 @@ class Signup extends \Core\Controller
     }
 
     /**
-     * Informacja o wysłaniu linka aktywacyjnego
+     * Aktywacja konta
      * 
      * @return void
      */
     public function activateAction()
     {
-        View::renderTemplate('Mail/activate.html');
+        User::activate($this->route_params['token']);
+        $this->redirect('/signup/activated');
+    }
+
+    /**
+     * Wyświetl stronę z informacją o udanej aktywacji konta
+     * 
+     * @return void
+     */
+    public function activatedAction()
+    {
+        View::renderTemplate('Signup/activated.html');
     }
 }

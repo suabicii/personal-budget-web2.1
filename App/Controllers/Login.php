@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 use App\Auth;
+use App\Flash;
 use Core\View;
 
 class Login extends \Core\Controller
@@ -38,5 +39,25 @@ class Login extends \Core\Controller
     {
         Auth::logout();
         $this->redirect('/');
+    }
+
+    /**
+     * Wyślij ponownie link aktywacyjny
+     * 
+     * @return void
+     */
+    public function resendActivationLinkAction()
+    {
+        $user = User::findByEmail($_POST['email']);
+
+        if ($user) {
+            $_SESSION['resenend_activation_email'] = true;
+            $user->sendActivationEmail();
+            Flash::addMessage('Sprawdź swoją skrzynkę odbiorczą na koncie pocztowym', Flash::INFO);
+            View::renderTemplate('Mail/activate.html');
+        } else {
+            Flash::addMessage('Nie ma użytkownika o podanym adresie e-mail', Flash::WARNING);
+            $this->redirect('/');
+        }
     }
 }

@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% block title %}Personal Budget Manager 2.1 by
-Michael Slabikovsky{% endblock %} {% block body %}
+{% extends "base.html" %} {% block body %}
 <header class="text-white text-center bg-dark py-2">
   <div class="header-content py-2">
     <h1 class="display-4">Menedżer budżetu osobistego</h1>
@@ -284,6 +283,9 @@ Michael Slabikovsky{% endblock %} {% block body %}
                 Zapamiętaj mnie
               </label>
             </div>
+            <div class="forgot-password">
+              <a href="password/forgot">Nie pamiętam hasła</a>
+            </div>
           </div>
           {% if session.login_failed %}
           <script>
@@ -291,8 +293,15 @@ Michael Slabikovsky{% endblock %} {% block body %}
               $("#loginModal").modal("show");
             });
           </script>
-          <div>
-            <p class="text-danger text-center">{{ session.login_failed }}</p>
+          <div class="text-center">
+            <p class="text-danger">{{ session.login_failed }}</p>
+            {% if session.account_unactive %}
+            <p>
+              Kliknij <a href="#" data-toggle="modal"
+            data-target="#activateModal">tutaj</a>, aby
+              ponownie wysłać link aktywacyjny
+            </p>
+            {% endif %}
           </div>
           {% endif %}
           <div class="modal-footer">
@@ -311,33 +320,57 @@ Michael Slabikovsky{% endblock %} {% block body %}
       </div>
     </div>
   </div>
-  <!-- Modal po rejestracji -->
+  <!-- Modal do ponownego wysłania linka do aktywacji konta -->
   <div
     class="modal fade"
-    id="registerConfirmation"
+    id="activateModal"
     tabindex="-1"
     role="dialog"
-    aria-labelledby="registerConfirmationLabel"
+    aria-labelledby="activateModalLabel"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title text-success" id="registerConfirmationLabel">
-            Sukces
-          </h5>
-          <a href="main.html" class="close">
+          <h5 class="modal-title" id="activateModalLabel">Wyślij ponownie link aktywacyjny</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
             <span aria-hidden="true">&times;</span>
-          </a>
-        </div>
-        <div class="modal-body">
-          <h3 class="text-center">Rejestracja zakończona sukcesem</h3>
-        </div>
-        <div class="modal-footer justify-content-center">
-          <button type="button" class="btn btn-primary" data-dismiss="modal">
-            OK <i class="far fa-smile"></i>
           </button>
         </div>
+        <form id="activate" method="post" action="login/resend-activation-link">
+          <div class="modal-body">
+            <div class="input-group mr-2 mt-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text"><i class="fas fa-at"></i></div>
+              </div>
+              <label class="sr-only" for="emailToActivate">E-mail</label>
+              <input
+                type="email"
+                name="email"
+                id="emailToActivate"
+                class="form-control"
+                placeholder="E-mail"
+                required
+              />
+            </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Anuluj
+            </button>
+            <button type="submit" class="btn btn-success">
+              Wyślij <i class="far fa-envelope"></i>
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
