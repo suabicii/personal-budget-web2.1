@@ -6,7 +6,15 @@
 body {
   background: url("../img/background.jpg") no-repeat fixed center;
   min-height: 100%;
+  padding: 0;
+  margin: 0;
   position: relative;
+}
+
+body::after {
+  content: "";
+  display: block;
+  height: 50px;
 }
 
 header {
@@ -31,11 +39,18 @@ ul {
 
 .welcome {
   img {
-    height: 275px;
+    height: 255px;
   }
 }
 
+.container {
+  font-family: "Monsterrat", sans-serif;
+  font-weight: 400;
+}
+
 .container-custom {
+  font-family: "Monsterrat", sans-serif;
+  font-weight: 400;
   width: 576px;
   margin: 0 auto;
 }
@@ -60,6 +75,12 @@ footer {
     .nav-link {
       font-size: 0.8rem;
     }
+  }
+}
+
+@media (max-width: 960px) {
+  .rwd-table {
+    overflow-x: scroll;
   }
 }
 
