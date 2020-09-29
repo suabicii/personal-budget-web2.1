@@ -6,7 +6,15 @@
 body {
   background: url("../img/background.jpg") no-repeat fixed center;
   min-height: 100%;
+  padding: 0;
+  margin: 0;
   position: relative;
+}
+
+body::after {
+  content: "";
+  display: block;
+  height: 50px;
 }
 
 header {
@@ -31,7 +39,7 @@ ul {
 
 .welcome {
   img {
-    height: 275px;
+    height: 255px;
   }
 }
 
