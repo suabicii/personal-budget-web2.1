@@ -1,5 +1,5 @@
-Resetowanie hasła
+Resetowanie hasla
 
-Kliknij na poniższy link, aby zresetować swoje hasło
+Kliknij na ponizszy link, aby zresetować swoje haslo
 
 {{ url }}
