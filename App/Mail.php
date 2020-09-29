@@ -3,7 +3,6 @@
 namespace App;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 $dotenv = \Dotenv\Dotenv::createUnsafeImmutable(dirname(__DIR__));
