@@ -47,7 +47,7 @@ const sumIncomes = (incomes) => {
   let sum = 0;
   if (incomes != null) {
     incomes.forEach((income) => {
-      sum += income.textContent;
+      sum += parseFloat(income.textContent);
     });
   }
   return sum;
@@ -57,7 +57,7 @@ const sumExpenses = (expenses) => {
   let sum = 0;
   if (expenses != null) {
     expenses.forEach((expense) => {
-      sum += expense.textContent;
+      sum += parseFloat(expense.textContent);
     });
   }
   return sum;
@@ -70,16 +70,16 @@ let allegro;
 let anotherIncomes;
 if (!particularView) {
   salary = document.querySelector("#Salary")
-    ? document.querySelector("#Salary").textContent
+    ? parseFloat(document.querySelector("#Salary").textContent)
     : 0;
   interest = document.querySelector("#Interest")
-    ? document.querySelector("#Interest").textContent
+    ? parseFloat(document.querySelector("#Interest").textContent)
     : 0;
   allegro = document.querySelector("#Allegro")
-    ? document.querySelector("#Allegro").textContent
+    ? parseFloat(document.querySelector("#Allegro").textContent)
     : 0;
   anotherIncomes = document.querySelector("#Another-Incomes")
-    ? document.querySelector("#Another-Incomes").textContent
+    ? parseFloat(document.querySelector("#Another-Incomes").textContent)
     : 0;
 } else {
   const salaries = document.querySelectorAll(".Salary");
@@ -98,10 +98,10 @@ if (!particularView) {
 const drawChartOfIncomes = () => {
   let data = google.visualization.arrayToDataTable([
     ["Kategoria", "Kwota"],
-    ["Wynagrodzenie", salary != null ? parseFloat(salary) : 0], // Zamiana string na liczbę
-    ["Odsetki bankowe", interest != null ? parseFloat(interest) : 0],
-    ["Sprzedaż na allegro", allegro != null ? parseFloat(allegro) : 0],
-    ["Inne", anotherIncomes != null ? parseFloat(anotherIncomes) : 0],
+    ["Wynagrodzenie", salary != null ? salary : 0], // Zamiana string na liczbę
+    ["Odsetki bankowe", interest != null ? interest : 0],
+    ["Sprzedaż na allegro", allegro != null ? allegro : 0],
+    ["Inne", anotherIncomes != null ? anotherIncomes : 0],
   ]);
 
   let options = { title: "Przychody", width: chartWidth, height: 400 };
@@ -133,55 +133,55 @@ let anotherExpenses;
 
 if (!particularView) {
   food = document.querySelector("#Food")
-    ? document.querySelector("#Food").textContent
+    ? parseFloat(document.querySelector("#Food").textContent)
     : 0;
   apartments = document.querySelector("#Apartments")
-    ? document.querySelector("#Apartments").textContent
+    ? parseFloat(document.querySelector("#Apartments").textContent)
     : 0;
   transport = document.querySelector("#Transport")
-    ? document.querySelector("#Transport").textContent
+    ? parseFloat(document.querySelector("#Transport").textContent)
     : 0;
   telecommunication = document.querySelector("#Telecommunication")
-    ? document.querySelector("#Telecommunication").textContent
+    ? parseFloat(document.querySelector("#Telecommunication").textContent)
     : 0;
   health = document.querySelector("#Health")
-    ? document.querySelector("#Health").textContent
+    ? parseFloat(document.querySelector("#Health").textContent)
     : 0;
   clothes = document.querySelector("#Clothes")
-    ? document.querySelector("#Clothes").textContent
+    ? parseFloat(document.querySelector("#Clothes").textContent)
     : 0;
   hygiene = document.querySelector("#Hygiene")
-    ? document.querySelector("#Hygiene").textContent
+    ? parseFloat(document.querySelector("#Hygiene").textContent)
     : 0;
   kids = document.querySelector("#Kids")
-    ? document.querySelector("#Kids").textContent
+    ? parseFloat(document.querySelector("#Kids").textContent)
     : 0;
   recreation = document.querySelector("#Recreation")
-    ? document.querySelector("#Recreation").textContent
+    ? parseFloat(document.querySelector("#Recreation").textContent)
     : 0;
   trip = document.querySelector("#Trip")
-    ? document.querySelector("#Trip").textContent
+    ? parseFloat(document.querySelector("#Trip").textContent)
     : 0;
   courses = document.querySelector("#Courses")
     ? document.querySelector("#Courses").textContent
     : 0;
   books = document.querySelector("#Books")
-    ? document.querySelector("#Books").textContent
+    ? parseFloat(document.querySelector("#Books").textContent)
     : 0;
   savings = document.querySelector("#Savings")
-    ? document.querySelector("#Savings").textContent
+    ? parseFloat(document.querySelector("#Savings").textContent)
     : 0;
   retirement = document.querySelector("#For-Retirement")
-    ? document.querySelector("#For-Retirement").textContent
+    ? parseFloat(document.querySelector("#For-Retirement").textContent)
     : 0;
   debts = document.querySelector("#Debt-Repayment")
-    ? document.querySelector("#Debt-Repayment").textContent
+    ? parseFloat(document.querySelector("#Debt-Repayment").textContent)
     : 0;
   gift = document.querySelector("#Gift")
-    ? document.querySelector("#Gift").textContent
+    ? parseFloat(document.querySelector("#Gift").textContent)
     : 0;
   anotherExpenses = document.querySelector("#Another-Expenses")
-    ? document.querySelector("#Another-Expenses").textContent
+    ? parseFloat(document.querySelector("#Another-Expenses").textContent)
     : 0;
 } else {
   const foodAll = document.querySelectorAll(".Food");
@@ -239,29 +239,23 @@ if (!particularView) {
 const drawChartOfExpenses = () => {
   let data = google.visualization.arrayToDataTable([
     ["Kategoria", "Kwota"],
-    ["Jedzenie", food != null ? parseFloat(food) : 0],
-    ["Mieszkanie", apartments != null ? parseFloat(apartments) : 0],
-    ["Transport", transport != null ? parseFloat(transport) : 0],
-    [
-      "Telekomunikacja",
-      telecommunication != null ? parseFloat(telecommunication) : 0,
-    ],
-    ["Opieka zdrowotna", health != null ? parseFloat(health) : 0],
-    ["Ubranie", clothes != null ? parseFloat(clothes) : 0],
-    ["Higiena", hygiene != null ? parseFloat(hygiene) : 0],
-    ["Dzieci", kids != null ? parseFloat(kids) : 0],
-    ["Rozrywka", recreation != null ? parseFloat(recreation) : 0],
-    ["Wycieczka", trip != null ? parseFloat(trip) : 0],
-    ["Szkolenia", courses != null ? parseFloat(courses) : 0],
-    ["Książki", books != null ? parseFloat(books) : 0],
-    ["Oszczędności", savings != null ? parseFloat(savings) : 0],
-    [
-      "Na złotą jesień, czyli emeryturę",
-      retirement != null ? parseFloat(retirement) : 0,
-    ],
-    ["Spłata długów", debts != null ? parseFloat(debts) : 0],
-    ["Darowizna", gift != null ? parseFloat(gift) : 0],
-    ["Inne wydatki", anotherExpenses != null ? parseFloat(anotherExpenses) : 0],
+    ["Jedzenie", food != null ? food : 0],
+    ["Mieszkanie", apartments != null ? apartments : 0],
+    ["Transport", transport != null ? transport : 0],
+    ["Telekomunikacja", telecommunication != null ? telecommunication : 0],
+    ["Opieka zdrowotna", health != null ? health : 0],
+    ["Ubranie", clothes != null ? clothes : 0],
+    ["Higiena", hygiene != null ? hygiene : 0],
+    ["Dzieci", kids != null ? kids : 0],
+    ["Rozrywka", recreation != null ? recreation : 0],
+    ["Wycieczka", trip != null ? trip : 0],
+    ["Szkolenia", courses != null ? courses : 0],
+    ["Książki", books != null ? books : 0],
+    ["Oszczędności", savings != null ? savings : 0],
+    ["Na złotą jesień, czyli emeryturę", retirement != null ? retirement : 0],
+    ["Spłata długów", debts != null ? debts : 0],
+    ["Darowizna", gift != null ? gift : 0],
+    ["Inne wydatki", anotherExpenses != null ? anotherExpenses : 0],
   ]);
 
   let options = { title: "Wydatki", width: chartWidth, height: 400 };

@@ -715,8 +715,9 @@ class User extends \Core\Model
         $db = static::getDB();
 
         $expense_category = 'expense_category_assigned_to_user_id';
+        $payment_method = 'payment_method_assigned_to_user_id';
 
-        $query =  $db->prepare("SELECT expenses.user_id, expense_category_assigned_to_user_id, name, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} AND expenses.user_id = {$this->id} AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
+        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} AND payment_methods_assigned_to_users.id = expenses.{$payment_method} AND expenses.user_id = {$this->id} AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
         $query->execute();
 
         return $query->fetchAll();

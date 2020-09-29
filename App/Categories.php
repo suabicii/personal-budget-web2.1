@@ -3,7 +3,7 @@
 namespace App;
 
 /**
- * Kategorie przychodów i wydatków
+ * Kategorie przychodów i wydatków oraz metody płatności
  * 
  * PHP v. 7.4
  */
@@ -44,5 +44,16 @@ class Categories
         'Gift' => 'Darowizna',
         'Another-Expenses' => 'Inne wydatki',
         'Courses' => 'Szkolenia'
+    ];
+
+    /**
+     * Sposoby płatności
+     * 
+     * @var array
+     */
+    const PAYMENT_METHODS = [
+        'Cash' => 'Gotówka',
+        'Debit-Card' => 'Karta debetowa',
+        'Credit-Card' => 'Karta kredytowa'
     ];
 }
