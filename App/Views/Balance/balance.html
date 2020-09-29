@@ -192,6 +192,7 @@ fourthOption %}active{% endblock %}{% block main %}
                 <tr>
                   <th scope="col">#</th>
                   <th scope="col">Kategoria</th>
+                  <th scope="col">Metoda płatności</th>
                   <th scope="col">Data</th>
                   <th scope="col">Kwota</th>
                   <th scope="col">Komentarz</th>
@@ -203,15 +204,19 @@ fourthOption %}active{% endblock %}{% block main %}
                 <tr>
                   {% set i = i + 1 %}
                   <th scope="row">{{ i }}</th>
-                  <td>{{ expenses_categories[expense.name] }}</td>
+                  <td>{{ expenses_categories[expense.expense_category] }}</td>
+                  <td>{{ payment_methods[expense.payment_method] }}</td>
                   <td>{{ expense.date_of_expense }}</td>
-                  <td class="{{ expense.name }}">{{ expense.amount }}</td>
+                  <td class="{{ expense.expense_category }}">
+                    {{ expense.amount }}
+                  </td>
                   <td>{{ expense.expense_comment }}</td>
                   {% set sumOfExpenses = sumOfExpenses + expense.amount %}
                 </tr>
                 {% endfor %}
                 <tr>
                   <th scope="row">Razem</th>
+                  <td class="text-center">-</td>
                   <td class="text-center">-</td>
                   <td class="text-center">-</td>
                   <th id="expenses">{{ sumOfExpenses }}</th>
