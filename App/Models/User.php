@@ -364,8 +364,8 @@ class User extends \Core\Model
     {
         $url = 'http://' . $_SERVER['HTTP_HOST'] . '/password/reset/' . $this->password_reset_token;
 
-        $text = View::getTemplate('Password/reset_email.txt', ['url' => $url]);
-        $html = View::getTemplate('Password/reset_email.html', ['url' => $url]);
+        $text = View::getTemplate('Password/reset_email.txt', ['url' => $url, 'username' => $this->username]);
+        $html = View::getTemplate('Password/reset_email.html', ['url' => $url, 'username' => $this->username]);
 
         Mail::send($this->email, 'Zmiana hasla w Personal Budget Manager by Michael Slabikovsky', $text, $html);
     }

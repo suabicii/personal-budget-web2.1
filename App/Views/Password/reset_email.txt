@@ -1,5 +1,7 @@
 Resetowanie hasla
 
+Twoj login: {{ username }}
+
 Kliknij na ponizszy link, aby zresetować swoje haslo
 
 {{ url }}
