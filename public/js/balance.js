@@ -163,7 +163,7 @@ if (!particularView) {
     ? parseFloat(document.querySelector("#Trip").textContent)
     : 0;
   courses = document.querySelector("#Courses")
-    ? document.querySelector("#Courses").textContent
+    ? parseFloat(document.querySelector("#Courses").textContent)
     : 0;
   books = document.querySelector("#Books")
     ? parseFloat(document.querySelector("#Books").textContent)
