@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Models\User;
+use App\Models\Finances;
 use Core\View;
 use DateTime;
 
@@ -36,7 +36,7 @@ class Balance extends \Core\Controller
      */
     public function generalAction()
     {
-        $user = User::findByID($_SESSION['user_id']);
+        $finances = new Finances;
 
         if (isset($_SESSION['particular_view'])) unset($_SESSION['particular_view']);
         $_SESSION['general_view'] = true;
@@ -44,8 +44,8 @@ class Balance extends \Core\Controller
         $startDateForQuery = static::getDateForQuery($_SESSION['start_date']);
         $endDateForQuery = static::getDateForQuery($_SESSION['end_date']);
 
-        $_SESSION['summed_incomes'] = $user->getSummedIncomes($startDateForQuery, $endDateForQuery);
-        $_SESSION['summed_expenses'] = $user->getSummedExpenses($startDateForQuery, $endDateForQuery);
+        $_SESSION['summed_incomes'] = $finances->getSummedIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
+        $_SESSION['summed_expenses'] = $finances->getSummedExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
         $this->redirect('/balance');
     }
@@ -57,7 +57,7 @@ class Balance extends \Core\Controller
      */
     public function particularAction()
     {
-        $user = User::findByID($_SESSION['user_id']);
+        $finances = new Finances;
 
         if (isset($_SESSION['general_view'])) unset($_SESSION['general_view']);
         $_SESSION['particular_view'] = true;
@@ -65,8 +65,8 @@ class Balance extends \Core\Controller
         $startDateForQuery = static::getDateForQuery($_SESSION['start_date']);
         $endDateForQuery = static::getDateForQuery($_SESSION['end_date']);
 
-        $_SESSION['all_incomes'] = $user->getAllIncomes($startDateForQuery, $endDateForQuery);
-        $_SESSION['all_expenses'] = $user->getAllExpenses($startDateForQuery, $endDateForQuery);
+        $_SESSION['all_incomes'] = $finances->getAllIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
+        $_SESSION['all_expenses'] = $finances->getAllExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
         $this->redirect('/balance');
     }
