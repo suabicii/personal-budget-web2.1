@@ -47,7 +47,7 @@ const sumIncomes = (incomes) => {
   let sum = 0;
   if (incomes != null) {
     incomes.forEach((income) => {
-      sum += parseFloat(income.textContent);
+      sum += parseFloat(income.textContent); // zamiana string na liczbę (float)
     });
   }
   return sum;
@@ -98,7 +98,7 @@ if (!particularView) {
 const drawChartOfIncomes = () => {
   let data = google.visualization.arrayToDataTable([
     ["Kategoria", "Kwota"],
-    ["Wynagrodzenie", salary != null ? salary : 0], // Zamiana string na liczbę
+    ["Wynagrodzenie", salary != null ? salary : 0],
     ["Odsetki bankowe", interest != null ? interest : 0],
     ["Sprzedaż na allegro", allegro != null ? allegro : 0],
     ["Inne", anotherIncomes != null ? anotherIncomes : 0],

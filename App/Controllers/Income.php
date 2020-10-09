@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use Core\View;
-use App\Models\User;
+use App\Models\Finances;
 use App\Flash;
 
 /**
@@ -37,11 +37,11 @@ class Income extends \Core\Controller
      */
     public function AddAction()
     {
-        $user = User::findByID($_SESSION['user_id']);
+        $income = new Finances;
 
-        if ($user->addIncomeToDatabase($_POST['amount'], $_POST['category'], $_POST['date'], $_POST['comment'])) {
+        if ($income->addIncomeToDatabase($_POST['amount'], $_POST['category'], $_POST['date'], $_POST['comment'], $_SESSION['user_id'])) {
             Flash::addMessage('Przychód został dodany');
-            $this->redirect('/home');
+            $this->redirect('/add-income');
         } else {
             Flash::addMessage('Nie udało się dodać przychodu', Flash::WARNING);
             $this->redirect('/add-income');
