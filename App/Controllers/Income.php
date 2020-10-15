@@ -41,10 +41,20 @@ class Income extends \Core\Controller
 
         if ($income->addIncomeToDatabase($_POST['amount'], $_POST['category'], $_POST['date'], $_POST['comment'], $_SESSION['user_id'])) {
             Flash::addMessage('Przychód został dodany');
-            $this->redirect('/add-income');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
         } else {
             Flash::addMessage('Nie udało się dodać przychodu', Flash::WARNING);
-            $this->redirect('/add-income');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
         }
     }
 }
