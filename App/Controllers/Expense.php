@@ -41,10 +41,20 @@ class Expense extends \Core\Controller
 
         if ($expense->addExpenseToDatabase($_POST['amount'], $_POST['payment'], $_POST['category'], $_POST['date'], $_POST['comment'], $_SESSION['user_id'])) {
             Flash::addMessage('Wydatek został dodany');
-            $this->redirect('/add-expense');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
         } else {
             Flash::addMessage('Nie udało się dodać wydatku', Flash::WARNING);
-            $this->redirect('/add-expense');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
         }
     }
 }

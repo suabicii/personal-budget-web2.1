@@ -1,12 +1,11 @@
 {% extends "base-logged.html" %} {% block title %}Dodawanie wydatku{% endblock
 %} {% block subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption
 %}active{% endblock %}{% block main %}
+<script src="/../js/add-expense.js"></script>
 <main>
   <section class="adding-expenses">
     <div class="container-custom border rounded bg-white mt-2 py-2">
-      {% for message in flash_messages %}
-      <div class="alert alert-{{ message.type }}">{{ message.body }}</div>
-      {% endfor %}
+      <div id="messages"></div>
       <div class="row justify-content-center">
         <form action="expense/add" method="post">
           <div class="input-group">
