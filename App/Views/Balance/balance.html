@@ -1,6 +1,58 @@
 {% extends "base-logged.html" %} {% block title %}Przegląd bilansu{% endblock %}
-{% block subtitle %}Bilans z {{ session.which_date }}{% endblock %}{% block
-fourthOption %}active{% endblock %}{% block main %}
+{% block subtitle %}Bilans{% endblock %} {% block fourthOption %}active{%
+endblock %}{% block main %}
+<script>
+  $(document).ready(function () {
+    function getTable(route) {
+      $.get(route)
+        .done(function (data, status) {
+          $("#tables").html(data);
+          $.get("/js/balance.js");
+        })
+        .fail(function (status) {
+          console.log(status);
+        });
+    }
+
+    $("#general-view").click(function (event) {
+      event.preventDefault();
+      getTable("balance/general");
+    });
+    $("#particular-view").click(function (event) {
+      event.preventDefault();
+      getTable("balance/particular");
+    });
+
+    $("#current-month").click(function (event) {
+      event.preventDefault();
+      getTable("balance/current-month");
+    });
+    $("#previous-month").click(function (event) {
+      event.preventDefault();
+      getTable("balance/previous-month");
+    });
+    $("#current-year").click(function (event) {
+      event.preventDefault();
+      getTable("balance/current-year");
+    });
+    $("#custom-date-choice").submit(function (event) {
+      event.preventDefault();
+      var startDate = $("#start-date").val();
+      var endDate = $("#end-date").val();
+      $.post("balance/custom-date", {
+        start_date: startDate,
+        end_date: endDate,
+      })
+        .done(function (data, status) {
+          $("#tables").html(data);
+          $("#which-date").html("{{ session.which_date }}");
+        })
+        .fail(function (status) {
+          console.log(status);
+        });
+    });
+  });
+</script>
 <main>
   <div class="container border rounded bg-white mt-2 pt-3">
     <section class="balance">
@@ -16,12 +68,12 @@ fourthOption %}active{% endblock %}{% block main %}
             Wybierz widok
           </button>
           <div class="dropdown-menu dropdown-menu-right">
-            <a class="dropdown-item" id="current-month" href="balance/general"
+            <a class="dropdown-item" id="general-view" href="balance/general"
               >Ogólny</a
             >
             <a
               class="dropdown-item"
-              id="previous-month"
+              id="particular-view"
               href="/balance/particular"
               >Szczegółowy</a
             >
@@ -67,169 +119,10 @@ fourthOption %}active{% endblock %}{% block main %}
           </div>
         </div>
       </div>
-      <!-- Widok ogólny -->
-      {% if session.general_view %}
-      <script>
-        var particularView = false;
-      </script>
-      <div class="row justify-content-between">
-        <div class="col">
-          <h3 class="text-center">Przychody</h3>
-          <div class="rwd-table">
-            <table class="table table-bordered">
-              <thead class="bg-success text-white">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col" class="middle-col">Kategoria</th>
-                  <th scope="col">Łączna kwota</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% set i = 0 %} {% set sumOfIncomes = 0 %} {% for income in
-                session.summed_incomes %}
-                <tr>
-                  {% set i = i + 1 %}
-                  <th scope="row">{{ i }}</th>
-                  <td>{{ incomes_categories[income.name] }}</td>
-                  <td id="{{ income.name }}">{{ income.amount }}</td>
-                  {% set sumOfIncomes = sumOfIncomes + income.amount %}
-                </tr>
-                {% endfor %}
-                <tr>
-                  <th scope="row">Razem</th>
-                  <td class="text-center">-</td>
-                  <th id="incomes">{{ sumOfIncomes }}</th>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-between">
-        <div class="col">
-          <h3 class="text-center">Wydatki</h3>
-          <div class="rwd-table">
-            <table class="table table-bordered">
-              <thead class="bg-warning text-white">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col" class="middle-col">Kategoria</th>
-                  <th scope="col">Łączna kwota</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% set i = 0 %} {% set sumOfExpenses = 0 %} {% for expense in
-                session.summed_expenses %}
-                <tr>
-                  {% set i = i + 1 %}
-                  <th scope="row">{{ i }}</th>
-                  <td>{{ expenses_categories[expense.name] }}</td>
-                  <td id="{{ expense.name }}">{{ expense.amount }}</td>
-                  {% set sumOfExpenses = sumOfExpenses + expense.amount %}
-                </tr>
-                {% endfor %}
-                <tr>
-                  <th scope="row">Razem</th>
-                  <td class="text-center">-</td>
-                  <th id="expenses">{{ sumOfExpenses }}</th>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      {% endif %}
-      <!-- Widok szczegółowy -->
-      {% if session.particular_view %}
-      <script>
-        var particularView = true;
-      </script>
-      <div class="row justify-content-between">
-        <div class="col">
-          <h3 class="text-center">Przychody</h3>
-          <div class="rwd-table">
-            <table class="table table-bordered">
-              <thead class="bg-success text-white">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Kategoria</th>
-                  <th scope="col">Data</th>
-                  <th scope="col">Kwota</th>
-                  <th scope="col">Komentarz</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% set i = 0 %} {% set sumOfIncomes = 0 %} {% for income in
-                session.all_incomes %}
-                <tr>
-                  {% set i = i + 1 %}
-                  <th scope="row">{{ i }}</th>
-                  <td>{{ incomes_categories[income.name] }}</td>
-                  <td>{{ income.date_of_income }}</td>
-                  <td class="{{ income.name }}">{{ income.amount }}</td>
-                  <td>{{ income.income_comment }}</td>
-                  {% set sumOfIncomes = sumOfIncomes + income.amount %}
-                </tr>
-                {% endfor %}
-                <tr>
-                  <th scope="row">Razem</th>
-                  <td class="text-center">-</td>
-                  <td class="text-center">-</td>
-                  <th id="incomes">{{ sumOfIncomes }}</th>
-                  <td class="text-center">-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-between">
-        <div class="col">
-          <h3 class="text-center">Wydatki</h3>
-          <div class="rwd-table">
-            <table class="table table-bordered">
-              <thead class="bg-warning text-white">
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Kategoria</th>
-                  <th scope="col">Metoda płatności</th>
-                  <th scope="col">Data</th>
-                  <th scope="col">Kwota</th>
-                  <th scope="col">Komentarz</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% set i = 0 %} {% set sumOfExpenses = 0 %} {% for expense in
-                session.all_expenses %}
-                <tr>
-                  {% set i = i + 1 %}
-                  <th scope="row">{{ i }}</th>
-                  <td>{{ expenses_categories[expense.expense_category] }}</td>
-                  <td>{{ payment_methods[expense.payment_method] }}</td>
-                  <td>{{ expense.date_of_expense }}</td>
-                  <td class="{{ expense.expense_category }}">
-                    {{ expense.amount }}
-                  </td>
-                  <td>{{ expense.expense_comment }}</td>
-                  {% set sumOfExpenses = sumOfExpenses + expense.amount %}
-                </tr>
-                {% endfor %}
-                <tr>
-                  <th scope="row">Razem</th>
-                  <td class="text-center">-</td>
-                  <td class="text-center">-</td>
-                  <td class="text-center">-</td>
-                  <th id="expenses">{{ sumOfExpenses }}</th>
-                  <td class="text-center">-</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      {% endif %}
+      <!-- Tabele -->
+      <div id="tables"></div>
     </section>
-
+    <!-- Wykresy -->
     <section class="charts">
       <div class="row justify-content-center">
         <div class="col-lg-6">
@@ -240,7 +133,7 @@ fourthOption %}active{% endblock %}{% block main %}
         </div>
       </div>
     </section>
-
+    <!-- Feedback -->
     <section class="difference py-3">
       <table class="table table-bordered">
         <tr>
@@ -288,7 +181,11 @@ fourthOption %}active{% endblock %}{% block main %}
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="/balance/custom-date" method="post">
+        <form
+          id="custom-date-choice"
+          action="/balance/custom-date"
+          method="post"
+        >
           <div class="modal-body">
             <div class="input-group mr-2 mb-2">
               <label for="start-date" class="mr-2">Od </label>
@@ -299,7 +196,7 @@ fourthOption %}active{% endblock %}{% block main %}
               </div>
               <input
                 type="date"
-                name="start-date"
+                name="start_date"
                 id="start-date"
                 class="form-control"
                 required
@@ -314,7 +211,7 @@ fourthOption %}active{% endblock %}{% block main %}
               </div>
               <input
                 type="date"
-                name="end-date"
+                name="end_date"
                 id="end-date"
                 class="form-control"
                 required
@@ -342,5 +239,5 @@ fourthOption %}active{% endblock %}{% block main %}
   src="https://www.gstatic.com/charts/loader.js"
 ></script>
 <!-- Skrypt do prawidłowego wyświetlania bilansu -->
-<script src="/js/balance.js"></script>
+<script id="balance-script"></script>
 {% endblock %}
