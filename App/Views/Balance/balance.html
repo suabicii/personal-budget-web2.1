@@ -2,18 +2,18 @@
 {% block subtitle %}Bilans{% endblock %} {% block fourthOption %}active{%
 endblock %}{% block main %}
 <script>
+  function getTable(route) {
+    $.get(route)
+      .done(function (data, status) {
+        $("#tables").html(data);
+        $.get("/js/balance.js");
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+  }
+  // Pobieranie tabel
   $(document).ready(function () {
-    function getTable(route) {
-      $.get(route)
-        .done(function (data, status) {
-          $("#tables").html(data);
-          $.get("/js/balance.js");
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
-    }
-
     $("#general-view").click(function (event) {
       event.preventDefault();
       getTable("balance/general");
@@ -45,7 +45,7 @@ endblock %}{% block main %}
       })
         .done(function (data, status) {
           $("#tables").html(data);
-          $("#which-date").html("{{ session.which_date }}");
+          $.get("/js/balance.js");
         })
         .fail(function (status) {
           console.log(status);
@@ -53,6 +53,19 @@ endblock %}{% block main %}
     });
   });
 </script>
+{% if session.default_view %}
+<script>
+  $(document).ready(function () {
+    getTable("balance/current-month");
+  });
+</script>
+{% endif %} {% if session.recently_chosen_period %}
+<script>
+  $(document).ready(function () {
+    getTable(`balance/${"{{ session.recently_chosen_period }}"}`);
+  });
+</script>
+{% endif %}
 <main>
   <div class="container border rounded bg-white mt-2 pt-3">
     <section class="balance">

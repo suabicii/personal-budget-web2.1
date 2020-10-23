@@ -22,8 +22,9 @@ class Balance extends \Core\Controller
     {
         // Ustaw domyślny widok i okres po pierwszym wejściu na stronę tuż po logowaniu
         if (!isset($_SESSION['general_view']) && !isset($_SESSION['particular_view'])) {
+            $_SESSION['default_view'] = true;
             $_SESSION['general_view'] = true;
-            $this->redirect('/balance/current-month');
+            View::renderTemplate('Balance/balance.html');
         } else {
             View::renderTemplate('Balance/balance.html');
         }
@@ -36,6 +37,8 @@ class Balance extends \Core\Controller
      */
     public function generalAction()
     {
+        if (isset($_SESSION['default_view'])) unset($_SESSION['default_view']);
+
         $finances = new Finances;
 
         if (isset($_SESSION['particular_view'])) unset($_SESSION['particular_view']);
@@ -47,7 +50,6 @@ class Balance extends \Core\Controller
         $_SESSION['summed_incomes'] = $finances->getSummedIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['summed_expenses'] = $finances->getSummedExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
-        // $this->redirect('/balance');
         View::renderTemplate("Balance/tables.html");
     }
 
@@ -58,6 +60,8 @@ class Balance extends \Core\Controller
      */
     public function particularAction()
     {
+        if (isset($_SESSION['default_view'])) unset($_SESSION['default_view']);
+
         $finances = new Finances;
 
         if (isset($_SESSION['general_view'])) unset($_SESSION['general_view']);
@@ -69,7 +73,6 @@ class Balance extends \Core\Controller
         $_SESSION['all_incomes'] = $finances->getAllIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['all_expenses'] = $finances->getAllExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
-        // $this->redirect('/balance');
         View::renderTemplate("Balance/tables.html");
     }
 
@@ -90,6 +93,8 @@ class Balance extends \Core\Controller
         $_SESSION['end_date'] = $today;
 
         $_SESSION['which_date'] = 'bieżącego miesiąca';
+
+        $_SESSION['recently_chosen_period'] = "current-month";
 
         $this->redirectToBalance();
     }
@@ -118,6 +123,8 @@ class Balance extends \Core\Controller
 
         $_SESSION['which_date'] = 'poprzedniego miesiąca';
 
+        $_SESSION['recently_chosen_period'] = "previous-month";
+
         $this->redirectToBalance();
     }
 
@@ -139,6 +146,8 @@ class Balance extends \Core\Controller
 
         $_SESSION['which_date'] = 'bieżącego roku';
 
+        $_SESSION['recently_chosen_period'] = "current-year";
+
         $this->redirectToBalance();
     }
 
@@ -156,6 +165,8 @@ class Balance extends \Core\Controller
         static::unsetOtherPeriods($_SESSION['custom_period']);
 
         $_SESSION['which_date'] = "okresu od {$_SESSION['start_date']} do {$_SESSION['end_date']}";
+
+        $_SESSION['recently_chosen_period'] = "custom-date";
 
         $this->redirectToBalance();
     }
