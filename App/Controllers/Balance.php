@@ -172,6 +172,16 @@ class Balance extends \Core\Controller
     }
 
     /**
+     * Automatyczne ładowanie tabel po odświeżeniu strony
+     * 
+     * @return void
+     */
+    public function autoloadAction()
+    {
+        View::renderTemplate("Balance/tables_autoload.html");
+    }
+
+    /**
      * Przekieruj na stronę z bilansem
      * 
      * @return void

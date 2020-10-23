@@ -1,91 +1,9 @@
-{% extends "base-logged.html" %} {% block title %}Przegląd bilansu{% endblock %}
-{% block subtitle %}Bilans{% endblock %} {% block fourthOption %}active{%
-endblock %}{% block main %}
-<script>
-  function getTable(route) {
-    $.get(route)
-      .done(function (data, status) {
-        $("#tables").html(data);
-        $.get("/js/balance.js");
-      })
-      .fail(function (status) {
-        console.log(status);
-      });
-  }
-  // Pobieranie tabel
-  $(document).ready(function () {
-    $("#general-view").click(function (event) {
-      event.preventDefault();
-      getTable("balance/general");
-    });
-    $("#particular-view").click(function (event) {
-      event.preventDefault();
-      getTable("balance/particular");
-    });
-
-    $("#current-month").click(function (event) {
-      event.preventDefault();
-      getTable("balance/current-month");
-    });
-    $("#previous-month").click(function (event) {
-      event.preventDefault();
-      getTable("balance/previous-month");
-    });
-    $("#current-year").click(function (event) {
-      event.preventDefault();
-      getTable("balance/current-year");
-    });
-    $("#custom-date-choice").submit(function (event) {
-      event.preventDefault();
-      var startDate = $("#start-date").val();
-      var endDate = $("#end-date").val();
-      $.post("balance/custom-date", {
-        start_date: startDate,
-        end_date: endDate,
-      })
-        .done(function (data, status) {
-          $("#tables").html(data);
-          $.get("/js/balance.js");
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
-      $("#customDateModal").modal("hide");
-    });
-  });
-</script>
-{% if session.default_view %}
-<script>
-  $(document).ready(function () {
-    getTable("balance/current-month");
-  });
-</script>
-{% endif %} {% if session.recently_chosen_period %} {% if
-session.recently_chosen_period == "custom-date" %}
-<script>
-  $(document).ready(function () {
-    var startDate = "{{ session.start_date }}";
-    var endDate = "{{ session.end_date }}";
-    $.post("balance/custom-date", {
-      start_date: startDate,
-      end_date: endDate,
-    })
-      .done(function (data, status) {
-        $("#tables").html(data);
-        $.get("/js/balance.js");
-      })
-      .fail(function (status) {
-        console.log(status);
-      });
-  });
-</script>
-{% endif %}
-<script>
-  $(document).ready(function () {
-    getTable(`balance/${"{{ session.recently_chosen_period }}"}`);
-  });
-</script>
-{% endif %}
+{% extends "base-logged.html" %} {% block scripts %}
+<script src="/js/tables.js"></script>
+{% endblock %} {% block title %}Przegląd bilansu{% endblock %} {% block subtitle
+%}Bilans{% endblock %} {% block fourthOption %}active{% endblock %}{% block main
+%}
+<div id="autoloadTables"></div>
 <main>
   <div class="container border rounded bg-white mt-2 pt-3">
     <section class="balance">
