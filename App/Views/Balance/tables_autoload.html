@@ -1,0 +1,32 @@
+{% if session.default_view %}
+<script>
+  $(document).ready(function () {
+    getTable("balance/current-month");
+  });
+</script>
+{% endif %} {% if session.recently_chosen_period %} {% if
+session.recently_chosen_period == "custom-date" %}
+<script>
+  $(document).ready(function () {
+    var startDate = "{{ session.start_date }}";
+    var endDate = "{{ session.end_date }}";
+    $.post("balance/custom-date", {
+      start_date: startDate,
+      end_date: endDate,
+    })
+      .done(function (data, status) {
+        $("#tables").html(data);
+        $.get("/js/balance.js");
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+  });
+</script>
+{% endif %}
+<script>
+  $(document).ready(function () {
+    getTable(`balance/${"{{ session.recently_chosen_period }}"}`);
+  });
+</script>
+{% endif %}
