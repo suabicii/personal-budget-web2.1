@@ -1,7 +1,80 @@
 {% extends "base-logged.html" %} {% block title %}Ustawienia{% endblock %} {%
 block subtitle %}Ustawienia{% endblock %}{% block fifthOption %}active{%
 endblock %} {% block main %}
+<script>
+  jQuery(document).ready(function ($) {
+    $("#settings-list").accordionjs({
+      openSection: function (section) {
+        $(".acc_section.acc_active > .acc_head > i").removeClass(
+          "fa-angle-down"
+        );
+        $(".acc_section.acc_active > .acc_head > i").addClass("fa-angle-up");
+      },
+      beforeOpenSection: function (section) {
+        $(".acc_section > .acc_head > i").removeClass("fa-angle-up");
+        $(".acc_section > .acc_head > i").addClass("fa-angle-down");
+      },
+    });
+  });
+</script>
 <div class="container border rounded bg-white mt-2 pt-3">
-  <h3 class="text-muted">Ziemniak</h3>
+  <section class="settings">
+    <h3 class="text-center">Kategorie ustawień</h3>
+    <ul id="settings-list" class="accordionjs">
+      <li>
+        <div class="bg-info text-white">
+          Przychody <i class="fas fa-angle-up"></i>
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum, natus
+          doloremque, dolor tenetur quaerat quas facere assumenda omnis pariatur
+          aspernatur reprehenderit totam distinctio impedit provident?
+        </div>
+      </li>
+      <li>
+        <div class="bg-info text-white">
+          Wydatki <i class="fas fa-angle-down"></i>
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut deserunt
+          culpa ut necessitatibus. Commodi consequuntur animi praesentium
+          voluptates est, voluptatum harum reiciendis. Blanditiis, tempora
+          harum!
+        </div>
+      </li>
+      <li>
+        <div class="bg-info text-white">
+          Sposoby płatności <i class="fas fa-angle-down"></i>
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Reprehenderit, distinctio laborum, maiores deserunt quas in amet nobis
+          voluptas nesciunt ratione error quaerat aliquam hic odio.
+        </div>
+      </li>
+      <li>
+        <div class="bg-info text-white">
+          Konto użytkownika <i class="fas fa-angle-down"></i>
+        </div>
+        <div>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro debitis
+          sed accusamus explicabo quibusdam dicta perspiciatis nulla velit
+          labore doloribus! Atque expedita quod harum architecto?
+        </div>
+      </li>
+    </ul>
+  </section>
+  <!-- <button class="btn btn-info btn-block mb-2 accordion">
+    Przychody <i class="fas fa-angle-down accordion"></i>
+  </button>
+  <button class="btn btn-info btn-block mb-2 accordion">
+    Wydatki <i class="fas fa-angle-down"></i>
+  </button>
+  <button class="btn btn-info btn-block mb-2 accordion">
+    Sposoby płatności <i class="fas fa-angle-down"></i>
+  </button>
+  <button class="btn btn-info btn-block mb-2 accordion">
+    Konto użytkownika <i class="fas fa-angle-down"></i>
+  </button> -->
 </div>
 {% endblock %}
