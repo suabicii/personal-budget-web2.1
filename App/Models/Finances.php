@@ -220,4 +220,55 @@ class Finances extends \Core\Model
 
         return $query->fetchAll();
     }
+
+    /**
+     * Pobierz kategorie przychodów powiązane z danym użytkownikiem
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * 
+     * @return array  Tablica asocjacyjna z kategoriami
+     */
+    public function getIncomesCategories($user_id)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("SELECT name FROM incomes_category_assigned_to_users WHERE user_id = {$user_id}");
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    /**
+     * Pobierz kategorie wydatków powiązane z danym użytkownikiem
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * 
+     * @return array  Tablica asocjacyjna z kategoriami
+     */
+    public function getExpensesCategories($user_id)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("SELECT name FROM expenses_category_assigned_to_users WHERE user_id = {$user_id}");
+        $query->execute();
+
+        return $query->fetchAll();
+    }
+
+    /**
+     * Pobierz sposoby płatności powiązane z danym użytkownikiem
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * 
+     * @return array  Tablica asocjacyjna z metodami płatności
+     */
+    public function getPaymentMethods($user_id)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("SELECT name FROM payment_methods_assigned_to_users WHERE user_id = {$user_id}");
+        $query->execute();
+
+        return $query->fetchAll();
+    }
 }

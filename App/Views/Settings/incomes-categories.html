@@ -1,0 +1,16 @@
+<table class="table table-hover table-bordered">
+  <thead class="table-primary">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col" class="text-center">Kategoria</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set i = 1 %} {% for category in session.incomes_categories %}
+    <tr>
+      <th scope="row">{{ i }}</th>
+      <td class="text-center">{{ category.name }}</td>
+    </tr>
+    {% set i = i + 1 %} {% endfor %}
+  </tbody>
+</table>
