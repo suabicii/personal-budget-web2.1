@@ -1,22 +1,8 @@
-{% extends "base-logged.html" %} {% block title %}Ustawienia{% endblock %} {%
-block subtitle %}Ustawienia{% endblock %}{% block fifthOption %}active{%
-endblock %} {% block main %}
-<script>
-  jQuery(document).ready(function ($) {
-    $("#settings-list").accordionjs({
-      openSection: function (section) {
-        $(".acc_section.acc_active > .acc_head > i").removeClass(
-          "fa-angle-down"
-        );
-        $(".acc_section.acc_active > .acc_head > i").addClass("fa-angle-up");
-      },
-      beforeOpenSection: function (section) {
-        $(".acc_section > .acc_head > i").removeClass("fa-angle-up");
-        $(".acc_section > .acc_head > i").addClass("fa-angle-down");
-      },
-    });
-  });
-</script>
+{% extends "base-logged.html" %} {% block scripts %}
+<script src="/js/settings-list.js"></script>
+{% endblock %} {% block title %}Ustawienia{% endblock %} {% block subtitle
+%}Ustawienia{% endblock %}{% block fifthOption %}active{% endblock %} {% block
+main %}
 <div class="container border rounded bg-white mt-2 pt-3">
   <section class="settings">
     <h3 class="text-center">Kategorie ustawień</h3>
