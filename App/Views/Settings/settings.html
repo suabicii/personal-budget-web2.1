@@ -213,16 +213,6 @@ main %}
                   Zmień dane <i class="far fa-paper-plane"></i>
                 </button>
               </form>
-              {% if user.errors is not empty %}
-              <div class="errors">
-                <p class="text-danger text-center">Lista błędów:</p>
-                <ul>
-                  {% for error in user.errors %}
-                  <li>{{ error }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-              {% endif %}
             </div>
           </div>
         </div>
