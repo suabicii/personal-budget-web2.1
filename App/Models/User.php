@@ -525,51 +525,71 @@ class User extends \Core\Model
     {
         $db = static::getDB();
 
-        if ($username == "") {
-            $username = $this->username;
-        } else {
-            if (static::usernameExists($username)) {
-                $this->errors[] = "Podany login już istnieje w bazie danych";
-                return false;
-            }
-        }
+        if ($username == "") $username = $this->username;
 
-        if ($email == "") {
-            $email = $this->email;
-        } else {
-            if (static::emailExists($email)) {
-                $this->errors[] = "Podany adres e-mail już istnieje w bazie danych";
-                return false;
-            }
-        }
+        if ($email == "") $email = $this->email;
 
         if ($firstName == "") $firstName = $this->name;
 
         if ($oldPassword == "") {
-            $query = $db->prepare("
-            UPDATE users 
-            SET name = '{$firstName}', username = '{$username}', email = '{$email}' WHERE id = {$this->id}");
+            if ($this->validateInEditMode($username, $email)) {
+                $query = $db->prepare("
+                    UPDATE users 
+                    SET name = '{$firstName}', username = '{$username}', email = '{$email}'
+                    WHERE id = {$this->id}
+                ");
 
-            return $query->execute();
-        } else {
-            if (!password_verify($oldPassword, $this->password)) {
-                $this->errors[] = "Nieprawidłowe hasło";
-                return false;
+                return $query->execute();
             } else {
-                if ($newPassword == $newPasswordConfirmation && $newPasswordConfirmation != "" && $newPassword != "") {
-                    $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                return false;
+            }
+        } else {
+            if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
+                $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 
-                    $query = $db->prepare("
+                $query = $db->prepare("
                     UPDATE users 
                     SET name = '{$firstName}', username = '{$username}',
-                    email = '{$email}', password = '{$newPasswordHash}'");
+                    email = '{$email}', password = '{$newPasswordHash}'
+                    WHERE id = {$this->id}'
+                ");
 
-                    return $query->execute();
-                } else {
+                return $query->execute();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Sprawdź poprawność wprowadzonych danych podczas edycji
+     * 
+     * @param string $username  Login użytkownika
+     * @param string $email  Wiadomo
+     * @param string $firstName  Imię użytkownika
+     * @param string $oldPassword  Aktualne hasło
+     * @param string $newPassword  Nowe hasło
+     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * 
+     * @return boolean  True, jeśli dane są prawidłowe, w przeciwnym wypadku - false
+     */
+    private function validateInEditMode($username, $email, $oldPassword = "", $newPassword = "", $newPasswordConfirmation = "")
+    {
+        if (static::usernameExists($username, $this->id)) $this->errors[] = "Podany login już istnieje w bazie danych";
+
+        if (static::emailExists($email, $this->id)) $this->errors[] = "Podany adres e-mail już istnieje w bazie danych";
+
+        if ($oldPassword != "" && $newPassword != "" && $newPasswordConfirmation != "") {
+            if (!password_verify($oldPassword, $this->password)) {
+                $this->errors[] = "Nieprawidłowe hasło";
+            } else {
+                if ($newPassword != $newPasswordConfirmation) {
                     $this->errors[] = "Nowe hasła w obu polach muszą być takie same";
-                    return false;
                 }
             }
         }
+
+        if (empty($this->errors)) return true;
+        else return false;
     }
 }
