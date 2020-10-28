@@ -508,4 +508,68 @@ class User extends \Core\Model
         $query->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
         $query->execute();
     }
+
+    /**
+     * Zmień dane użytkownika
+     * 
+     * @param string $username  Login użytkownika
+     * @param string $email  Wiadomo
+     * @param string $firstName  Imię użytkownika
+     * @param string $oldPassword  Aktualne hasło
+     * @param string $newPassword  Nowe hasło
+     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * 
+     * @return boolean  True, jeśli zmiana się powiodła, w przeciwnym przypadku - false
+     */
+    public function changeUserData($username, $email, $firstName, $oldPassword, $newPassword, $newPasswordConfirmation)
+    {
+        $db = static::getDB();
+
+        if ($username == "") {
+            $username = $this->username;
+        } else {
+            if (static::usernameExists($username)) {
+                $this->errors[] = "Podany login już istnieje w bazie danych";
+                return false;
+            }
+        }
+
+        if ($email == "") {
+            $email = $this->email;
+        } else {
+            if (static::emailExists($email)) {
+                $this->errors[] = "Podany adres e-mail już istnieje w bazie danych";
+                return false;
+            }
+        }
+
+        if ($firstName == "") $firstName = $this->name;
+
+        if ($oldPassword == "") {
+            $query = $db->prepare("
+            UPDATE users 
+            SET name = '{$firstName}', username = '{$username}', email = '{$email}' WHERE id = {$this->id}");
+
+            return $query->execute();
+        } else {
+            if (!password_verify($oldPassword, $this->password)) {
+                $this->errors[] = "Nieprawidłowe hasło";
+                return false;
+            } else {
+                if ($newPassword == $newPasswordConfirmation && $newPasswordConfirmation != "" && $newPassword != "") {
+                    $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+
+                    $query = $db->prepare("
+                    UPDATE users 
+                    SET name = '{$firstName}', username = '{$username}',
+                    email = '{$email}', password = '{$newPasswordHash}'");
+
+                    return $query->execute();
+                } else {
+                    $this->errors[] = "Nowe hasła w obu polach muszą być takie same";
+                    return false;
+                }
+            }
+        }
+    }
 }

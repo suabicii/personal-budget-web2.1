@@ -5,6 +5,7 @@ namespace App\Controllers;
 use Core\View;
 use App\Models\User;
 use App\Models\Finances;
+use App\Flash;
 
 /**
  * Kontroler ustawień
@@ -30,11 +31,11 @@ class Settings extends \Core\Controller
      * 
      * @return void
      */
-    public function getIncomesCategories()
+    public function getIncomesCategoriesAction()
     {
-        $incomes = new Finances;
+        $finances = new Finances;
 
-        $_SESSION['incomes_categories'] = $incomes->getIncomesCategories($_SESSION['user_id']);
+        $_SESSION['incomes_categories'] = $finances->getIncomesCategories($_SESSION['user_id']);
 
         View::renderTemplate("Settings/incomes-categories.html");
     }
@@ -44,11 +45,11 @@ class Settings extends \Core\Controller
      * 
      * @return void
      */
-    public function getExpensesCategories()
+    public function getExpensesCategoriesAction()
     {
-        $incomes = new Finances;
+        $finances = new Finances;
 
-        $_SESSION['expenses_categories'] = $incomes->getExpensesCategories($_SESSION['user_id']);
+        $_SESSION['expenses_categories'] = $finances->getExpensesCategories($_SESSION['user_id']);
 
         View::renderTemplate("Settings/expenses-categories.html");
     }
@@ -58,12 +59,51 @@ class Settings extends \Core\Controller
      * 
      * @return void
      */
-    public function getPaymentMethods()
+    public function getPaymentMethodsAction()
     {
-        $incomes = new Finances;
+        $finances = new Finances;
 
-        $_SESSION['payment_methods'] = $incomes->getPaymentMethods($_SESSION['user_id']);
+        $_SESSION['payment_methods'] = $finances->getPaymentMethods($_SESSION['user_id']);
 
         View::renderTemplate("Settings/payment-methods.html");
+    }
+
+    /**
+     * Zmień dane użytkownika
+     * 
+     * @return void
+     */
+    public function changeUserDataAction()
+    {
+        $user = User::findByID($_SESSION['user_id']);
+
+        if ($user->changeUserData($_POST['username'], $_POST['email'], $_POST['name'], $_POST['old_password'], $_POST['new_password'], $_POST['new_password_confirmation'])) {
+            Flash::addMessage('Dane zostały zmienione');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Nie udało się zmienić danych', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+
+            $errors = $user->errors;
+
+            echo '<div class="errors">';
+            echo '<p class="text-danger text-center mb-2">Lista błędów:</p>';
+            echo '<ul>';
+            foreach ($errors as $error) {
+                echo "<li>{$error}</li>";
+            }
+            echo '</ul>';
+            echo '</div>';
+        }
     }
 }

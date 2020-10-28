@@ -5,32 +5,62 @@
 main %}
 <script>
   $(document).ready(function () {
-    $("#incomes").click(function () {
-      $.get("settings/get-incomes-categories")
+    // Pobierz kategorie przychodów
+    $.get("settings/get-incomes-categories")
+      .done(function (data, status) {
+        $("#incomes-categories").html(data);
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+    // Pobierz kategorie wydatków
+    $.get("settings/get-expenses-categories")
+      .done(function (data, status) {
+        $("#expenses-categories").html(data);
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+    // Pobierz sposoby płatności
+    $.get("settings/get-payment-methods")
+      .done(function (data, status) {
+        $("#payment-methods").html(data);
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+
+    // Zmiana danych użytkownika
+    $("#change-data-form").submit(function (event) {
+      event.preventDefault();
+      var username = $("#username").val();
+      var email = $("#email").val();
+      var firstName = $("#name").val();
+      var oldPassword = $("#old-password").val();
+      var newPassword = $("#new-password").val();
+      var newPasswordConfirmation = $("#new-password-confirmation").val();
+      $.post("settings/change-user-data", {
+        username: username,
+        email: email,
+        name: firstName,
+        old_password: oldPassword,
+        new_password: newPassword,
+        new_password_confirmation: newPasswordConfirmation,
+      })
         .done(function (data, status) {
-          $("#incomes-categories").html(data);
+          $("#messages").html(data);
+          setTimeout(function () {
+            $(".alert").remove();
+            $(".errors").remove();
+          }, 3000);
+          console.log(status);
         })
         .fail(function (status) {
           console.log(status);
         });
-    });
-    $("#expenses").click(function () {
-      $.get("settings/get-expenses-categories")
-        .done(function (data, status) {
-          $("#expenses-categories").html(data);
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
-    });
-    $("#payment").click(function () {
-      $.get("settings/get-payment-methods")
-        .done(function (data, status) {
-          $("#payment-methods").html(data);
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
+      $(
+        "#username, #email, #old-password, #new-password, #new-password-confirmation"
+      ).val("");
     });
   });
 </script>
@@ -72,9 +102,129 @@ main %}
           Konto użytkownika <i class="fas fa-angle-down"></i>
         </div>
         <div>
-          <p class="lead">Login: <strong>{{ user.username }}</strong></p>
-          <p>E-mail: <strong>{{ user.email }}</strong></p>
-          <p>Imię: <strong>{{ user.name }}</strong></p>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="lead">Login: <strong>{{ user.username }}</strong></p>
+              <p>E-mail: <strong>{{ user.email }}</strong></p>
+              <p>Imię: <strong>{{ user.name }}</strong></p>
+            </div>
+            <div class="col-md-6">
+              <div id="messages"></div>
+              <form
+                id="change-data-form"
+                action="settings/change-user-data"
+                method="post"
+              >
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text pr-2">
+                      <i class="fas fa-user-shield"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="username">Zmiana loginu</label>
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    class="form-control"
+                    placeholder="Zmiana loginu"
+                  />
+                </div>
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <i class="fas fa-at"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="email"
+                    >Zmiana adresu e-mail</label
+                  >
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    class="form-control"
+                    placeholder="Zmiana adresu e-mail"
+                  />
+                </div>
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <i class="fas fa-user"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="name">Zmiana imienia</label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    class="form-control"
+                    placeholder="Zmiana imienia"
+                  />
+                </div>
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <i class="fas fa-key"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="password">Stare hasło</label>
+                  <input
+                    type="password"
+                    name="old_password"
+                    id="old-password"
+                    class="form-control"
+                    placeholder="Stare hasło"
+                  />
+                </div>
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <i class="fas fa-key"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="password">Nowe hasło</label>
+                  <input
+                    type="password"
+                    name="new_password"
+                    id="new-password"
+                    class="form-control"
+                    placeholder="Nowe hasło"
+                  />
+                </div>
+                <div class="input-group mb-2">
+                  <div class="input-group-prepend">
+                    <div class="input-group-text">
+                      <i class="fas fa-key"></i>
+                    </div>
+                  </div>
+                  <label class="sr-only" for="password"
+                    >Powtórz nowe hasło</label
+                  >
+                  <input
+                    type="password"
+                    name="new_password_confirmation"
+                    id="new-password-confirmation"
+                    class="form-control"
+                    placeholder="Powtórz nowe hasło"
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                  Zmień dane <i class="far fa-paper-plane"></i>
+                </button>
+              </form>
+              {% if user.errors is not empty %}
+              <div class="errors">
+                <p class="text-danger text-center">Lista błędów:</p>
+                <ul>
+                  {% for error in user.errors %}
+                  <li>{{ error }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+              {% endif %}
+            </div>
+          </div>
         </div>
       </li>
     </ul>
