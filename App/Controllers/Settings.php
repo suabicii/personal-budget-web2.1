@@ -94,15 +94,10 @@ class Settings extends \Core\Controller
                 echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
             }
 
-            $errors = $user->errors;
-
             echo '<div class="errors">';
-            echo '<p class="text-danger text-center mb-2">Lista błędów:</p>';
-            echo '<ul>';
-            foreach ($errors as $error) {
-                echo "<li>{$error}</li>";
+            foreach ($user->errors as $error) {
+                echo "<p class='text-danger'>{$error}</p>";
             }
-            echo '</ul>';
             echo '</div>';
         }
     }
