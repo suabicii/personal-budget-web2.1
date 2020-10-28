@@ -6,6 +6,7 @@ use PDO;
 use App\Token;
 use Core\View;
 use App\Mail;
+use DateTime;
 
 class User extends \Core\Model
 {
@@ -507,6 +508,72 @@ class User extends \Core\Model
         ');
         $query->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
         $query->execute();
+    }
+
+    /**
+     * Dodaj tymczasowo nowe dane użytkownika do odzielnej tabeli.
+     * Dane te zostaną później przeniesione do tabeli "users" po uprzednim
+     * potwierdzeniu przez użytkownika
+     * 
+     * @param string $username  Login użytkownika
+     * @param string $email  Wiadomo
+     * @param string $firstName  Imię użytkownika
+     * @param string $oldPassword  Aktualne hasło
+     * @param string $newPassword  Nowe hasło
+     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * 
+     * @return boolean  True, jeśli pomyślnie zapisano dane do tabeli,
+     * w przeciwnym przypadku - false
+     */
+    public function saveNewDataTemporarily($username, $email, $firstName, $oldPassword, $newPassword, $newPasswordConfirmation)
+    {
+        $token = new Token();
+        $hashed_token = $token->getHash();
+
+        $db = static::getDB();
+
+        if ($username == "") $username = $this->username;
+
+        if ($email == "") $email = $this->email;
+
+        if ($firstName == "") $firstName = $this->name;
+
+        $expiry_timestamp = new DateTime();
+        $expiry_timestamp->modify('+1 hour');
+        $expiry_timestamp_formated = $expiry_timestamp->format('Y-m-d H:i:s');
+
+        if ($oldPassword == "") {
+            if ($this->validateInEditMode($username, $email)) {
+                $query = $db->prepare("INSERT INTO data_change (id, name, username, email, token_hash, expires_at) VALUES (
+                    {$this->id},
+                    '{$firstName}',
+                    '{$username}',
+                    '{$email}',
+                    '{$hashed_token}',
+                    '{$expiry_timestamp_formated}'
+                    )
+                ");
+                return $query->execute();
+            } else {
+                return false;
+            }
+        } else {
+            if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
+                $query = $db->prepare("INSERT INTO data_change VALUES (
+                    {$this->id},
+                    '{$firstName}',
+                    '{$username}',
+                    '{$newPassword}',
+                    '{$email}',
+                   '{$hashed_token}',
+                    {$expiry_timestamp_formated}
+                    )
+                ");
+                return $query->execute();
+            } else {
+                return false;
+            }
+        }
     }
 
     /**

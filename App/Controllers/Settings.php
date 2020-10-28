@@ -77,7 +77,7 @@ class Settings extends \Core\Controller
     {
         $user = User::findByID($_SESSION['user_id']);
 
-        if ($user->changeUserData($_POST['username'], $_POST['email'], $_POST['name'], $_POST['old_password'], $_POST['new_password'], $_POST['new_password_confirmation'])) {
+        if ($user->saveNewDataTemporarily($_POST['username'], $_POST['email'], $_POST['name'], $_POST['old_password'], $_POST['new_password'], $_POST['new_password_confirmation'])) {
             Flash::addMessage('Dane zostały zmienione');
 
             $messages = Flash::getMessages();
