@@ -527,8 +527,11 @@ class User extends \Core\Model
      */
     public function saveNewDataTemporarily($username, $email, $firstName, $oldPassword, $newPassword, $newPasswordConfirmation)
     {
+        $this->deleteTemporaryData($this->id);
+
         $token = new Token();
         $hashed_token = $token->getHash();
+        $this->data_edit_token = $token->getValue();
 
         $db = static::getDB();
 
@@ -553,7 +556,11 @@ class User extends \Core\Model
                     '{$expiry_timestamp_formated}'
                     )
                 ");
-                return $query->execute();
+
+                $query->execute();
+                $this->sendEditConfirmation();
+
+                return true;
             } else {
                 return false;
             }
@@ -563,13 +570,14 @@ class User extends \Core\Model
                     {$this->id},
                     '{$firstName}',
                     '{$username}',
-                    '{$newPassword}',
-                    '{$email}',
-                   '{$hashed_token}',
-                    {$expiry_timestamp_formated}
+                    '{$newPassword}'
                     )
                 ");
-                return $query->execute();
+
+                $query->execute();
+                $this->sendEditConfirmation();
+
+                return true;
             } else {
                 return false;
             }
@@ -577,54 +585,135 @@ class User extends \Core\Model
     }
 
     /**
-     * Zmień dane użytkownika
+     * Usuń dane z tabeli "data_change", jeśli znaleziono dany rekord
      * 
-     * @param string $username  Login użytkownika
-     * @param string $email  Wiadomo
-     * @param string $firstName  Imię użytkownika
-     * @param string $oldPassword  Aktualne hasło
-     * @param string $newPassword  Nowe hasło
-     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * @param int $user_id  Id danego użytkownika
      * 
-     * @return boolean  True, jeśli zmiana się powiodła, w przeciwnym przypadku - false
+     * @return void
      */
-    public function changeUserData($username, $email, $firstName, $oldPassword, $newPassword, $newPasswordConfirmation)
+    private function deleteTemporaryData($user_id)
     {
         $db = static::getDB();
 
-        if ($username == "") $username = $this->username;
+        $query = $db->prepare("DELETE FROM data_change WHERE id = {$user_id}");
 
-        if ($email == "") $email = $this->email;
+        $query->execute();
+    }
 
-        if ($firstName == "") $firstName = $this->name;
+    /**
+     * Znajdź rekord z tymczasowymi danymi do zmiany danych użytkownika
+     * i sprawdź czy wygasł token
+     * 
+     * @param int $user_id  Id użytkownika
+     * 
+     * @return mixed  Obiekt z danymi, które użytkownik chce zmienić, jeśli
+     * dany rekord znaleziono i token nie wygasł - w przeciwnym wypadku - null
+     */
+    public static function findByEditData($token)
+    {
+        $db = static::getDB();
 
-        if ($oldPassword == "") {
-            if ($this->validateInEditMode($username, $email)) {
-                $query = $db->prepare("
-                    UPDATE users 
-                    SET name = '{$firstName}', username = '{$username}', email = '{$email}'
-                    WHERE id = {$this->id}
-                ");
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = '{$hashed_token}'");
+
+        $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $query->execute();
+
+        $user = $query->fetch();
+
+        if ($user) {
+            // Sprawdź czy token nie wygasł
+            $now = new DateTime();
+            if ($user->expires_at > $now->format('Y-m-d H:i:s')) {
+                return $user;
+            }
+        }
+    }
+
+    /**
+     * Wyślij e-maila do użytkownika z linkiem do potwierdzenia edycji swoich danych
+     * 
+     * @return void
+     */
+    public function sendEditConfirmation()
+    {
+        $user = static::findByEditData($this->data_edit_token);
+
+        if ($user) {
+            $this->sendEditConfirmationEmail();
+        }
+    }
+
+    /**
+     * Wyślij maila do użytkownika, aby potwierdził edycję swoich danych
+     * 
+     * @return void
+     */
+    public function sendEditConfirmationEmail()
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/settings/confirm/' . $this->data_edit_token;
+
+        // Treść wiadomości - zwykły tekst i HTML
+        $text = View::getTemplate('Settings/edit_data_email.txt', [
+            'url' => $url,
+            'name' => $this->name,
+            'email' => $this->email
+        ]);
+        $html = View::getTemplate('Settings/edit_data_email.html', [
+            'url' => $url,
+            'name' => $this->name,
+            'email' => $this->email
+        ]);
+
+        Mail::send($this->email, 'Potwierdz zmiane danych na Personal Budget Manager by Michael Slabikovsky', $text, $html);
+    }
+
+    /**
+     * Zmień dane użytkownika
+     * 
+     * @param string $token  Token do potwierdzenia edycji danych
+     * 
+     * @return boolean  True, jeśli zmiana się powiodła, w przeciwnym przypadku - false
+     */
+    public function changeUserData($token)
+    {
+        $db = static::getDB();
+
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = {$hashed_token}");
+
+        $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $query->execute();
+
+        $user = $query->fetch();
+
+        if ($user) {
+            if ($user->password == "") {
+                $query = $db->prepare("UPDATE users SET
+                name = '{$user->name}',
+                username = '{$user->username}',
+                email = '{$user->email}'
+            ");
 
                 return $query->execute();
             } else {
-                return false;
+                $query = $db->prepare("UPDATE users SET
+                name = '{$user->name}',
+                username = '{$user->username}',
+                password = '{$user->password}',
+                email = '{$user->email}'
+            ");
+
+                return $query->execute();
             }
         } else {
-            if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
-                $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
-
-                $query = $db->prepare("
-                    UPDATE users 
-                    SET name = '{$firstName}', username = '{$username}',
-                    email = '{$email}', password = '{$newPasswordHash}'
-                    WHERE id = {$this->id}'
-                ");
-
-                return $query->execute();
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 

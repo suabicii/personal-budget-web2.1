@@ -1,0 +1,9 @@
+Zmiana danych
+
+Twoj login: {{ username }},
+Imie: {{ name }},
+E-mail: {{ email }}
+Hasło: ********
+
+Kliknij na ponizszy link, aby potwierdzić zmiane danych:
+{{ url }}

@@ -35,6 +35,7 @@ $router->add('', ['controller' => 'Start', 'action' => 'index']);
 $router->add('create', ['controller' => 'Signup', 'action' => 'create']);
 $router->add('signup/activate/{token:[\da-f]+}', ['controller' => 'Signup', 'action' => 'activate']);
 $router->add('password/reset/{token:[\da-f]+}', ['controller' => 'Password', 'action' => 'reset']);
+$router->add('settings/confirm/{token:[\da-f]+}', ['controller' => 'Settings', 'action' => 'confirm']);
 $router->add('password/reset/reset-password', ['controller' => 'Password', 'action' => 'reset-password']);
 $router->add('login', ['controller' => 'Login', 'action' => 'create']);
 $router->add('logout', ['controller' => 'Login', 'action' => 'destroy']);

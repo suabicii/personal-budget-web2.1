@@ -78,7 +78,7 @@ class Settings extends \Core\Controller
         $user = User::findByID($_SESSION['user_id']);
 
         if ($user->saveNewDataTemporarily($_POST['username'], $_POST['email'], $_POST['name'], $_POST['old_password'], $_POST['new_password'], $_POST['new_password_confirmation'])) {
-            Flash::addMessage('Dane zostały zmienione');
+            Flash::addMessage('Nowe dane zostały zapisane. Aby dokończyć edycję, sprawdź pocztę i kliknij na link umieszczony w mailu');
 
             $messages = Flash::getMessages();
 
@@ -99,6 +99,59 @@ class Settings extends \Core\Controller
                 echo "<p class='text-danger'>{$error}</p>";
             }
             echo '</div>';
+        }
+    }
+
+    /**
+     * Wyświetl stronę do potwierdzenia zmiany danych
+     * 
+     * @return void
+     */
+    public function confirmAction()
+    {
+        $token = $this->route_params['token'];
+
+        View::renderTemplate("Settings/confirm.html", [
+            'token' => $token
+        ]);
+    }
+
+    /**
+     * Potwierdź edycję danych
+     * 
+     * @return void
+     */
+    public function confirmEditAction()
+    {
+        $token = $_POST['token'];
+
+        $user = $this->getUserOrExit($token);
+
+        if ($user->changeUserData($token)) {
+            View::renderTemplate('Settings/edit_success.html');
+        } else {
+            View::renderTemplate('Settings/edit_fail.html');
+        }
+    }
+
+    /**
+     * Znajdź model user powiązany z tokenem resetowania hasła lub
+     * zakończ żądanie z wiadomością
+     * 
+     * @param string $token  Token resetowania hasła wysłany do użytkownika
+     * 
+     * @return mixed  Obiekt User, jeśli znaleziono i token nie wygasł, w przeciwnym
+     * wypadku - null
+     */
+    private function getUserOrExit($token)
+    {
+        $user = User::findByEditData($token);
+
+        if ($user) {
+            return $user;
+        } else {
+            View::renderTemplate('Settings/token_expired.html');
+            exit;
         }
     }
 }
