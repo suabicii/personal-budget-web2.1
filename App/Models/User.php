@@ -643,29 +643,33 @@ class User extends \Core\Model
         $user = static::findByEditData($this->data_edit_token);
 
         if ($user) {
-            $this->sendEditConfirmationEmail();
+            $this->sendEditConfirmationEmail($user);
         }
     }
 
     /**
      * Wyślij maila do użytkownika, aby potwierdził edycję swoich danych
      * 
+     * @param Object $user  Obiekt user powiązany z danymi tymczasowymi z tabeli data_change
+     * 
      * @return void
      */
-    public function sendEditConfirmationEmail()
+    public function sendEditConfirmationEmail($user)
     {
         $url = 'http://' . $_SERVER['HTTP_HOST'] . '/settings/confirm/' . $this->data_edit_token;
 
         // Treść wiadomości - zwykły tekst i HTML
         $text = View::getTemplate('Settings/edit_data_email.txt', [
             'url' => $url,
-            'name' => $this->name,
-            'email' => $this->email
+            'username' => $user->username,
+            'name' => $user->name,
+            'email' => $user->email
         ]);
         $html = View::getTemplate('Settings/edit_data_email.html', [
             'url' => $url,
-            'name' => $this->name,
-            'email' => $this->email
+            'username' => $user->username,
+            'name' => $user->name,
+            'email' => $user->email
         ]);
 
         Mail::send($this->email, 'Potwierdz zmiane danych na Personal Budget Manager by Michael Slabikovsky', $text, $html);
@@ -685,7 +689,7 @@ class User extends \Core\Model
         $token = new Token($token);
         $hashed_token = $token->getHash();
 
-        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = {$hashed_token}");
+        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = '{$hashed_token}'");
 
         $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
 
