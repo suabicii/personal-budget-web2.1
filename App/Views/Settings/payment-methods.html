@@ -9,7 +9,17 @@
     {% set i = 1 %} {% for method in session.payment_methods %}
     <tr>
       <th scope="row">{{ i }}</th>
-      <td class="text-center">{{ method.name }}</td>
+      <td>
+        {{ method.name }}
+        <div class="edit-buttons float-right">
+          <button class="btn btn-warning m-auto">
+            <i class="far fa-edit"></i>
+          </button>
+          <button class="btn btn-danger m-auto">
+            <i class="far fa-trash-alt"></i>
+          </button>
+        </div>
+      </td>
     </tr>
     {% set i = i + 1 %} {% endfor %}
   </tbody>
