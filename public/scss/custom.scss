@@ -14,7 +14,7 @@ body {
 body::after {
   content: "";
   display: block;
-  height: 50px;
+  height: 45px;
 }
 
 header {
@@ -57,6 +57,10 @@ ul {
 
 .middle-col {
   width: 476px;
+}
+
+.first-col {
+  width: 50px;
 }
 
 footer {
