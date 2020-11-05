@@ -16,6 +16,10 @@ $(document).ready(function () {
     })
       .done(function (data, status) {
         $("#messages").html(data);
+        setTimeout(function () {
+          $(".alert").remove();
+          $(".errors").remove();
+        }, 4000);
         console.log(status);
       })
       .fail(function (status) {
