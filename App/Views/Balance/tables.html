@@ -22,7 +22,7 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ incomes_categories[income.name] }}</td>
+            <td>{{ translated_categories[income.name] }}</td>
             <td id="{{ income.name }}">{{ income.amount }}</td>
             {% set sumOfIncomes = sumOfIncomes + income.amount %}
           </tr>
@@ -55,7 +55,7 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ expenses_categories[expense.name] }}</td>
+            <td>{{ translated_categories[expense.name] }}</td>
             <td id="{{ expense.name }}">{{ expense.amount }}</td>
             {% set sumOfExpenses = sumOfExpenses + expense.amount %}
           </tr>
@@ -96,7 +96,7 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ incomes_categories[income.name] }}</td>
+            <td>{{ income.name }}</td>
             <td>{{ income.date_of_income }}</td>
             <td class="{{ income.name }}">{{ income.amount }}</td>
             <td>{{ income.income_comment }}</td>
@@ -136,8 +136,8 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ expenses_categories[expense.expense_category] }}</td>
-            <td>{{ payment_methods[expense.payment_method] }}</td>
+            <td>{{ expense.expense_category }}</td>
+            <td>{{ expense.payment_method }}</td>
             <td>{{ expense.date_of_expense }}</td>
             <td class="{{ expense.expense_category }}">{{ expense.amount }}</td>
             <td>{{ expense.expense_comment }}</td>

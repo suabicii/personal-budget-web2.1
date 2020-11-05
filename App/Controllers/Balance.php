@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Finances;
 use Core\View;
 use DateTime;
+use App\Categories;
 
 /**
  * Kontroler do wyliczania bilansu
@@ -50,7 +51,18 @@ class Balance extends \Core\Controller
         $_SESSION['summed_incomes'] = $finances->getSummedIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['summed_expenses'] = $finances->getSummedExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
-        View::renderTemplate("Balance/tables.html");
+
+        foreach ($_SESSION['summed_incomes'] as $income) {
+            $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
+        }
+
+        foreach ($_SESSION['summed_expenses'] as $expense) {
+            $translatedCategories[$expense['name']] = Categories::translateCategory($expense['name']);
+        }
+
+        View::renderTemplate("Balance/tables.html", [
+            'translated_categories' => $translatedCategories
+        ]);
     }
 
     /**

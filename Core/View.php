@@ -54,9 +54,6 @@ class View
             $loader = new \Twig\Loader\FilesystemLoader(dirname(__DIR__) . '/App/Views');
             $twig = new \Twig\Environment($loader);
             $twig->addGlobal('session', $_SESSION);
-            $twig->addGlobal('incomes_categories', \App\Categories::INCOMES_CATEGORIES);
-            $twig->addGlobal('expenses_categories', \App\Categories::EXPENSES_CATEGORIES);
-            $twig->addGlobal('payment_methods', \App\Categories::PAYMENT_METHODS);
             $twig->addGlobal('flash_messages', \App\Flash::getMessages());
             $twig->addGlobal('errors', \App\Models\User::getErrors());
         }

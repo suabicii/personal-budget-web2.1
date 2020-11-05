@@ -45,6 +45,7 @@ $router->add('add-income', ['controller' => 'Income', 'action' => 'index']);
 $router->add('add-expense', ['controller' => 'Expense', 'action' => 'index']);
 $router->add('balance', ['controller' => 'Balance', 'action' => 'index']);
 $router->add('settings', ['controller' => 'Settings', 'action' => 'index']);
+$router->add('test', ['controller' => 'Test', 'action' => 'index']);
 $router->add('{controller}/{action}');
 
 $router->dispatch($_SERVER['QUERY_STRING']);

@@ -10,23 +10,15 @@ namespace App;
 class Categories
 {
     /**
-     * Kategorie przychodów
+     * Kategorie przychodów/wydatków/sposoby płatności
      * 
-     * @var array
+     * @var array  Tablica asocjacyjna z tłumaczeniami kategorii
      */
-    const INCOMES_CATEGORIES = [
+    const TRANSLATED_CATEGORIES = [
         'Salary' => 'Wynagrodzenie',
         'Interest' => 'Odsetki bankowe',
         'Allegro' => 'Sprzedaż na allegro',
-        'Another-Incomes' => 'Inne'
-    ];
-
-    /**
-     * Kategorie wydatków
-     * 
-     * @var array
-     */
-    const EXPENSES_CATEGORIES = [
+        'Another-Incomes' => 'Inne',
         'Transport' => 'Transport',
         'Books' => 'Książki',
         'Food' => 'Jedzenie',
@@ -43,17 +35,27 @@ class Categories
         'Debt-Repayment' => 'Spłata długów',
         'Gift' => 'Darowizna',
         'Another-Expenses' => 'Inne wydatki',
-        'Courses' => 'Szkolenia'
-    ];
-
-    /**
-     * Sposoby płatności
-     * 
-     * @var array
-     */
-    const PAYMENT_METHODS = [
+        'Courses' => 'Szkolenia',
         'Cash' => 'Gotówka',
         'Debit-Card' => 'Karta debetowa',
         'Credit-Card' => 'Karta kredytowa'
     ];
+
+    /**
+     * Przetłumacz kategorię (jedną z domyślnych) na język polski
+     * 
+     * @param string $category  Kategoria przychodu/wydatku lub sposób płatności
+     * 
+     * @return string  Przetłumaczona kategoria
+     */
+    public static function translateCategory($category)
+    {
+        foreach (static::TRANSLATED_CATEGORIES as $key => $value) {
+            if ($category == $key) {
+                return $value;
+            }
+        }
+
+        return $category;
+    }
 }
