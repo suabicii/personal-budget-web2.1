@@ -5,10 +5,22 @@
 main %}
 <script>
   $(document).ready(function () {
+    // Funkcja edycji kategorii
+    function editCategory(category) {
+      $("#category-edit").val(category);
+    }
+
     // Pobierz kategorie przychodów
     $.get("settings/get-incomes-categories")
       .done(function (data, status) {
         $("#incomes-categories").html(data);
+
+        // Edycja/usuwanie kategorii przychodów
+        $(".income-edit").click(function (event) {
+          var category = event.currentTarget.id;
+          category = category.replace("-edit", "");
+          editCategory(category);
+        });
       })
       .fail(function (status) {
         console.log(status);
@@ -17,6 +29,13 @@ main %}
     $.get("settings/get-expenses-categories")
       .done(function (data, status) {
         $("#expenses-categories").html(data);
+
+        // Edycja/usuwanie kategorii wydatków
+        $(".expense-edit").click(function (event) {
+          var category = event.currentTarget.id;
+          category = category.replace("-edit", "");
+          editCategory(category);
+        });
       })
       .fail(function (status) {
         console.log(status);
@@ -25,6 +44,13 @@ main %}
     $.get("settings/get-payment-methods")
       .done(function (data, status) {
         $("#payment-methods").html(data);
+
+        // Edycja/usuwanie sposobów płatności
+        $(".payment-edit").click(function (event) {
+          var category = event.currentTarget.id;
+          category = category.replace("-edit", "");
+          editCategory(category);
+        });
       })
       .fail(function (status) {
         console.log(status);
@@ -210,7 +236,7 @@ main %}
                   />
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">
-                  Zmień dane <i class="far fa-paper-plane"></i>
+                  Zmień dane <i class="fas fa-exchange-alt"></i>
                 </button>
               </form>
             </div>
@@ -219,5 +245,63 @@ main %}
       </li>
     </ul>
   </section>
+  <!-- Modal do edycji kategorii -->
+  <div
+    class="modal fade"
+    id="editModal"
+    data-backdrop="static"
+    data-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="editModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Zmiana kategorii</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Zamknij"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="" method="post">
+          <div class="modal-body">
+            <div class="input-group mr-2">
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+              </div>
+              <label class="sr-only" for="name">Kategoria</label>
+              <input
+                type="text"
+                name="category_edit"
+                id="category-edit"
+                class="form-control"
+                value=""
+                required
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Anuluj
+            </button>
+            <button type="submit" class="btn btn-some">
+              Zmień <i class="fas fa-exchange-alt"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

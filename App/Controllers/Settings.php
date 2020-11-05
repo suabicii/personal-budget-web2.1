@@ -68,6 +68,15 @@ class Settings extends \Core\Controller
         View::renderTemplate("Settings/payment-methods.html");
     }
 
+    /** EDYCJA KATEGORII/SPOSOBÓW PRZYCHODÓW/WYDATKÓW/PŁATNOŚCI */
+
+    public function editIncomeCategoryAction()
+    {
+        $finances = new Finances;
+    }
+
+    /** EDYCJA DANYCH UŻYTKOWNIKA */
+
     /**
      * Zmień dane użytkownika
      * 

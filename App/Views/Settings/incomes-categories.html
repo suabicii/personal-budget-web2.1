@@ -10,20 +10,18 @@
     <tr>
       <th scope="row">{{ i }}</th>
       <td>
-        {{ category.name }}
+        <span class="category">{{ category.name }}</span>
         <div class="edit-buttons float-right">
           <button
-            class="btn btn-warning m-auto"
-            data-toggle="tooltip"
+            id="{{ category.name }}-edit"
+            class="btn btn-warning income-edit"
+            data-toggle="modal"
+            data-target="#editModal"
             title="edytuj"
           >
             <i class="far fa-edit"></i>
           </button>
-          <button
-            class="btn btn-danger m-auto"
-            data-toggle="tooltip"
-            title="usuń"
-          >
+          <button class="btn btn-danger" title="usuń">
             <i class="far fa-trash-alt"></i>
           </button>
         </div>
@@ -32,3 +30,6 @@
     {% set i = i + 1 %} {% endfor %}
   </tbody>
 </table>
+<button class="btn btn-success btn-block">
+  Dodaj <i class="fas fa-plus"></i>
+</button>
