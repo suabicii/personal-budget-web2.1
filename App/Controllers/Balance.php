@@ -51,6 +51,7 @@ class Balance extends \Core\Controller
         $_SESSION['summed_incomes'] = $finances->getSummedIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['summed_expenses'] = $finances->getSummedExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
+        $translatedCategories = [];
 
         foreach ($_SESSION['summed_incomes'] as $income) {
             $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
@@ -84,6 +85,8 @@ class Balance extends \Core\Controller
 
         $_SESSION['all_incomes'] = $finances->getAllIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['all_expenses'] = $finances->getAllExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
+
+        $translatedCategories = [];
 
         foreach ($_SESSION['all_incomes'] as $income) {
             $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
