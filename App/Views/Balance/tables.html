@@ -96,7 +96,7 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ income.name }}</td>
+            <td>{{ translated_categories[income.name] }}</td>
             <td>{{ income.date_of_income }}</td>
             <td class="{{ income.name }}">{{ income.amount }}</td>
             <td>{{ income.income_comment }}</td>
@@ -136,8 +136,8 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ expense.expense_category }}</td>
-            <td>{{ expense.payment_method }}</td>
+            <td>{{ translated_categories[expense.expense_category] }}</td>
+            <td>{{ translated_categories[expense.payment_method] }}</td>
             <td>{{ expense.date_of_expense }}</td>
             <td class="{{ expense.expense_category }}">{{ expense.amount }}</td>
             <td>{{ expense.expense_comment }}</td>

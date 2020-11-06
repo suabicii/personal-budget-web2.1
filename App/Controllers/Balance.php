@@ -85,7 +85,18 @@ class Balance extends \Core\Controller
         $_SESSION['all_incomes'] = $finances->getAllIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['all_expenses'] = $finances->getAllExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
-        View::renderTemplate("Balance/tables.html");
+        foreach ($_SESSION['all_incomes'] as $income) {
+            $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
+        }
+
+        foreach ($_SESSION['all_expenses'] as $expense) {
+            $translatedCategories[$expense['expense_category']] = Categories::translateCategory($expense['expense_category']);
+            $translatedCategories[$expense['payment_method']] = Categories::translateCategory($expense['payment_method']);
+        }
+
+        View::renderTemplate("Balance/tables.html", [
+            'translated_categories' => $translatedCategories
+        ]);
     }
 
     /**
