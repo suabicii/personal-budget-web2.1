@@ -51,18 +51,27 @@ class Balance extends \Core\Controller
         $_SESSION['summed_incomes'] = $finances->getSummedIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['summed_expenses'] = $finances->getSummedExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
+        // Tłumaczenie domyślnych kategorii i przypisywanie id do
+        // poszczególnych przychodów/wydaktów
         $translatedCategories = [];
+        $idsForJS = []; // id do identyfikacji w pliku JS służącym do wyświetlania wykresów
+        // i wyliczania różnicy między przychodami a wydatkami (public/js/balance.js)
 
         foreach ($_SESSION['summed_incomes'] as $income) {
             $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
+            // Zastąp spację myślnikiem
+            $idsForJS[$income['name']] = preg_replace('/\s/', '-', $income['name']);
         }
 
         foreach ($_SESSION['summed_expenses'] as $expense) {
             $translatedCategories[$expense['name']] = Categories::translateCategory($expense['name']);
+            $idsForJS[$expense['name']] = preg_replace('/\s/', '-', $expense['name']);
         }
 
+
         View::renderTemplate("Balance/tables.html", [
-            'translated_categories' => $translatedCategories
+            'translated_categories' => $translatedCategories,
+            'idsForJS' => $idsForJS
         ]);
     }
 
@@ -86,19 +95,25 @@ class Balance extends \Core\Controller
         $_SESSION['all_incomes'] = $finances->getAllIncomes($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
         $_SESSION['all_expenses'] = $finances->getAllExpenses($startDateForQuery, $endDateForQuery, $_SESSION['user_id']);
 
+        // Tłumaczenie domyślnych kategorii i przypisywanie klas do
+        // poszczególnych przychodów/wydaktów
         $translatedCategories = [];
+        $classesForJS = [];
 
         foreach ($_SESSION['all_incomes'] as $income) {
             $translatedCategories[$income['name']] = Categories::translateCategory($income['name']);
+            $classesForJS[$income['name']] = preg_replace('/\s/', '-', $income['name']);
         }
 
         foreach ($_SESSION['all_expenses'] as $expense) {
             $translatedCategories[$expense['expense_category']] = Categories::translateCategory($expense['expense_category']);
             $translatedCategories[$expense['payment_method']] = Categories::translateCategory($expense['payment_method']);
+            $classesForJS[$expense['expense_category']] = preg_replace('/\s/', '-', $expense['expense_category']);
         }
 
         View::renderTemplate("Balance/tables.html", [
-            'translated_categories' => $translatedCategories
+            'translated_categories' => $translatedCategories,
+            'classesForJS' => $classesForJS
         ]);
     }
 
