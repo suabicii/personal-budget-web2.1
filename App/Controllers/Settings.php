@@ -6,6 +6,7 @@ use Core\View;
 use App\Models\User;
 use App\Models\Finances;
 use App\Flash;
+use App\Categories;
 
 /**
  * Kontroler ustawień
@@ -37,7 +38,15 @@ class Settings extends \Core\Controller
 
         $_SESSION['incomes_categories'] = $finances->getIncomesCategories($_SESSION['user_id']);
 
-        View::renderTemplate("Settings/incomes-categories.html");
+        $tranlsated_categories = [];
+
+        foreach ($_SESSION['incomes_categories'] as $category) {
+            $tranlsated_categories[$category['name']] = Categories::translateCategory($category['name']);
+        }
+
+        View::renderTemplate("Settings/incomes-categories.html", [
+            'translated_categories' => $tranlsated_categories
+        ]);
     }
 
     /**
@@ -51,7 +60,13 @@ class Settings extends \Core\Controller
 
         $_SESSION['expenses_categories'] = $finances->getExpensesCategories($_SESSION['user_id']);
 
-        View::renderTemplate("Settings/expenses-categories.html");
+        foreach ($_SESSION['expenses_categories'] as $category) {
+            $tranlsated_categories[$category['name']] = Categories::translateCategory($category['name']);
+        }
+
+        View::renderTemplate("Settings/expenses-categories.html", [
+            'translated_categories' => $tranlsated_categories
+        ]);
     }
 
     /**
@@ -65,7 +80,14 @@ class Settings extends \Core\Controller
 
         $_SESSION['payment_methods'] = $finances->getPaymentMethods($_SESSION['user_id']);
 
-        View::renderTemplate("Settings/payment-methods.html");
+        foreach ($_SESSION['payment_methods'] as $method) {
+            $tranlsated_categories[$method['name']] = Categories::translateCategory($method['name']);
+        }
+
+
+        View::renderTemplate("Settings/payment-methods.html", [
+            'translated_categories' => $tranlsated_categories
+        ]);
     }
 
     /** EDYCJA KATEGORII/SPOSOBÓW PRZYCHODÓW/WYDATKÓW/PŁATNOŚCI */
