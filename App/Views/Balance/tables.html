@@ -97,7 +97,7 @@
         <tbody>
           {% set i = 0 %} {% set sumOfIncomes = 0 %} {% for income in
           session.all_incomes %}
-          <tr>
+          <tr class="income">
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="income-category">
@@ -139,7 +139,7 @@
         <tbody>
           {% set i = 0 %} {% set sumOfExpenses = 0 %} {% for expense in
           session.all_expenses %}
-          <tr>
+          <tr class="expense">
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="income-category">
