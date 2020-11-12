@@ -19,11 +19,13 @@
         <tbody>
           {% set i = 0 %} {% set sumOfIncomes = 0 %} {% for income in
           session.summed_incomes %}
-          <tr>
+          <tr class="income" id="{{ idsForJS[income.name] }}">
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ translated_categories[income.name] }}</td>
-            <td id="{{ idsForJS[income.name] }}">{{ income.amount }}</td>
+            <td class="income-category">
+              {{ translated_categories[income.name] }}
+            </td>
+            <td>{{ income.amount }}</td>
             {% set sumOfIncomes = sumOfIncomes + income.amount %}
           </tr>
           {% endfor %}
@@ -52,11 +54,13 @@
         <tbody>
           {% set i = 0 %} {% set sumOfExpenses = 0 %} {% for expense in
           session.summed_expenses %}
-          <tr>
+          <tr class="expense" id="{{ idsForJS[expense.name] }}">
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ translated_categories[expense.name] }}</td>
-            <td id="{{ idsForJS[expense.name] }}">{{ expense.amount }}</td>
+            <td class="expense-category">
+              {{ translated_categories[expense.name] }}
+            </td>
+            <td>{{ expense.amount }}</td>
             {% set sumOfExpenses = sumOfExpenses + expense.amount %}
           </tr>
           {% endfor %}
@@ -96,7 +100,9 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ translated_categories[income.name] }}</td>
+            <td class="income-category">
+              {{ translated_categories[income.name] }}
+            </td>
             <td>{{ income.date_of_income }}</td>
             <td class="{{ classesForJS[income.name] }}">{{ income.amount }}</td>
             <td>{{ income.income_comment }}</td>
@@ -136,8 +142,12 @@
           <tr>
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td>{{ translated_categories[expense.expense_category] }}</td>
-            <td>{{ translated_categories[expense.payment_method] }}</td>
+            <td class="income-category">
+              {{ translated_categories[expense.expense_category] }}
+            </td>
+            <td class="payment-method">
+              {{ translated_categories[expense.payment_method] }}
+            </td>
             <td>{{ expense.date_of_expense }}</td>
             <td class="{{classesForJS[expense.expense_category] }}">
               {{ expense.amount }}

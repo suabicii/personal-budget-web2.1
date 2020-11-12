@@ -6,6 +6,28 @@
   let sumOfIncomes = document.getElementById("incomes");
   let sumOfExpenses = document.getElementById("expenses");
 
+  // Kategorie przychodów
+  let rowsWithIncomes = document.querySelectorAll(".income");
+  let incomes = [];
+
+  for (let i = 0; i < rowsWithIncomes.length; i++) {
+    incomes.push({
+      name: rowsWithIncomes[i].children[1].textContent,
+      amount: parseFloat(rowsWithIncomes[i].children[2].textContent),
+    });
+  }
+
+  // Kategorie wydatków
+  let rowsWithExpenses = document.querySelectorAll(".expense");
+  let expenses = [];
+
+  for (let i = 0; i < rowsWithExpenses.length; i++) {
+    expenses.push({
+      name: rowsWithExpenses[i].children[1].textContent,
+      amount: parseFloat(rowsWithExpenses[i].children[2].textContent),
+    });
+  }
+
   difference.textContent = (
     sumOfIncomes.textContent - sumOfExpenses.textContent
   ).toFixed(2);
@@ -95,13 +117,15 @@
   }
 
   const drawChartOfIncomes = () => {
-    let data = google.visualization.arrayToDataTable([
-      ["Kategoria", "Kwota"],
-      ["Wynagrodzenie", salary != null ? salary : 0],
-      ["Odsetki bankowe", interest != null ? interest : 0],
-      ["Sprzedaż na allegro", allegro != null ? allegro : 0],
-      ["Inne", anotherIncomes != null ? anotherIncomes : 0],
-    ]);
+    let data = new google.visualization.DataTable();
+    data.addColumn("string", "Kategoria");
+    data.addColumn("number", "Kwota");
+
+    data.addRows(incomes.length);
+    for (let i = 0; i < incomes.length; i++) {
+      data.setCell(i, 0, incomes[i].name);
+      data.setCell(i, 1, incomes[i].amount);
+    }
 
     let options = { title: "Przychody", width: chartWidth, height: 400 };
 
@@ -238,26 +262,15 @@
   }
 
   const drawChartOfExpenses = () => {
-    let data = google.visualization.arrayToDataTable([
-      ["Kategoria", "Kwota"],
-      ["Jedzenie", food != null ? food : 0],
-      ["Mieszkanie", apartments != null ? apartments : 0],
-      ["Transport", transport != null ? transport : 0],
-      ["Telekomunikacja", telecommunication != null ? telecommunication : 0],
-      ["Opieka zdrowotna", health != null ? health : 0],
-      ["Ubranie", clothes != null ? clothes : 0],
-      ["Higiena", hygiene != null ? hygiene : 0],
-      ["Dzieci", kids != null ? kids : 0],
-      ["Rozrywka", recreation != null ? recreation : 0],
-      ["Wycieczka", trip != null ? trip : 0],
-      ["Szkolenia", courses != null ? courses : 0],
-      ["Książki", books != null ? books : 0],
-      ["Oszczędności", savings != null ? savings : 0],
-      ["Na złotą jesień, czyli emeryturę", retirement != null ? retirement : 0],
-      ["Spłata długów", debts != null ? debts : 0],
-      ["Darowizna", gift != null ? gift : 0],
-      ["Inne wydatki", anotherExpenses != null ? anotherExpenses : 0],
-    ]);
+    let data = new google.visualization.DataTable();
+    data.addColumn("string", "Kategoria");
+    data.addColumn("number", "Kwota");
+
+    data.addRows(expenses.length);
+    for (let i = 0; i < expenses.length; i++) {
+      data.setCell(i, 0, expenses[i].name);
+      data.setCell(i, 1, expenses[i].amount);
+    }
 
     let options = { title: "Wydatki", width: chartWidth, height: 400 };
 
