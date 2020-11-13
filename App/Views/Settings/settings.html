@@ -16,9 +16,9 @@ main %}
         $("#incomes-categories").html(data);
 
         // Edycja/usuwanie kategorii przychodów
-        $(".income-edit").click(function (event) {
-          var category = event.currentTarget.id;
-          category = category.replace("-edit", "");
+        $(".edit-income").submit(function (event) {
+          event.preventDefault();
+          var category = event.target[0].defaultValue;
           editCategory(category);
         });
       })
@@ -31,9 +31,9 @@ main %}
         $("#expenses-categories").html(data);
 
         // Edycja/usuwanie kategorii wydatków
-        $(".expense-edit").click(function (event) {
-          var category = event.currentTarget.id;
-          category = category.replace("-edit", "");
+        $(".edit-expense").submit(function (event) {
+          event.preventDefault();
+          var category = event.target[0].defaultValue;
           editCategory(category);
         });
       })
@@ -46,9 +46,9 @@ main %}
         $("#payment-methods").html(data);
 
         // Edycja/usuwanie sposobów płatności
-        $(".payment-edit").click(function (event) {
-          var category = event.currentTarget.id;
-          category = category.replace("-edit", "");
+        $(".edit-payment").submit(function (event) {
+          event.preventDefault();
+          var category = event.target[0].defaultValue;
           editCategory(category);
         });
       })

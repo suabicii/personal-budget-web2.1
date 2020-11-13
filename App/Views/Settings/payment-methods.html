@@ -12,18 +12,32 @@
       <td>
         {{ translated_categories[method.name] }}
         <div class="edit-buttons float-right">
-          <button
-            id="{{ method.name }}-edit"
-            class="btn btn-warning payment-edit"
-            data-toggle="modal"
-            data-target="#editModal"
-            title="edytuj"
-          >
-            <i class="far fa-edit"></i>
-          </button>
-          <button class="btn btn-danger" title="usuń">
-            <i class="far fa-trash-alt"></i>
-          </button>
+          <form action="" class="edit-payment">
+            <input
+              type="hidden"
+              name="{{ method.name }}_edit"
+              value="{{ translated_categories[method.name] }}"
+            />
+            <button
+              type="submit"
+              id="{{ method.name }}-edit"
+              class="btn btn-warning"
+              data-toggle="modal"
+              data-target="#editModal"
+              title="edytuj"
+            >
+              <i class="far fa-edit"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-toggle="modal"
+              data-target="#deleteModal"
+              title="usuń"
+            >
+              <i class="far fa-trash-alt"></i>
+            </button>
+          </form>
         </div>
       </td>
     </tr>

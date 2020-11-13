@@ -12,18 +12,32 @@
       <td>
         <span class="category">{{ translated_categories[category.name] }}</span>
         <div class="edit-buttons float-right">
-          <button
-            id="{{ category.name }}-edit"
-            class="btn btn-warning income-edit"
-            data-toggle="modal"
-            data-target="#editModal"
-            title="edytuj"
-          >
-            <i class="far fa-edit"></i>
-          </button>
-          <button class="btn btn-danger" title="usuń">
-            <i class="far fa-trash-alt"></i>
-          </button>
+          <form class="edit-income" action="" method="post">
+            <input
+              type="hidden"
+              name="{{ category.name }}_edit"
+              value="{{ translated_categories[category.name] }}"
+            />
+            <button
+              type="submit"
+              id="{{ category.name }}-edit"
+              class="btn btn-warning"
+              data-toggle="modal"
+              data-target="#editModal"
+              title="edytuj"
+            >
+              <i class="far fa-edit"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger income-delete"
+              data-toggle="modal"
+              data-target="#deleteModal"
+              title="usuń"
+            >
+              <i class="far fa-trash-alt"></i>
+            </button>
+          </form>
         </div>
       </td>
     </tr>
