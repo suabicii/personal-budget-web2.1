@@ -6,8 +6,41 @@ main %}
 <script>
   $(document).ready(function () {
     // Funkcja edycji kategorii
-    function editCategory(category) {
-      $("#category-edit").val(category);
+    function editCategory(translatedName, originalName, tableName, route) {
+      $("#category-edit").val(translatedName);
+      $("#old-name").val(originalName);
+      var oldName = originalName;
+
+      $("#send-edit").submit(function (event) {
+        event.preventDefault();
+
+        $("#editModal").modal("hide");
+
+        $.post("settings/edit", {
+          table_name: tableName,
+          old_name: originalName,
+          new_name: $("#category-edit").val(),
+        })
+          .done(function (data, status) {
+            $(".messages-finances").html(data);
+            setTimeout(function () {
+              $(".alert").remove();
+              $(".errors").remove();
+            }, 4000);
+            $.get("settings/get-" + route)
+              .done(function (data, status) {
+                $("#" + route).html(data);
+                console.log(status);
+              })
+              .fail(function (status) {
+                console.log(status);
+              });
+            console.log(status);
+          })
+          .fail(function (status) {
+            console.log(status);
+          });
+      });
     }
 
     // Pobierz kategorie przychodów
@@ -18,8 +51,14 @@ main %}
         // Edycja/usuwanie kategorii przychodów
         $(".edit-income").submit(function (event) {
           event.preventDefault();
-          var category = event.target[0].defaultValue;
-          editCategory(category);
+          var translatedName = event.target[0].defaultValue;
+          var originalName = event.target[1].defaultValue;
+          editCategory(
+            translatedName,
+            originalName,
+            "incomes_category_assigned_to_users",
+            "incomes-categories"
+          );
         });
       })
       .fail(function (status) {
@@ -33,8 +72,14 @@ main %}
         // Edycja/usuwanie kategorii wydatków
         $(".edit-expense").submit(function (event) {
           event.preventDefault();
-          var category = event.target[0].defaultValue;
-          editCategory(category);
+          var translatedName = event.target[0].defaultValue;
+          var originalName = event.target[1].defaultValue;
+          editCategory(
+            translatedName,
+            originalName,
+            "expenses_category_assigned_to_users",
+            "expenses-categories"
+          );
         });
       })
       .fail(function (status) {
@@ -48,8 +93,14 @@ main %}
         // Edycja/usuwanie sposobów płatności
         $(".edit-payment").submit(function (event) {
           event.preventDefault();
-          var category = event.target[0].defaultValue;
-          editCategory(category);
+          var translatedName = event.target[0].defaultValue;
+          var originalName = event.target[1].defaultValue;
+          editCategory(
+            translatedName,
+            originalName,
+            "payment_methods_assigned_to_users",
+            "payment-methods"
+          );
         });
       })
       .fail(function (status) {
@@ -99,6 +150,7 @@ main %}
           Przychody <i class="fas fa-angle-up"></i>
         </div>
         <div>
+          <div class="messages-finances"></div>
           <h4 class="text-center text-secondary">Istniejące kategorie</h4>
           <div id="incomes-categories"></div>
         </div>
@@ -108,6 +160,7 @@ main %}
           Wydatki <i class="fas fa-angle-down"></i>
         </div>
         <div>
+          <div class="messages-finances"></div>
           <h4 class="text-center text-secondary">Istniejące kategorie</h4>
           <div id="expenses-categories"></div>
         </div>
@@ -117,6 +170,7 @@ main %}
           Sposoby płatności <i class="fas fa-angle-down"></i>
         </div>
         <div>
+          <div class="messages-finances"></div>
           <h4 class="text-center text-secondary">
             Istniejące sposoby płatności
           </h4>
@@ -268,7 +322,7 @@ main %}
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form action="" method="post">
+        <form action="settings/edit" method="post" id="send-edit">
           <div class="modal-body">
             <div class="input-group mr-2">
               <div class="input-group-prepend">
@@ -277,9 +331,10 @@ main %}
                 </div>
               </div>
               <label class="sr-only" for="name">Kategoria</label>
+              <input type="hidden" name="old_name" id="old-name" value="" />
               <input
                 type="text"
-                name="category_edit"
+                name="new_name"
                 id="category-edit"
                 class="form-control"
                 value=""

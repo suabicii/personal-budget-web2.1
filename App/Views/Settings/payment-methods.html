@@ -18,6 +18,12 @@
               name="{{ method.name }}_edit"
               value="{{ translated_categories[method.name] }}"
             />
+            <input
+              type="hidden"
+              class="original-name"
+              name="{{ category.name }}_noidea"
+              value="{{ category.name }}"
+            />
             <button
               type="submit"
               id="{{ method.name }}-edit"

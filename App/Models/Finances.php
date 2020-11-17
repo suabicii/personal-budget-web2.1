@@ -271,4 +271,27 @@ class Finances extends \Core\Model
 
         return $query->fetchAll();
     }
+
+    /** EDYCJA I USUWANIE */
+
+    /**
+     * Edytuj kategorię przychodu/wydatku/metodę płatności
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param string $oldName  Aktualna nazwa kategorii
+     * @param string $newName  Nowa nazwa kategorii
+     * @param string $tableName  Nazwa tabeli z nazwami kategorii
+     * 
+     * @return boolean  True, jeśli edycja się powiodła, false w przeciwnym wypadku
+     */
+    public function editCategory($user_id, $oldName, $newName, $tableName)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
+            WHERE name = '{$oldName}' AND user_id = {$user_id}
+        ");
+
+        return $query->execute();
+    }
 }

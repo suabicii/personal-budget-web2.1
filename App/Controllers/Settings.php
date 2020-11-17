@@ -92,9 +92,32 @@ class Settings extends \Core\Controller
 
     /** EDYCJA KATEGORII/SPOSOBÓW PRZYCHODÓW/WYDATKÓW/PŁATNOŚCI */
 
-    public function editIncomeCategoryAction()
+    /**
+     * Edytuj kategorię przychodu/wydatku/sposób płatności
+     * 
+     * @return void
+     */
+    public function editAction()
     {
         $finances = new Finances;
+
+        if ($finances->editCategory($_SESSION['user_id'], $_POST['old_name'], $_POST['new_name'], $_POST['table_name'])) {
+            Flash::addMessage('Kategoria została zmieniona');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Nie udało się zmienić kategorii', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
     }
 
     /** EDYCJA DANYCH UŻYTKOWNIKA */
