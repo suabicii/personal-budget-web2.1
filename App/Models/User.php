@@ -566,11 +566,14 @@ class User extends \Core\Model
             }
         } else {
             if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
-                $query = $db->prepare("INSERT INTO data_change VALUES (
+                $query = $db->prepare("INSERT INTO data_change (id, name, username, password, email, token_hash, expires_at) VALUES (
                     {$this->id},
                     '{$firstName}',
                     '{$username}',
-                    '{$newPassword}'
+                    '{$newPassword}',
+                    '{$email}',
+                    '{$hashed_token}',
+                    '{$expiry_timestamp_formated}'
                     )
                 ");
 
@@ -702,7 +705,8 @@ class User extends \Core\Model
                 $query = $db->prepare("UPDATE users SET
                 name = '{$user->name}',
                 username = '{$user->username}',
-                email = '{$user->email}'
+                email = '{$user->email}' 
+                WHERE id = {$user->id}
             ");
 
                 return $query->execute();
@@ -711,7 +715,8 @@ class User extends \Core\Model
                 name = '{$user->name}',
                 username = '{$user->username}',
                 password = '{$user->password}',
-                email = '{$user->email}'
+                email = '{$user->email}' 
+                WHERE id = {$user->id}
             ");
 
                 return $query->execute();
