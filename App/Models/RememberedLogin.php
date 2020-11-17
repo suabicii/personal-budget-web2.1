@@ -54,7 +54,7 @@ class RememberedLogin extends \Core\Model
      */
     public function hasExpired()
     {
-        return strtotime($this->expires_at) < time();
+        return strtotime($this->expires_at) > time();
     }
 
     /**
