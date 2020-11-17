@@ -5,6 +5,7 @@ namespace App\Controllers;
 use Core\View;
 use App\Models\Finances;
 use App\Flash;
+use App\Categories;
 
 /**
  * Kontroler do dodawania wydatków
@@ -27,7 +28,29 @@ class Expense extends \Core\Controller
             unset($_SESSION['particular_view']);
         }
 
-        View::renderTemplate('Expense/add-expense.html');
+        $expense = new Finances;
+
+        $expenseCategories = $expense->getexpensesCategories($_SESSION['user_id']);
+        $paymentMethods = $expense->getPaymentMethods($_SESSION['user_id']);
+        $translatedCategories = [];
+        $optionValues = [];
+
+        foreach ($expenseCategories as $category) {
+            $translatedCategories[$category['name']] = Categories::translateCategory($category['name']);
+            $optionValues[$category['name']] = preg_replace('/\s/', '-', $category['name']);
+        }
+
+        foreach ($paymentMethods as $method) {
+            $translatedCategories[$method['name']] = Categories::translateCategory($method['name']);
+            $optionValues[$method['name']] = preg_replace('/\s/', '-', $method['name']);
+        }
+
+        View::renderTemplate('Expense/add-expense.html', [
+            'expense_categories' => $expenseCategories,
+            'translated_categories' => $translatedCategories,
+            'payment_methods' => $paymentMethods,
+            'option_values' => $optionValues
+        ]);
     }
 
     /**

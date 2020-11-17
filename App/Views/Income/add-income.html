@@ -41,10 +41,11 @@ subtitle %}Dodaj przychód{% endblock %}{% block secondOption %}active{% endbloc
               required
             >
               <option selected disabled>Wybierz kategorię</option>
-              <option value="Salary">Wynagrodzenie</option>
-              <option value="Interest">Odsetki</option>
-              <option value="Allegro">Sprzedaż na allegro</option>
-              <option value="Another-Incomes">Inne</option>
+              {% for category in income_categories %}
+              <option value="{{ option_values[category.name] }}">
+                {{ translated_categories[category.name] }}
+              </option>
+              {% endfor %}
             </select>
           </div>
           <div class="input-group mt-2">
