@@ -5,6 +5,26 @@
 main %}
 <script>
   $(document).ready(function () {
+    // Usuń alerty i komunikaty o błędach
+    function deleteMessages() {
+      setTimeout(function () {
+        $(".alert").remove();
+        $(".errors").remove();
+      }, 4000);
+    }
+
+    // Załaduj ponownie tabelę zaraz po edycji jej zawartości
+    function reloadTable(route) {
+      $.get("settings/get-" + route)
+        .done(function (data, status) {
+          $("#" + route).html(data);
+          console.log(status);
+        })
+        .fail(function (status) {
+          console.log(status);
+        });
+    }
+
     // Funkcja edycji kategorii
     function editCategory(translatedName, originalName, tableName, route) {
       $("#category-edit").val(translatedName);
@@ -22,18 +42,35 @@ main %}
         })
           .done(function (data, status) {
             $(".messages-finances").html(data);
-            setTimeout(function () {
-              $(".alert").remove();
-              $(".errors").remove();
-            }, 4000);
-            $.get("settings/get-" + route)
-              .done(function (data, status) {
-                $("#" + route).html(data);
-                console.log(status);
-              })
-              .fail(function (status) {
-                console.log(status);
-              });
+            deleteMessages();
+            reloadTable(route);
+            console.log(status);
+          })
+          .fail(function (status) {
+            console.log(status);
+          });
+      });
+    }
+
+    // Usuwanie kategorii
+    function deleteCategory(translatedName, originalName, tableName, route) {
+      $("#category-to-delete").html(translatedName);
+      $("#original-category-to-delete").val(originalName);
+
+      $("#send-delete").submit(function (event) {
+        event.preventDefault();
+
+        $("#deleteModal").modal("hide");
+
+        $.post("settings/delete", {
+          category: originalName,
+          table_name: tableName,
+        })
+          .done(function (data, status) {
+            $(".messages-finances").html(data);
+            reloadTable(route);
+            deleteMessages();
+
             console.log(status);
           })
           .fail(function (status) {
@@ -59,6 +96,15 @@ main %}
             "incomes-categories"
           );
         });
+        $(".delete-income").click(function (event) {
+          console.log(event);
+          deleteCategory(
+            event.currentTarget.dataset.translatedName,
+            event.currentTarget.dataset.originalName,
+            "incomes_category_assigned_to_users",
+            "incomes-categories"
+          );
+        });
       })
       .fail(function (status) {
         console.log(status);
@@ -80,6 +126,15 @@ main %}
             "expenses-categories"
           );
         });
+        $(".delete-expense").click(function (event) {
+          console.log(event);
+          deleteCategory(
+            event.currentTarget.dataset.translatedName,
+            event.currentTarget.dataset.originalName,
+            "expenses_category_assigned_to_users",
+            "expenses-categories"
+          );
+        });
       })
       .fail(function (status) {
         console.log(status);
@@ -97,6 +152,15 @@ main %}
           editCategory(
             translatedName,
             originalName,
+            "payment_methods_assigned_to_users",
+            "payment-methods"
+          );
+        });
+        $(".delete-payment").click(function (event) {
+          console.log(event);
+          deleteCategory(
+            event.currentTarget.dataset.translatedName,
+            event.currentTarget.dataset.originalName,
             "payment_methods_assigned_to_users",
             "payment-methods"
           );
@@ -355,6 +419,54 @@ main %}
           </div>
         </form>
       </div>
+    </div>
+  </div>
+</div>
+<!-- Modal do usuwania kategorii -->
+<div
+  class="modal fade"
+  id="deleteModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Usuwanie kategorii</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="settings/delete" method="post" id="send-delete">
+        <div class="modal-body">
+          <input
+            type="hidden"
+            name="category"
+            id="original-category-to-delete"
+            value=""
+          />
+          <p class="text-center">
+            Czy na pewno chcesz usunąć kategorię
+            <strong id="category-to-delete"></strong> wraz z jej zawartością?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">
+            Tak <i class="far fa-trash-alt"></i>
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Nie
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

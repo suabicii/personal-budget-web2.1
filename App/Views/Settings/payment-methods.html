@@ -36,9 +36,11 @@
             </button>
             <button
               type="button"
-              class="btn btn-danger"
+              class="btn btn-danger delete-payment"
               data-toggle="modal"
               data-target="#deleteModal"
+              data-translated-name="{{ translated_categories[method.name] }}"
+              data-original-name="{{ method.name }}"
               title="usuń"
             >
               <i class="far fa-trash-alt"></i>

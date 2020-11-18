@@ -120,6 +120,36 @@ class Settings extends \Core\Controller
         }
     }
 
+    /** USUWANIE KATEGORII/SPOSOBÓW PŁATNOŚCI */
+
+    /**
+     * Usuń kategorię przychodu/wydatku/sposób płatności
+     * 
+     * @return void
+     */
+    public function deleteAction()
+    {
+        $finances = new Finances;
+
+        if ($finances->deleteCategory($_SESSION['user_id'], $_POST['category'], $_POST['table_name'])) {
+            Flash::addMessage('Pomyślnie usunięto kategorię');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Nie udało się usunąć kategorii', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
+    }
+
     /** EDYCJA DANYCH UŻYTKOWNIKA */
 
     /**

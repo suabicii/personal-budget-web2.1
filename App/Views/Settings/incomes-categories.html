@@ -36,9 +36,11 @@
             </button>
             <button
               type="button"
-              class="btn btn-danger income-delete"
+              class="btn btn-danger delete-income"
               data-toggle="modal"
               data-target="#deleteModal"
+              data-translated-name="{{ translated_categories[category.name] }}"
+              data-original-name="{{ category.name }}"
               title="usuń"
             >
               <i class="far fa-trash-alt"></i>

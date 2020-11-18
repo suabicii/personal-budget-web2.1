@@ -294,4 +294,25 @@ class Finances extends \Core\Model
 
         return $query->execute();
     }
+
+    /**
+     * Usuń kategorię przychodu/wydatku/sposób płatności
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param string $category  Nazwa kategorii
+     * @param string $tableName  Nazwa tabeli, w której znajduje się dana kategoria
+     * 
+     * @return boolean  True, jeśli pomyślnie usunięto kategorię, false w przeciwnym
+     * wypadku
+     */
+    public function deleteCategory($user_id, $category, $tableName)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("DELETE FROM {$tableName} 
+            WHERE name = '{$category}' AND user_id = {$user_id}
+        ");
+
+        return $query->execute();
+    }
 }
