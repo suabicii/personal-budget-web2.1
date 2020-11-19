@@ -60,6 +60,8 @@ class Settings extends \Core\Controller
 
         $_SESSION['expenses_categories'] = $finances->getExpensesCategories($_SESSION['user_id']);
 
+        $tranlsated_categories = [];
+
         foreach ($_SESSION['expenses_categories'] as $category) {
             $tranlsated_categories[$category['name']] = Categories::translateCategory($category['name']);
         }
@@ -79,6 +81,8 @@ class Settings extends \Core\Controller
         $finances = new Finances;
 
         $_SESSION['payment_methods'] = $finances->getPaymentMethods($_SESSION['user_id']);
+
+        $tranlsated_categories = [];
 
         foreach ($_SESSION['payment_methods'] as $method) {
             $tranlsated_categories[$method['name']] = Categories::translateCategory($method['name']);
@@ -141,6 +145,36 @@ class Settings extends \Core\Controller
             }
         } else {
             Flash::addMessage('Nie udało się usunąć kategorii', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
+    }
+
+    /** DODAWANIE KATEGORII */
+
+    /**
+     * Dodaj kategorię przychodu/wydatku/sposób płatności
+     * 
+     * @return void
+     */
+    public function addAction()
+    {
+        $finances = new Finances;
+
+        if ($finances->addCategory($_SESSION['user_id'], $_POST['category'], $_POST['table_name'])) {
+            Flash::addMessage('Pomyślnie dodano kategorię');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Nie udało się dodać kategorii', Flash::WARNING);
 
             $messages = Flash::getMessages();
 

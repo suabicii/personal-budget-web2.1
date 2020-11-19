@@ -315,4 +315,25 @@ class Finances extends \Core\Model
 
         return $query->execute();
     }
+
+    /** DODAWANIE KATEGORII */
+
+    /**
+     * Dodaj kategorię przychodu/wydatku lub sposób płatności
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param string $category  Nazwa kategorii
+     * @param string $tableName  Nazwa tabeli, w której ma znaleźć się nowa kategoria
+     * 
+     * @return boolean  True, jeśli pomyślnie dodano kategorię, false w przeciwnym
+     * wypadku
+     */
+    public function addCategory($user_id, $category, $tableName)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+
+        return $query->execute();
+    }
 }
