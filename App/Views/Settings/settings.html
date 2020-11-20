@@ -38,7 +38,7 @@ main %}
             $(".messages-finances").html(data);
             deleteMessages();
             getTable(route, settingsCategory, tableName);
-            console.log(status);
+            $("#send-edit").off("submit");
           })
           .fail(function (status) {
             console.log(status);
@@ -64,6 +64,7 @@ main %}
             getTable(route, settingsCategory, tableName);
             console.log(status);
             $("#category-add").val("");
+            $("#send-add").off("submit");
           })
           .fail(function (status) {
             console.log(status);
@@ -95,8 +96,7 @@ main %}
             $(".messages-finances").html(data);
             getTable(route, settingsCategory, tableName);
             deleteMessages();
-
-            console.log(status);
+            $("#send-delete").off("submit");
           })
           .fail(function (status) {
             console.log(status);
