@@ -15,18 +15,15 @@
           <form class="edit-income" action="" method="post">
             <input
               type="hidden"
-              name="{{ category.name }}_edit"
               value="{{ translated_categories[category.name] }}"
             />
             <input
               type="hidden"
               class="original-name"
-              name="{{ category.name }}_noidea"
               value="{{ category.name }}"
             />
             <button
               type="submit"
-              id="{{ category.name }}-edit"
               class="btn btn-warning"
               data-toggle="modal"
               data-target="#editModal"

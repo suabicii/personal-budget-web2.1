@@ -15,18 +15,15 @@
           <form action="" class="edit-payment">
             <input
               type="hidden"
-              name="{{ method.name }}_edit"
               value="{{ translated_categories[method.name] }}"
             />
             <input
               type="hidden"
               class="original-name"
-              name="{{ category.name }}_noidea"
               value="{{ category.name }}"
             />
             <button
               type="submit"
-              id="{{ method.name }}-edit"
               class="btn btn-warning"
               data-toggle="modal"
               data-target="#editModal"
