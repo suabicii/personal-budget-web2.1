@@ -21,6 +21,7 @@ main %}
       route,
       settingsCategory
     ) {
+      $("#send-delete").off("submit");
       $("#category-edit").val(translatedName);
       $("#old-name").val(originalName);
 
@@ -38,7 +39,7 @@ main %}
             $(".messages-finances").html(data);
             deleteMessages();
             getTable(route, settingsCategory, tableName);
-            $("#send-edit").off("submit");
+            $("#send-delete").off("submit");
           })
           .fail(function (status) {
             console.log(status);
@@ -48,6 +49,7 @@ main %}
 
     // Dodawanie kategorii
     function addCategory(tableName, route, settingsCategory) {
+      $("#send-add").off("submit");
       $("#send-add").submit(function (event) {
         event.preventDefault();
         var category = $("#category-add").val();
@@ -80,6 +82,7 @@ main %}
       route,
       settingsCategory
     ) {
+      $("#send-delete").off("submit");
       $("#category-to-delete").html(translatedName);
       $("#original-category-to-delete").val(originalName);
 
