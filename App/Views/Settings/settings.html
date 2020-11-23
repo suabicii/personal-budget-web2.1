@@ -64,7 +64,6 @@ main %}
             $(".messages-finances").html(data);
             deleteMessages();
             getTable(route, settingsCategory, tableName);
-            console.log(status);
             $("#category-add").val("");
             $("#send-add").off("submit");
           })
@@ -176,7 +175,6 @@ main %}
         .done(function (data, status) {
           $("#messages").html(data);
           deleteMessages();
-          console.log(status);
         })
         .fail(function (status) {
           console.log(status);
