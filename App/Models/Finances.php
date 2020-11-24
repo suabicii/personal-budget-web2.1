@@ -151,8 +151,9 @@ class Finances extends \Core\Model
 
         $query = $db->prepare("
             SELECT {$income_category}, name, SUM(amount) as amount FROM incomes, incomes_category_assigned_to_users 
-            WHERE incomes.user_id = {$user_id} AND incomes_category_assigned_to_users.id = incomes.{$income_category}
-            AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' 
+            WHERE incomes.user_id = {$user_id} 
+                AND incomes_category_assigned_to_users.id = incomes.{$income_category}
+                AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' 
             GROUP BY {$income_category} ORDER BY amount DESC
         ");
         $query->execute();
@@ -174,7 +175,11 @@ class Finances extends \Core\Model
 
         $expense_category = 'expense_category_assigned_to_user_id';
 
-        $query = $db->prepare("SELECT {$expense_category}, name, SUM(amount) as amount FROM expenses, expenses_category_assigned_to_users WHERE expenses.user_id = {$user_id} AND expenses_category_assigned_to_users.id = expenses.{$expense_category} AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' GROUP BY {$expense_category} ORDER BY amount DESC");
+        $query = $db->prepare("SELECT {$expense_category}, name, SUM(amount) as amount FROM expenses, expenses_category_assigned_to_users 
+        WHERE expenses.user_id = {$user_id} 
+            AND expenses_category_assigned_to_users.id = expenses.{$expense_category} 
+            AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' 
+        GROUP BY {$expense_category} ORDER BY amount DESC");
         $query->execute();
 
         return $query->fetchAll();
@@ -194,7 +199,10 @@ class Finances extends \Core\Model
 
         $income_category = 'income_category_assigned_to_user_id';
 
-        $query =  $db->prepare("SELECT incomes.user_id, income_category_assigned_to_user_id, name, amount, date_of_income, income_comment FROM incomes, incomes_category_assigned_to_users WHERE incomes_category_assigned_to_users.id = incomes.{$income_category} AND incomes.user_id = {$user_id} AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
+        $query =  $db->prepare("SELECT incomes.user_id, income_category_assigned_to_user_id, name, amount, date_of_income, income_comment FROM incomes, incomes_category_assigned_to_users WHERE incomes_category_assigned_to_users.id = incomes.{$income_category} 
+            AND incomes.user_id = {$user_id} 
+            AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' 
+        ORDER BY amount DESC");
         $query->execute();
 
         return $query->fetchAll();
@@ -215,7 +223,12 @@ class Finances extends \Core\Model
         $expense_category = 'expense_category_assigned_to_user_id';
         $payment_method = 'payment_method_assigned_to_user_id';
 
-        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} AND payment_methods_assigned_to_users.id = expenses.{$payment_method} AND expenses.user_id = {$user_id} AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}' ORDER BY amount DESC");
+        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users 
+        WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} 
+            AND payment_methods_assigned_to_users.id = expenses.{$payment_method} 
+            AND expenses.user_id = {$user_id} 
+            AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}'
+        ORDER BY amount DESC");
         $query->execute();
 
         return $query->fetchAll();
@@ -232,7 +245,8 @@ class Finances extends \Core\Model
     {
         $db = static::getDB();
 
-        $query = $db->prepare("SELECT name FROM incomes_category_assigned_to_users WHERE user_id = {$user_id}");
+        $query = $db->prepare("SELECT name FROM incomes_category_assigned_to_users 
+            WHERE user_id = {$user_id}");
         $query->execute();
 
         return $query->fetchAll();
@@ -249,7 +263,8 @@ class Finances extends \Core\Model
     {
         $db = static::getDB();
 
-        $query = $db->prepare("SELECT name FROM expenses_category_assigned_to_users WHERE user_id = {$user_id}");
+        $query = $db->prepare("SELECT name FROM expenses_category_assigned_to_users 
+            WHERE user_id = {$user_id}");
         $query->execute();
 
         return $query->fetchAll();
@@ -266,7 +281,8 @@ class Finances extends \Core\Model
     {
         $db = static::getDB();
 
-        $query = $db->prepare("SELECT name FROM payment_methods_assigned_to_users WHERE user_id = {$user_id}");
+        $query = $db->prepare("SELECT name FROM payment_methods_assigned_to_users 
+            WHERE user_id = {$user_id}");
         $query->execute();
 
         return $query->fetchAll();
