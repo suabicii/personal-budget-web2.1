@@ -59,7 +59,7 @@
       ),
     });
 
-    for (let i = 1; i <= rowsWithIncomes.length; i++) {
+    for (let i = 1; i <= rowsWithIncomes.length - 1; i++) {
       if (
         rowsWithIncomes[i].children[1].textContent !=
         rowsWithIncomes[i - 1].children[1].textContent
@@ -84,7 +84,7 @@
       ),
     });
 
-    for (let i = 1; i <= rowsWithExpenses.length; i++) {
+    for (let i = 1; i <= rowsWithExpenses.length - 1; i++) {
       if (
         rowsWithExpenses[i].children[1].textContent !=
         rowsWithExpenses[i - 1].children[1].textContent
