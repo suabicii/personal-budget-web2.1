@@ -223,15 +223,52 @@ class Finances extends \Core\Model
         $expense_category = 'expense_category_assigned_to_user_id';
         $payment_method = 'payment_method_assigned_to_user_id';
 
-        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users 
+        $this->checkPaymentMethodsDeletion($user_id);
+
+        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users
         WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} 
-            AND payment_methods_assigned_to_users.id = expenses.{$payment_method} 
+            AND payment_methods_assigned_to_users.id = expenses.{$payment_method}
             AND expenses.user_id = {$user_id} 
             AND date_of_expense BETWEEN '{$startDate}' AND '{$endDate}'
         ORDER BY amount DESC");
         $query->execute();
 
         return $query->fetchAll();
+    }
+
+    /**
+     * Sprawdź, czy isnieją w bazie danych sposoby płatności z konkretnymi Id.
+     * Jeśli ich nie ma, wstaw rekordy o wartościach "Brak danych"
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * 
+     * @return void
+     */
+    private function checkPaymentMethodsDeletion($user_id)
+    {
+        $db = static::getDB();
+
+        $payment_method = 'payment_method_assigned_to_user_id';
+
+        $query = $db->prepare("SELECT expenses.{$payment_method} AS payment_id FROM expenses 
+        WHERE user_id = {$user_id} GROUP BY {$payment_method}");
+        $query->execute();
+
+        $paymentIds = $query->fetchAll();
+
+        foreach ($paymentIds as $paymentId) {
+            $query = $db->prepare("SELECT id FROM payment_methods_assigned_to_users
+            WHERE id = {$paymentId['payment_id']}");
+            $query->execute();
+
+            $existingId = $query->fetch();
+
+            if (empty($existingId)) {
+                $query = $db->prepare("INSERT INTO payment_methods_assigned_to_users 
+                VALUES ({$paymentId['payment_id']}, {$user_id}, 'Brak danych')");
+                $query->execute();
+            }
+        }
     }
 
     /**
