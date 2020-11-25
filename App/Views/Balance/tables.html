@@ -80,6 +80,54 @@
 <script>
   var particularView = true;
 </script>
+<script>
+  $(document).ready(function () {
+    $(".edit-income").submit(function (event) {
+      event.preventDefault();
+      $("#send-edit-income").off("submit");
+
+      var translatedName = event.target[0].defaultValue;
+      var originalName = event.target[1].defaultValue;
+      var date = event.target[2].defaultValue;
+      var amount = event.target[3].defaultValue;
+      var comment = event.target[4].defaultValue;
+
+      $("#income-category-edit").val(translatedName);
+      $("#income-date-edit").val(date);
+      $("#income-amount-edit").val(amount);
+      $("#income-comment-edit").val(comment);
+
+      $("#send-edit-income").submit(function (event) {
+        event.preventDefault();
+      });
+    });
+
+    $(".edit-expense").submit(function (event) {
+      event.preventDefault();
+
+      $("#send-edit-expense").off("submit");
+
+      var translatedName = event.target[0].defaultValue;
+      var originalName = event.target[1].defaultValue;
+      var paymentMethod = event.target[2].defaultValue;
+      var date = event.target[4].defaultValue;
+      var amount = event.target[5].defaultValue;
+      var comment = event.target[6].defaultValue;
+
+      console.log(event);
+
+      $("#expense-category-edit").val(translatedName);
+      $("#payment-method-edit").val(paymentMethod);
+      $("#expense-date-edit").val(date);
+      $("#expense-amount-edit").val(amount);
+      $("#expense-comment-edit").val(comment);
+
+      $("#send-edit-expense").submit(function (event) {
+        event.preventDefault();
+      });
+    });
+  });
+</script>
 <div class="row justify-content-between">
   <div class="col">
     <h3 class="text-center">Przychody</h3>
@@ -102,6 +150,55 @@
             <th scope="row">{{ i }}</th>
             <td class="income-category">
               {{ translated_categories[income.name] }}
+              <!-- Aktywator modalu do edycji/usuwania przychodu -->
+              <div class="edit-buttons float-right">
+                <form class="edit-income" method="post">
+                  <input
+                    type="hidden"
+                    value="{{ translated_categories[income.name] }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="original-name"
+                    value="{{ income.name }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="income-date"
+                    value="{{ income.date_of_income }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="income-amount"
+                    value="{{ income.amount }}"
+                  />
+                  <input
+                    type="hidden"
+                    name="income-comment"
+                    value="{{ income.income_comment }}"
+                  />
+                  <button
+                    type="submit"
+                    class="btn btn-warning"
+                    data-toggle="modal"
+                    data-target="#editIncomeModal"
+                    title="edytuj"
+                  >
+                    <i class="far fa-edit"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger delete-income"
+                    data-toggle="modal"
+                    data-target="#deleteModal"
+                    data-translated-name="{{ translated_categories[income.name] }}"
+                    data-original-name="{{ income.name }}"
+                    title="usuń"
+                  >
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </form>
+              </div>
             </td>
             <td>{{ income.date_of_income }}</td>
             <td class="{{ classesForJS[income.name] }}">{{ income.amount }}</td>
@@ -142,8 +239,67 @@
           <tr class="expense">
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
-            <td class="income-category">
+            <td class="expense-category">
               {{ translated_categories[expense.expense_category] }}
+              <!-- Aktywator modalu do edycji/usuwania wydatku -->
+              <div class="edit-buttons float-right">
+                <form class="edit-expense" method="post">
+                  <input
+                    type="hidden"
+                    value="{{ translated_categories[expense.expense_category] }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="original-name"
+                    value="{{ expense.expense_category }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="payment-translated"
+                    value="{{ translated_categories[expense.payment_method] }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="payment-original"
+                    value="{{ expense.payment_method }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="expense-date"
+                    value="{{ expense.date_of_expense }}"
+                  />
+                  <input
+                    type="hidden"
+                    class="expense-amount"
+                    value="{{ expense.amount }}"
+                  />
+                  <input
+                    type="hidden"
+                    name="expense-comment"
+                    value="{{ expense.expense_comment }}"
+                  />
+                  <button
+                    type="submit"
+                    class="btn btn-warning"
+                    data-toggle="modal"
+                    data-target="#editExpenseModal"
+                    title="edytuj"
+                  >
+                    <i class="far fa-edit"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-danger delete-expense"
+                    data-toggle="modal"
+                    data-target="#deleteModal"
+                    data-translated-name="{{ translated_categories[category.name] }}"
+                    data-original-name="{{ category.name }}"
+                    title="usuń"
+                  >
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </form>
+              </div>
             </td>
             <td class="payment-method">
               {{ translated_categories[expense.payment_method] }}
@@ -166,6 +322,218 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</div>
+<!-- Modal do edycji przychodu -->
+<div
+  class="modal fade"
+  id="editIncomeModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editIncomeModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edycja przychodu</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="balance/edit-income" method="post" id="send-edit-income">
+        <div class="modal-body">
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Kategoria</label>
+            <input type="hidden" name="old_name" id="old-name" value="" />
+            <input
+              type="text"
+              name="new_name"
+              id="income-category-edit"
+              class="form-control"
+              placeholder="Kategoria"
+              value=""
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="far fa-calendar-alt"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Data</label>
+            <input
+              type="date"
+              id="income-date-edit"
+              class="form-control"
+              value=""
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Kwota</label>
+            <input
+              type="number"
+              id="income-amount-edit"
+              class="form-control"
+              value=""
+              step="0.01"
+              placeholder="Kwota"
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <label class="sr-only" for="comment">Komentarz (opcjonalnie)</label>
+            <textarea
+              name="comment"
+              id="income-comment-edit"
+              rows="2"
+              class="form-control"
+              placeholder="Komentarz (opcjonalnie)"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Anuluj
+          </button>
+          <button type="submit" class="btn btn-some">
+            Edytuj <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal do edycji wydatku -->
+<div
+  class="modal fade"
+  id="editExpenseModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="editExpenseModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">Edycja wydatku</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="balance/edit-expense" method="post" id="send-edit-expense">
+        <div class="modal-body">
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Kategoria</label>
+            <input type="hidden" name="old_name" id="old-name" value="" />
+            <input
+              type="text"
+              name="new_name"
+              id="expense-category-edit"
+              class="form-control"
+              placeholder="Kategoria"
+              value=""
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-2">
+                <i class="far fa-credit-card"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="payment">Sposób płatności</label>
+            <select name="payment" id="payment" class="form-control">
+              <option selected disabled>Wybierz sposób płatności</option>
+              {% for method in payment_methods %}
+              <option value="{{ option_values[method.name] }}">
+                {{ translated_categories[method.name] }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="far fa-calendar-alt"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Data</label>
+            <input
+              type="date"
+              id="expense-date-edit"
+              class="form-control"
+              value=""
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="name">Kwota</label>
+            <input
+              type="number"
+              id="expense-amount-edit"
+              class="form-control"
+              value=""
+              step="0.01"
+              placeholder="Kwota"
+              required
+            />
+          </div>
+          <div class="input-group mr-2 mb-2">
+            <label class="sr-only" for="comment">Komentarz (opcjonalnie)</label>
+            <textarea
+              name="comment"
+              id="expense-comment-edit"
+              rows="2"
+              class="form-control"
+              placeholder="Komentarz (opcjonalnie)"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Anuluj
+          </button>
+          <button type="submit" class="btn btn-some">
+            Edytuj <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
