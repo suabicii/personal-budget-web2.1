@@ -566,11 +566,12 @@ class User extends \Core\Model
             }
         } else {
             if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
+                $password_hash = password_hash($newPassword, PASSWORD_DEFAULT);
                 $query = $db->prepare("INSERT INTO data_change (id, name, username, password, email, token_hash, expires_at) VALUES (
                     {$this->id},
                     '{$firstName}',
                     '{$username}',
-                    '{$newPassword}',
+                    '{$password_hash}',
                     '{$email}',
                     '{$hashed_token}',
                     '{$expiry_timestamp_formated}'
