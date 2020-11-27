@@ -6,6 +6,7 @@ use App\Models\Finances;
 use Core\View;
 use DateTime;
 use App\Categories;
+use App\Flash;
 
 /**
  * Kontroler do wyliczania bilansu
@@ -237,6 +238,62 @@ class Balance extends \Core\Controller
     public function autoloadAction()
     {
         View::renderTemplate("Balance/tables_autoload.html");
+    }
+
+    /**
+     * Edytuj pojedynczy przychód
+     * 
+     * @return void
+     */
+    public function editIncomeAction()
+    {
+        $income = new Finances;
+
+        if ($income->editSingleIncome($_SESSION['user_id'], $_POST['income_id'], $_POST['category'], $_POST['date'], $_POST['amount'], $_POST['comment'])) {
+            Flash::addMessage('Edycja przychodu zakończona pomyślnie');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Edycja przychodu nie powiodła się', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
+    }
+
+    /**
+     * Edytuj pojedynczy wydatek
+     * 
+     * @return void
+     */
+    public function editExpenseAction()
+    {
+        $expense = new Finances;
+
+        if ($expense->editSingleExpense($_SESSION['user_id'], $_POST['expense_id'], $_POST['category'], $_POST['payment_method'], $_POST['date'], $_POST['amount'], $_POST['comment'])) {
+            Flash::addMessage('Edycja wydatku zakończona pomyślnie');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Edycja wydatku nie powiodła się', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
     }
 
     /**

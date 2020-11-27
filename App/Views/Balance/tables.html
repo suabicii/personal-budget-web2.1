@@ -82,31 +82,56 @@
 </script>
 <script>
   $(document).ready(function () {
+    // Usuń alerty i komunikaty o błędach
+    function deleteMessages() {
+      setTimeout(function () {
+        $(".alert").remove();
+        $(".errors").remove();
+      }, 4000);
+    }
+
     $(".edit-income").submit(function (event) {
       event.preventDefault();
       $("#send-edit-income").off("submit");
 
-      var translatedName = event.target[0].defaultValue;
-      var originalName = event.target[1].defaultValue;
+      var category = event.target[1].defaultValue;
       var date = event.target[2].defaultValue;
       var amount = event.target[3].defaultValue;
       var comment = event.target[4].defaultValue;
-
-      var originalNameFormated = originalName.replace(" ", "-");
+      var incomeId = event.target[5].defaultValue;
 
       $("#income-category-edit")
         .children()
         .each(function () {
-          if ($(this).val() == originalNameFormated)
-            $(this).prop("selected", true);
+          if ($(this).val() == category) $(this).prop("selected", true);
         });
 
+      $("#income-id-edit").val(incomeId);
       $("#income-date-edit").val(date);
       $("#income-amount-edit").val(amount);
       $("#income-comment-edit").val(comment);
 
       $("#send-edit-income").submit(function (event) {
         event.preventDefault();
+
+        $("#editIncomeModal").modal("hide");
+
+        $.post("balance/edit-income", {
+          income_id: incomeId,
+          category: $("#income-category-edit").val(),
+          date: $("#income-date-edit").val(),
+          amount: $("#income-amount-edit").val(),
+          comment: $("#income-comment-edit").val(),
+        })
+          .done(function (data, status) {
+            $("#incomes-messages").html(data);
+            $("#send-edit-income").off("submit");
+            deleteMessages();
+            console.log(status);
+          })
+          .fail(function (status) {
+            console.log(status);
+          });
       });
     });
 
@@ -115,35 +140,51 @@
 
       $("#send-edit-expense").off("submit");
 
-      var translatedName = event.target[0].defaultValue;
-      var originalName = event.target[1].defaultValue;
-      var paymentMethod = event.target[2].defaultValue;
+      var category = event.target[1].defaultValue;
+      var paymentMethod = event.target[3].defaultValue;
       var date = event.target[4].defaultValue;
       var amount = event.target[5].defaultValue;
       var comment = event.target[6].defaultValue;
-
-      var originalNameFormated = originalName.replace(" ", "-");
-      var paymentMethodFormated = paymentMethod.replace(" ", "-");
+      var expenseId = event.target[7].defaultValue;
 
       $("#expense-category-edit")
         .children()
         .each(function () {
-          if ($(this).val() == originalNameFormated)
-            $(this).prop("selected", true);
+          if ($(this).val() == category) $(this).prop("selected", true);
         });
       $("#payment-method-edit")
         .children()
         .each(function () {
-          if ($(this).val() == paymentMethodFormated)
-            $(this).prop("selected", true);
+          if ($(this).val() == paymentMethod) $(this).prop("selected", true);
         });
 
+      $("#expense-id-edit").val(expenseId);
       $("#expense-date-edit").val(date);
       $("#expense-amount-edit").val(amount);
       $("#expense-comment-edit").val(comment);
 
       $("#send-edit-expense").submit(function (event) {
         event.preventDefault();
+
+        $("#editExpenseModal").modal("hide");
+
+        $.post("balance/edit-expense", {
+          expense_id: expenseId,
+          category: $("#expense-category-edit").val(),
+          payment_method: $("#payment-method-edit").val(),
+          date: $("#expense-date-edit").val(),
+          amount: $("#expense-amount-edit").val(),
+          comment: $("#expense-comment-edit").val(),
+        })
+          .done(function (data, status) {
+            $("#expenses-messages").html(data);
+            $("#send-edit-expense").off("submit");
+            deleteMessages();
+            console.log(status);
+          })
+          .fail(function (status) {
+            console.log(status);
+          });
       });
     });
   });
@@ -151,6 +192,7 @@
 <div class="row justify-content-between">
   <div class="col">
     <h3 class="text-center">Przychody</h3>
+    <div id="incomes-messages"></div>
     <div class="rwd-table">
       <table class="table table-bordered table-hover">
         <thead class="bg-success text-white">
@@ -197,6 +239,11 @@
                     name="income-comment"
                     value="{{ income.income_comment }}"
                   />
+                  <input
+                    type="hidden"
+                    name="income-id"
+                    value="{{ income.id }}"
+                  />
                   <button
                     type="submit"
                     class="btn btn-warning"
@@ -241,6 +288,7 @@
 <div class="row justify-content-between">
   <div class="col">
     <h3 class="text-center">Wydatki</h3>
+    <div id="epxenses-messages"></div>
     <div class="rwd-table">
       <table class="table table-bordered table-hover">
         <thead class="bg-warning text-white">
@@ -297,6 +345,11 @@
                     type="hidden"
                     name="expense-comment"
                     value="{{ expense.expense_comment }}"
+                  />
+                  <input
+                    type="hidden"
+                    name="expense-id"
+                    value="{{ expense.id }}"
                   />
                   <button
                     type="submit"
@@ -376,6 +429,7 @@
                 <i class="fas fa-money-check"></i>
               </div>
             </div>
+            <input type="hidden" name="income_id" id="income-id-edit" />
             <label class="sr-only" for="income-category-edit">Kategoria</label>
             <select
               name="category"
@@ -386,7 +440,7 @@
             >
               <option disabled>Wybierz kategorię</option>
               {% for category in income_categories %}
-              <option value="{{ option_values[category.name] }}">
+              <option value="{{ category.name }}">
                 {{ translated_categories_edit[category.name] }}
               </option>
               {% endfor %}
@@ -478,6 +532,7 @@
                 <i class="fas fa-money-check"></i>
               </div>
             </div>
+            <input type="hidden" name="expense_id" id="expense-id-edit" />
             <label class="sr-only" for="expense-category-edit">Kategoria</label>
             <select
               name="expense-category-edit"
@@ -487,7 +542,7 @@
             >
               <option disabled>Wybierz kategorię</option>
               {% for category in expense_categories %}
-              <option value="{{ option_values[category.name] }}">
+              <option value="{{ category.name }}">
                 {{ translated_categories_edit[category.name] }}
               </option>
               {% endfor %}
@@ -509,7 +564,7 @@
             >
               <option disabled>Wybierz sposób płatności</option>
               {% for method in payment_methods %}
-              <option value="{{ option_values[method.name] }}">
+              <option value="{{ method.name }}">
                 {{ translated_categories_edit[method.name] }}
               </option>
               {% endfor %}

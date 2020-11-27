@@ -2,9 +2,6 @@
 
 namespace App\Models;
 
-use PDO;
-use Core\View;
-
 class Finances extends \Core\Model
 {
     /**
@@ -199,7 +196,7 @@ class Finances extends \Core\Model
 
         $income_category = 'income_category_assigned_to_user_id';
 
-        $query =  $db->prepare("SELECT incomes.user_id, income_category_assigned_to_user_id, name, amount, date_of_income, income_comment FROM incomes, incomes_category_assigned_to_users WHERE incomes_category_assigned_to_users.id = incomes.{$income_category} 
+        $query =  $db->prepare("SELECT incomes.id, incomes.user_id, income_category_assigned_to_user_id, name, amount, date_of_income, income_comment FROM incomes, incomes_category_assigned_to_users WHERE incomes_category_assigned_to_users.id = incomes.{$income_category} 
             AND incomes.user_id = {$user_id} 
             AND date_of_income BETWEEN '{$startDate}' AND '{$endDate}' 
         ORDER BY amount DESC");
@@ -225,7 +222,7 @@ class Finances extends \Core\Model
 
         $this->checkPaymentMethodsDeletion($user_id);
 
-        $query =  $db->prepare("SELECT expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users
+        $query =  $db->prepare("SELECT expenses.id, expenses.user_id, {$expense_category}, expenses_category_assigned_to_users.name AS expense_category, payment_methods_assigned_to_users.name AS payment_method, amount, date_of_expense, expense_comment FROM expenses, expenses_category_assigned_to_users, payment_methods_assigned_to_users
         WHERE expenses_category_assigned_to_users.id = expenses.{$expense_category} 
             AND payment_methods_assigned_to_users.id = expenses.{$payment_method}
             AND expenses.user_id = {$user_id} 
@@ -386,6 +383,88 @@ class Finances extends \Core\Model
         $db = static::getDB();
 
         $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+
+        return $query->execute();
+    }
+
+    /** EDYCJA POJEDNYCZYCH PRYCHODÓW/WYDATKÓW */
+
+    /**
+     * Edytuj pojedynczy przychód
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param int $income_id  Id danego przychodu
+     * @param string $category  Kategoria przychodu
+     * @param string $date  Data otrzymania przychodu
+     * @param float $amount  Kwota
+     * @param string $comment  Komentarz
+     * 
+     * @return boolean  True, jeśli edycja się powiodła, false w przeciwnym wypadku
+     */
+    public function editSingleIncome($user_id, $income_id, $category, $date, $amount, $comment = "")
+    {
+        $db = static::getDB();
+
+        // Znajdź id kategorii powiązanej z zalogowanym użytkownikiem
+        $query = $db->prepare("SELECT id FROM incomes_category_assigned_to_users
+            WHERE user_id = {$user_id} AND name = '{$category}'
+        ");
+        $query->execute();
+
+        $categoryId = $query->fetch();
+
+        $query = $db->prepare("UPDATE incomes SET 
+            income_category_assigned_to_user_id = {$categoryId['id']},
+            amount = {$amount},
+            date_of_income = '{$date}',
+            income_comment = '{$comment}'
+            WHERE id = {$income_id}
+        ");
+
+        return $query->execute();
+    }
+
+    /**
+     * Edytuj pojedynczy wydatek
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param int $income_id  Id danego przychodu
+     * @param string $category  Kategoria przychodu
+     * @param string $payment_method  Sposób płatności
+     * @param string $date  Data wydania pieniędzy
+     * @param float $amount  Kwota
+     * @param string $comment  Komentarz
+     * 
+     * @return boolean  True, jeśli edycja się powiodła, false w przeciwnym wypadku
+     */
+    public function editSingleExpense($user_id, $expense_id, $category, $payment_method, $date, $amount, $comment = "")
+    {
+        $db = static::getDB();
+
+        // Znajdź id kategorii powiązanej z zalogowanym użytkownikiem
+        $query = $db->prepare("SELECT id FROM expenses_category_assigned_to_users
+            WHERE user_id = {$user_id} AND name = '{$category}'
+        ");
+        $query->execute();
+
+        $categoryId = $query->fetch();
+
+        // Znajdź id sposobu płatności powiązanego z zalogowanym użytkownikiem
+        $query = $db->prepare("SELECT id FROM payment_methods_assigned_to_users
+            WHERE user_id = {$user_id} AND name = '{$payment_method}'
+        ");
+        $query->execute();
+
+        $paymentId = $query->fetch();
+
+        $query = $db->prepare("UPDATE expenses SET 
+            expense_category_assigned_to_user_id = {$categoryId['id']},
+            payment_method_assigned_to_user_id = {$paymentId['id']},
+            amount = {$amount},
+            date_of_expense = '{$date}',
+            expense_comment = '{$comment}'
+            WHERE id = {$expense_id}
+        ");
 
         return $query->execute();
     }
