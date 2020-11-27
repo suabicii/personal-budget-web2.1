@@ -111,9 +111,26 @@ class Balance extends \Core\Controller
             $classesForJS[$expense['expense_category']] = preg_replace('/\s/', '-', $expense['expense_category']);
         }
 
+        // Pobierz wszystkie kategorie powiązane z zalogowanym użytkownikiem
+        // do formularzy edycji przychodów/wydatków
+        $incomeCategories = $finances->getIncomesCategories($_SESSION['user_id']);
+        $expenseCategories = $finances->getExpensesCategories($_SESSION['user_id']);
+        $paymentMethods = $finances->getPaymentMethods($_SESSION['user_id']);
+
+        $translatedCategoriesEditMode = [];
+        $optionValues = [];
+
+        $translatedCategoriesEditMode = array_merge(static::translateCategoriesForEditForm($incomeCategories), static::translateCategoriesForEditForm($expenseCategories), static::translateCategoriesForEditForm($paymentMethods));
+        $optionValues = array_merge(static::getValuesForSelectInputs($incomeCategories), static::getValuesForSelectInputs($expenseCategories), static::getValuesForSelectInputs($paymentMethods));
+
         View::renderTemplate("Balance/tables.html", [
             'translated_categories' => $translatedCategories,
-            'classesForJS' => $classesForJS
+            'translated_categories_edit' => $translatedCategoriesEditMode,
+            'option_values' => $optionValues,
+            'classesForJS' => $classesForJS,
+            'income_categories' => $incomeCategories,
+            'expense_categories' => $expenseCategories,
+            'payment_methods' => $paymentMethods
         ]);
     }
 
@@ -268,5 +285,44 @@ class Balance extends \Core\Controller
         } else {
             return $date->format('Y-m-d');
         }
+    }
+
+    /**
+     * Przetłumacz wszystkie dostępne (domyślne) kategorie lub sposoby płatności
+     * na język polski
+     * 
+     * @param array $categories  Kategorie powiązane z danym użytkownikiem
+     * pobrane z bazy danych (tablica asocjacyjna)
+     * 
+     * @return array  Tablica asocjacyjna z przetłumaczonymi kategoriami
+     */
+    private static function translateCategoriesForEditForm($categories)
+    {
+        $translatedCategories = [];
+
+        foreach ($categories as $category) {
+            $translatedCategories[$category['name']] = Categories::translateCategory($category['name']);
+        }
+
+        return $translatedCategories;
+    }
+
+    /**
+     * Przetwórz nazwy kategorii na odpowiedni format dla pól select w formularzach
+     * 
+     * @param array $categories  Kategorie powiązane z danym użytkownikiem
+     * pobrane z bazy danych (tablica asocjacyjna)
+     * 
+     * @return array  Tablica asocjacyjna ze sformatowanymi kategoriami
+     */
+    private static function getValuesForSelectInputs($categories)
+    {
+        $optionValues = [];
+
+        foreach ($categories as $category) {
+            $optionValues[$category['name']] = preg_replace('/\s/', '-', $category['name']);
+        }
+
+        return $optionValues;
     }
 }

@@ -92,7 +92,15 @@
       var amount = event.target[3].defaultValue;
       var comment = event.target[4].defaultValue;
 
-      $("#income-category-edit").val(translatedName);
+      var originalNameFormated = originalName.replace("/\s/", "-");
+
+      $("#income-category-edit")
+        .children()
+        .each(function () {
+          if ($(this).val() == originalNameFormated)
+            $(this).prop("selected", true);
+        });
+
       $("#income-date-edit").val(date);
       $("#income-amount-edit").val(amount);
       $("#income-comment-edit").val(comment);
@@ -114,10 +122,22 @@
       var amount = event.target[5].defaultValue;
       var comment = event.target[6].defaultValue;
 
-      console.log(event);
+      var originalNameFormated = originalName.replace(" ", "-");
+      var paymentMethodFormated = paymentMethod.replace(" ", "-");
 
-      $("#expense-category-edit").val(translatedName);
-      $("#payment-method-edit").val(paymentMethod);
+      $("#expense-category-edit")
+        .children()
+        .each(function () {
+          if ($(this).val() == originalNameFormated)
+            $(this).prop("selected", true);
+        });
+      $("#payment-method-edit")
+        .children()
+        .each(function () {
+          if ($(this).val() == paymentMethodFormated)
+            $(this).prop("selected", true);
+        });
+
       $("#expense-date-edit").val(date);
       $("#expense-amount-edit").val(amount);
       $("#expense-comment-edit").val(comment);
@@ -149,7 +169,7 @@
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="income-category">
-              {{ translated_categories[income.name] }}
+              <span>{{ translated_categories[income.name] }}</span>
               <!-- Aktywator modalu do edycji/usuwania przychodu -->
               <div class="edit-buttons float-right">
                 <form class="edit-income" method="post">
@@ -240,7 +260,7 @@
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="expense-category">
-              {{ translated_categories[expense.expense_category] }}
+              <span>{{ translated_categories[expense.expense_category] }}</span>
               <!-- Aktywator modalu do edycji/usuwania wydatku -->
               <div class="edit-buttons float-right">
                 <form class="edit-expense" method="post">
@@ -352,21 +372,25 @@
         <div class="modal-body">
           <div class="input-group mr-2 mb-2">
             <div class="input-group-prepend">
-              <div class="input-group-text">
-                <i class="fas fa-file-invoice-dollar"></i>
+              <div class="input-group-text pr-2">
+                <i class="fas fa-money-check"></i>
               </div>
             </div>
-            <label class="sr-only" for="name">Kategoria</label>
-            <input type="hidden" name="old_name" id="old-name" value="" />
-            <input
-              type="text"
-              name="new_name"
+            <label class="sr-only" for="income-category-edit">Kategoria</label>
+            <select
+              name="category"
               id="income-category-edit"
               class="form-control"
-              placeholder="Kategoria"
-              value=""
+              aria-placeholder="Wybierz kategorię"
               required
-            />
+            >
+              <option disabled>Wybierz kategorię</option>
+              {% for category in income_categories %}
+              <option value="{{ option_values[category.name] }}">
+                {{ translated_categories_edit[category.name] }}
+              </option>
+              {% endfor %}
+            </select>
           </div>
           <div class="input-group mr-2 mb-2">
             <div class="input-group-prepend">
@@ -450,21 +474,24 @@
         <div class="modal-body">
           <div class="input-group mr-2 mb-2">
             <div class="input-group-prepend">
-              <div class="input-group-text">
-                <i class="fas fa-file-invoice-dollar"></i>
+              <div class="input-group-text pr-2">
+                <i class="fas fa-money-check"></i>
               </div>
             </div>
-            <label class="sr-only" for="name">Kategoria</label>
-            <input type="hidden" name="old_name" id="old-name" value="" />
-            <input
-              type="text"
-              name="new_name"
+            <label class="sr-only" for="expense-category-edit">Kategoria</label>
+            <select
+              name="expense-category-edit"
               id="expense-category-edit"
               class="form-control"
-              placeholder="Kategoria"
-              value=""
               required
-            />
+            >
+              <option disabled>Wybierz kategorię</option>
+              {% for category in expense_categories %}
+              <option value="{{ option_values[category.name] }}">
+                {{ translated_categories_edit[category.name] }}
+              </option>
+              {% endfor %}
+            </select>
           </div>
           <div class="input-group mr-2 mb-2">
             <div class="input-group-prepend">
@@ -472,12 +499,18 @@
                 <i class="far fa-credit-card"></i>
               </div>
             </div>
-            <label class="sr-only" for="payment">Sposób płatności</label>
-            <select name="payment" id="payment" class="form-control">
-              <option selected disabled>Wybierz sposób płatności</option>
+            <label class="sr-only" for="payment-method-edit"
+              >Sposób płatności</label
+            >
+            <select
+              name="payment"
+              id="payment-method-edit"
+              class="form-control"
+            >
+              <option disabled>Wybierz sposób płatności</option>
               {% for method in payment_methods %}
               <option value="{{ option_values[method.name] }}">
-                {{ translated_categories[method.name] }}
+                {{ translated_categories_edit[method.name] }}
               </option>
               {% endfor %}
             </select>
