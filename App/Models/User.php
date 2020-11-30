@@ -6,6 +6,7 @@ use PDO;
 use App\Token;
 use Core\View;
 use App\Mail;
+use DateTime;
 
 class User extends \Core\Model
 {
@@ -507,5 +508,254 @@ class User extends \Core\Model
         ');
         $query->bindValue(':hashed_token', $hashed_token, PDO::PARAM_STR);
         $query->execute();
+    }
+
+    /**
+     * Dodaj tymczasowo nowe dane użytkownika do odzielnej tabeli.
+     * Dane te zostaną później przeniesione do tabeli "users" po uprzednim
+     * potwierdzeniu przez użytkownika
+     * 
+     * @param string $username  Login użytkownika
+     * @param string $email  Wiadomo
+     * @param string $firstName  Imię użytkownika
+     * @param string $oldPassword  Aktualne hasło
+     * @param string $newPassword  Nowe hasło
+     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * 
+     * @return boolean  True, jeśli pomyślnie zapisano dane do tabeli,
+     * w przeciwnym przypadku - false
+     */
+    public function saveNewDataTemporarily($username, $email, $firstName, $oldPassword, $newPassword, $newPasswordConfirmation)
+    {
+        $this->deleteTemporaryData($this->id);
+
+        $token = new Token();
+        $hashed_token = $token->getHash();
+        $this->data_edit_token = $token->getValue();
+
+        $db = static::getDB();
+
+        if ($username == "") $username = $this->username;
+
+        if ($email == "") $email = $this->email;
+
+        if ($firstName == "") $firstName = $this->name;
+
+        $expiry_timestamp = new DateTime();
+        $expiry_timestamp->modify('+1 hour');
+        $expiry_timestamp_formated = $expiry_timestamp->format('Y-m-d H:i:s');
+
+        if ($oldPassword == "") {
+            if ($this->validateInEditMode($username, $email)) {
+                $query = $db->prepare("INSERT INTO data_change (id, name, username, email, token_hash, expires_at) VALUES (
+                    {$this->id},
+                    '{$firstName}',
+                    '{$username}',
+                    '{$email}',
+                    '{$hashed_token}',
+                    '{$expiry_timestamp_formated}'
+                    )
+                ");
+
+                $query->execute();
+                $this->sendEditConfirmation();
+
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if ($this->validateInEditMode($username, $email, $oldPassword, $newPassword, $newPasswordConfirmation)) {
+                $password_hash = password_hash($newPassword, PASSWORD_DEFAULT);
+                $query = $db->prepare("INSERT INTO data_change (id, name, username, password, email, token_hash, expires_at) VALUES (
+                    {$this->id},
+                    '{$firstName}',
+                    '{$username}',
+                    '{$password_hash}',
+                    '{$email}',
+                    '{$hashed_token}',
+                    '{$expiry_timestamp_formated}'
+                    )
+                ");
+
+                $query->execute();
+                $this->sendEditConfirmation();
+
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Usuń dane z tabeli "data_change", jeśli znaleziono dany rekord
+     * 
+     * @param int $user_id  Id danego użytkownika
+     * 
+     * @return void
+     */
+    private function deleteTemporaryData($user_id)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("DELETE FROM data_change WHERE id = {$user_id}");
+
+        $query->execute();
+    }
+
+    /**
+     * Znajdź rekord z tymczasowymi danymi do zmiany danych użytkownika
+     * i sprawdź czy wygasł token
+     * 
+     * @param int $user_id  Id użytkownika
+     * 
+     * @return mixed  Obiekt z danymi, które użytkownik chce zmienić, jeśli
+     * dany rekord znaleziono i token nie wygasł - w przeciwnym wypadku - null
+     */
+    public static function findByEditData($token)
+    {
+        $db = static::getDB();
+
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = '{$hashed_token}'");
+
+        $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $query->execute();
+
+        $user = $query->fetch();
+
+        if ($user) {
+            // Sprawdź czy token nie wygasł
+            $now = new DateTime();
+            if ($user->expires_at > $now->format('Y-m-d H:i:s')) {
+                return $user;
+            }
+        }
+    }
+
+    /**
+     * Wyślij e-maila do użytkownika z linkiem do potwierdzenia edycji swoich danych
+     * 
+     * @return void
+     */
+    public function sendEditConfirmation()
+    {
+        $user = static::findByEditData($this->data_edit_token);
+
+        if ($user) {
+            $this->sendEditConfirmationEmail($user);
+        }
+    }
+
+    /**
+     * Wyślij maila do użytkownika, aby potwierdził edycję swoich danych
+     * 
+     * @param Object $user  Obiekt user powiązany z danymi tymczasowymi z tabeli data_change
+     * 
+     * @return void
+     */
+    public function sendEditConfirmationEmail($user)
+    {
+        $url = 'http://' . $_SERVER['HTTP_HOST'] . '/settings/confirm/' . $this->data_edit_token;
+
+        // Treść wiadomości - zwykły tekst i HTML
+        $text = View::getTemplate('Settings/edit_data_email.txt', [
+            'url' => $url,
+            'username' => $user->username,
+            'name' => $user->name,
+            'email' => $user->email
+        ]);
+        $html = View::getTemplate('Settings/edit_data_email.html', [
+            'url' => $url,
+            'username' => $user->username,
+            'name' => $user->name,
+            'email' => $user->email
+        ]);
+
+        Mail::send($this->email, 'Potwierdz zmiane danych na Personal Budget Manager by Michael Slabikovsky', $text, $html);
+    }
+
+    /**
+     * Zmień dane użytkownika
+     * 
+     * @param string $token  Token do potwierdzenia edycji danych
+     * 
+     * @return boolean  True, jeśli zmiana się powiodła, w przeciwnym przypadku - false
+     */
+    public function changeUserData($token)
+    {
+        $db = static::getDB();
+
+        $token = new Token($token);
+        $hashed_token = $token->getHash();
+
+        $query = $db->prepare("SELECT * FROM data_change WHERE token_hash = '{$hashed_token}'");
+
+        $query->setFetchMode(PDO::FETCH_CLASS, get_called_class());
+
+        $query->execute();
+
+        $user = $query->fetch();
+
+        if ($user) {
+            if ($user->password == "") {
+                $query = $db->prepare("UPDATE users SET
+                name = '{$user->name}',
+                username = '{$user->username}',
+                email = '{$user->email}' 
+                WHERE id = {$user->id}
+            ");
+
+                return $query->execute();
+            } else {
+                $query = $db->prepare("UPDATE users SET
+                name = '{$user->name}',
+                username = '{$user->username}',
+                password = '{$user->password}',
+                email = '{$user->email}' 
+                WHERE id = {$user->id}
+            ");
+
+                return $query->execute();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Sprawdź poprawność wprowadzonych danych podczas edycji
+     * 
+     * @param string $username  Login użytkownika
+     * @param string $email  Wiadomo
+     * @param string $firstName  Imię użytkownika
+     * @param string $oldPassword  Aktualne hasło
+     * @param string $newPassword  Nowe hasło
+     * @param string $newPasswordConfirmation  Potwierdzenie nowego hasła
+     * 
+     * @return boolean  True, jeśli dane są prawidłowe, w przeciwnym wypadku - false
+     */
+    private function validateInEditMode($username, $email, $oldPassword = "", $newPassword = "", $newPasswordConfirmation = "")
+    {
+        if (static::usernameExists($username, $this->id)) $this->errors[] = "Podany login już istnieje w bazie danych";
+
+        if (static::emailExists($email, $this->id)) $this->errors[] = "Podany adres e-mail już istnieje w bazie danych";
+
+        if ($oldPassword != "" && $newPassword != "" && $newPasswordConfirmation != "") {
+            if (!password_verify($oldPassword, $this->password)) {
+                $this->errors[] = "Nieprawidłowe hasło";
+            } else {
+                if ($newPassword != $newPasswordConfirmation) {
+                    $this->errors[] = "Nowe hasła w obu polach muszą być takie same";
+                }
+            }
+        }
+
+        if (empty($this->errors)) return true;
+        else return false;
     }
 }

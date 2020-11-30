@@ -1,0 +1,14 @@
+{% extends 'base.html' %} {% block title %}Potwierdzenie zmiany danych
+użytkownika{% endblock %} {% block body %}
+<div
+  class="container-custom border rounded bg-white text-center py-2 mt-2 px-2"
+>
+  <h3>Kliknij na poniższy przycisk, aby potwierdzić zmianę danych</h3>
+  <form action="confirm-edit" method="post">
+    <input type="hidden" name="token" value="{{ token }}" />
+    <button class="btn btn-some" type="submit">
+      Potwierdzam <i class="far fa-thumbs-up"></i>
+    </button>
+  </form>
+</div>
+{% endblock %}

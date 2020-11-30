@@ -1,0 +1,58 @@
+<table class="table table-hover table-bordered">
+  <thead class="table-primary">
+    <tr>
+      <th scope="col" class="first-col">#</th>
+      <th scope="col" class="text-center">Kategoria</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% set i = 1 %} {% for method in session.payment_methods %}
+    <tr>
+      <th scope="row">{{ i }}</th>
+      <td>
+        {{ translated_categories[method.name] }}
+        <div class="edit-buttons float-right">
+          <form action="" class="edit-payment">
+            <input
+              type="hidden"
+              value="{{ translated_categories[method.name] }}"
+            />
+            <input
+              type="hidden"
+              class="original-name"
+              value="{{ method.name }}"
+            />
+            <button
+              type="submit"
+              class="btn btn-warning"
+              data-toggle="modal"
+              data-target="#editModal"
+              title="edytuj"
+            >
+              <i class="far fa-edit"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger delete-payment"
+              data-toggle="modal"
+              data-target="#deleteModal"
+              data-translated-name="{{ translated_categories[method.name] }}"
+              data-original-name="{{ method.name }}"
+              title="usuń"
+            >
+              <i class="far fa-trash-alt"></i>
+            </button>
+          </form>
+        </div>
+      </td>
+    </tr>
+    {% set i = i + 1 %} {% endfor %}
+  </tbody>
+</table>
+<button
+  class="btn btn-success btn-block add-payment"
+  data-toggle="modal"
+  data-target="#addModal"
+>
+  Dodaj <i class="fas fa-plus"></i>
+</button>
