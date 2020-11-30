@@ -297,6 +297,40 @@ class Balance extends \Core\Controller
     }
 
     /**
+     * Usuń pojedynczy przychód/wydatek
+     * 
+     * @return void
+     */
+    public function deleteAction()
+    {
+        $finances = new Finances;
+
+        if ($finances->deleteIncomeOrExpense($_POST['id_to_delete'], $_POST['table_name'])) {
+            if ($_POST['what_messages'] == "incomes") $whatIsRemoved = "przychód";
+            else $whatIsRemoved = "wydatek";
+
+            Flash::addMessage('Pomyślnie usunięto ' . $whatIsRemoved);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            if ($_POST['what_messages'] == "incomes") $whatIsRemoved = "przychodu";
+            else $whatIsRemoved = "wydatku";
+
+            Flash::addMessage('Nie udało się usunąć ' . $whatIsRemoved, Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
+    }
+
+    /**
      * Przekieruj na stronę z bilansem
      * 
      * @return void

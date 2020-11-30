@@ -97,6 +97,32 @@
       });
     }
 
+    // Usuń przychód/wydatek
+    function deleteIncomeOrExpense(idToDelete, tableName, whatMessages) {
+      $("#send-delete").off("submit");
+      $("#send-delete").submit(function (event) {
+        event.preventDefault();
+
+        $("#deleteModal").modal("hide");
+
+        $.post("balance/delete", {
+          id_to_delete: idToDelete,
+          table_name: tableName,
+          what_messages: whatMessages,
+        })
+          .done(function (data, status) {
+            reloadTables();
+            $("#" + whatMessages + "-messages").html(data);
+            deleteMessages();
+            $("#send-delete").off("submit");
+          })
+          .fail(function (status) {
+            console.log(status);
+          });
+      });
+    }
+
+    // Edytuj/usuń pojedynczy przychód
     $(".edit-income").submit(function (event) {
       event.preventDefault();
       $("#send-edit-income").off("submit");
@@ -141,7 +167,12 @@
           });
       });
     });
+    $(".delete-income").click(function (event) {
+      var idToDelete = event.currentTarget.parentElement[5].defaultValue;
+      deleteIncomeOrExpense(idToDelete, "incomes", "incomes");
+    });
 
+    // Edytuj/usuń wydatek
     $(".edit-expense").submit(function (event) {
       event.preventDefault();
 
@@ -194,6 +225,10 @@
             console.log(status);
           });
       });
+    });
+    $(".delete-expense").click(function (event) {
+      var idToDelete = event.currentTarget.parentElement[7].defaultValue;
+      deleteIncomeOrExpense(idToDelete, "expenses", "expenses");
     });
   });
 </script>
@@ -625,6 +660,50 @@
           </button>
           <button type="submit" class="btn btn-some">
             Edytuj <i class="fas fa-exchange-alt"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal do usuwania przychodów/wydatków -->
+<div
+  class="modal fade"
+  id="deleteModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="deleteModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">
+          Usuwanie przychodu/wydatku
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="balance/delete" method="post" id="send-delete">
+        <input type="hidden" name="id" id="id-to-delete" />
+        <div class="modal-body">
+          <p class="text-center">
+            Czy na pewno chcesz usunąć dany przychód/wydatek?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">
+            Tak <i class="far fa-trash-alt"></i>
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Nie
           </button>
         </div>
       </form>

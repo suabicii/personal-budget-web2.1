@@ -468,4 +468,24 @@ class Finances extends \Core\Model
 
         return $query->execute();
     }
+
+    /** USUWANIE POJEDYNCZYCH PRZYCHODÓW/WYDATKÓW */
+
+    /**
+     * Usuń pojedynczy przychód/wydatek
+     * 
+     * @param int $idToDelete  Id przychodu lub wydatku
+     * @param string $tableName  Nazwa tabeli, w której znajduje się dany przychód/wydatek
+     * 
+     * @return boolean  True, jeśli usuwanie zakończyło się pomyślnie, false w przeciwnym
+     * wypadku
+     */
+    public function deleteIncomeOrExpense($idToDelete, $tableName)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("DELETE FROM {$tableName} WHERE id = {$idToDelete}");
+
+        return $query->execute();
+    }
 }
