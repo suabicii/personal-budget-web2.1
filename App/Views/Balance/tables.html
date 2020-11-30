@@ -90,6 +90,13 @@
       }, 4000);
     }
 
+    // Przeładuj tabele po edycji pojedynczego przychodu/wydatku
+    function reloadTables() {
+      $.get("balance/autoload", function (data, status) {
+        $("#autoloadTables").html(data);
+      });
+    }
+
     $(".edit-income").submit(function (event) {
       event.preventDefault();
       $("#send-edit-income").off("submit");
@@ -124,10 +131,10 @@
           comment: $("#income-comment-edit").val(),
         })
           .done(function (data, status) {
+            reloadTables();
             $("#incomes-messages").html(data);
-            $("#send-edit-income").off("submit");
             deleteMessages();
-            console.log(status);
+            $("#send-edit-income").off("submit");
           })
           .fail(function (status) {
             console.log(status);
@@ -177,6 +184,7 @@
           comment: $("#expense-comment-edit").val(),
         })
           .done(function (data, status) {
+            reloadTables();
             $("#expenses-messages").html(data);
             $("#send-edit-expense").off("submit");
             deleteMessages();
@@ -192,7 +200,6 @@
 <div class="row justify-content-between">
   <div class="col">
     <h3 class="text-center">Przychody</h3>
-    <div id="incomes-messages"></div>
     <div class="rwd-table">
       <table class="table table-bordered table-hover">
         <thead class="bg-success text-white">
@@ -288,7 +295,6 @@
 <div class="row justify-content-between">
   <div class="col">
     <h3 class="text-center">Wydatki</h3>
-    <div id="epxenses-messages"></div>
     <div class="rwd-table">
       <table class="table table-bordered table-hover">
         <thead class="bg-warning text-white">
