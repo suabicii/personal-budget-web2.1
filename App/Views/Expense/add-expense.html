@@ -3,6 +3,28 @@
 {% endblock %} {% block title %}Dodawanie wydatku{% endblock %} {% block
 subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
 %}{% block main %}
+<script>
+  $(document).ready(function () {
+    $("#add-limit").submit(function (event) {
+      event.preventDefault();
+
+      $("#limitModal").modal("hide");
+
+      $.post("expense/limit", {
+        category_limit: $("#category-limit").val(),
+        amount_limit: $("#amount-limit").val(),
+      })
+        .done(function (data, status) {
+          $("#messages").html(data);
+          $("#add-limit").off("submit");
+          console.log(status);
+        })
+        .fail(function (status) {
+          console.log(status);
+        });
+    });
+  });
+</script>
 <main>
   <section class="adding-expenses">
     <div class="container-custom border rounded bg-white mt-2 py-2">
@@ -134,7 +156,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="income/limit" method="post" id="add-limit">
+      <form action="expense/limit" method="post" id="add-limit">
         <div class="modal-body">
           <div class="input-group mt-2">
             <div class="input-group-prepend">
@@ -142,8 +164,13 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
                 <i class="fas fa-money-check"></i>
               </div>
             </div>
-            <label class="sr-only" for="category">Kategoria</label>
-            <select name="category" id="category" class="form-control" required>
+            <label class="sr-only" for="category-limit">Kategoria</label>
+            <select
+              name="category_limit"
+              id="category-limit"
+              class="form-control"
+              required
+            >
               <option selected disabled>Wybierz kategorię</option>
               {% for category in expense_categories %}
               <option value="{{ category.name }}">
@@ -161,8 +188,8 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
             <label class="sr-only" for="amount">Kwota limitu</label>
             <input
               type="number"
-              name="amount"
-              id="amount"
+              name="amount_limit"
+              id="amount-limit"
               class="form-control"
               placeholder="Kwota limitu"
               step="0.01"

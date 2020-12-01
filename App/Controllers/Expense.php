@@ -77,4 +77,32 @@ class Expense extends \Core\Controller
             }
         }
     }
+
+    /**
+     * Dodaj limit w danej kategorii
+     * 
+     * @return void
+     */
+    public function limitAction()
+    {
+        $expense =  new Finances;
+
+        if ($expense->setExpenseLimit($_SESSION['user_id'], $_POST['category_limit'], $_POST['amount_limit'])) {
+            Flash::addMessage('Pomyślnie ustawiono limit dla danej kategorii');
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        } else {
+            Flash::addMessage('Nie udało się ustawić limitu dla danej kategorii', Flash::WARNING);
+
+            $messages = Flash::getMessages();
+
+            foreach ($messages as $message) {
+                echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
+            }
+        }
+    }
 }
