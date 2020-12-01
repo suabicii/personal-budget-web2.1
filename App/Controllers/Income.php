@@ -36,13 +36,11 @@ class Income extends \Core\Controller
 
         foreach ($incomeCategories as $category) {
             $translatedCategories[$category['name']] = Categories::translateCategory($category['name']);
-            $optionValues[$category['name']] = preg_replace('/\s/', '-', $category['name']);
         }
 
         View::renderTemplate('Income/add-income.html', [
             'income_categories' => $incomeCategories,
             'translated_categories' => $translatedCategories,
-            'option_values' => $optionValues
         ]);
     }
 

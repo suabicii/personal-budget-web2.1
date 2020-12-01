@@ -42,7 +42,7 @@ subtitle %}Dodaj przychód{% endblock %}{% block secondOption %}active{% endbloc
             >
               <option selected disabled>Wybierz kategorię</option>
               {% for category in income_categories %}
-              <option value="{{ option_values[category.name] }}">
+              <option value="{{ category.name }}">
                 {{ translated_categories[category.name] }}
               </option>
               {% endfor %}

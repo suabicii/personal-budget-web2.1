@@ -19,7 +19,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
             <select name="payment" id="payment" class="form-control">
               <option selected disabled>Wybierz sposób płatności</option>
               {% for method in payment_methods %}
-              <option value="{{ option_values[method.name] }}">
+              <option value="{{ method.name }}">
                 {{ translated_categories[method.name] }}
               </option>
               {% endfor %}
@@ -52,7 +52,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
             <select name="category" id="category" class="form-control" required>
               <option selected disabled>Wybierz kategorię</option>
               {% for category in expense_categories %}
-              <option value="{{ option_values[category.name] }}">
+              <option value="{{ category.name }}">
                 {{ translated_categories[category.name] }}
               </option>
               {% endfor %}

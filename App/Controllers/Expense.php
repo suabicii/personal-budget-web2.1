@@ -37,19 +37,16 @@ class Expense extends \Core\Controller
 
         foreach ($expenseCategories as $category) {
             $translatedCategories[$category['name']] = Categories::translateCategory($category['name']);
-            $optionValues[$category['name']] = preg_replace('/\s/', '-', $category['name']);
         }
 
         foreach ($paymentMethods as $method) {
             $translatedCategories[$method['name']] = Categories::translateCategory($method['name']);
-            $optionValues[$method['name']] = preg_replace('/\s/', '-', $method['name']);
         }
 
         View::renderTemplate('Expense/add-expense.html', [
             'expense_categories' => $expenseCategories,
             'translated_categories' => $translatedCategories,
             'payment_methods' => $paymentMethods,
-            'option_values' => $optionValues
         ]);
     }
 
