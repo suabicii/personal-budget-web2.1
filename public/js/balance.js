@@ -6,6 +6,16 @@
   let sumOfIncomes = document.getElementById("incomes");
   let sumOfExpenses = document.getElementById("expenses");
 
+  // Domyślna data końca okresu w formularzu wyboru niestandardowych dat
+  let date = new Date();
+  let month =
+    date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth() + 1;
+  let day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+
+  document
+    .getElementById("end-date")
+    .setAttribute("value", date.getFullYear() + "-" + month + "-" + day);
+
   /** Zapisywanie do tablic przychodów i wydatków */
 
   let rowsWithIncomes = document.querySelectorAll(".income");
