@@ -84,6 +84,15 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
             ></textarea>
           </div>
           <button type="submit" class="btn btn-some">Dodaj</button>
+          <button
+            type="button"
+            class="btn btn-warning"
+            data-toggle="modal"
+            data-target="#limitModal"
+            title="Dodanie limitu do wybranej kategorii pozwoli Ci lepiej zaplanować wydatki. Za każdym razem, gdy spróbujesz dodać wydatek przekraczający dany limit, program wyświetli Ci ostrzeżenie, a Ty zastanowisz się przynajmniej dwa razy zanim wydasz tyle pieniędzy :)"
+          >
+            Ustal limit <i class="far fa-stop-circle"></i>
+          </button>
           <a href="/home" class="btn btn-danger">Anuluj</a>
         </form>
         {% if errors is not empty %}
@@ -100,4 +109,77 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
     </div>
   </section>
 </main>
+<!-- Modal do ustawiania limitów -->
+<div
+  class="modal fade"
+  id="limitModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="limitModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">
+          Ustal limit w danej kategorii
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="income/limit" method="post" id="add-limit">
+        <div class="modal-body">
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-2">
+                <i class="fas fa-money-check"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="category">Kategoria</label>
+            <select name="category" id="category" class="form-control" required>
+              <option selected disabled>Wybierz kategorię</option>
+              {% for category in expense_categories %}
+              <option value="{{ category.name }}">
+                {{ translated_categories[category.name] }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="input-group mt-2">
+            <div class="input-group-prepend">
+              <div class="input-group-text pr-3">
+                <i class="fas fa-dollar-sign"></i>
+              </div>
+            </div>
+            <label class="sr-only" for="amount">Kwota limitu</label>
+            <input
+              type="number"
+              name="amount"
+              id="amount"
+              class="form-control"
+              placeholder="Kwota limitu"
+              step="0.01"
+              required
+            />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Anuluj
+          </button>
+          <button type="submit" class="btn btn-warning">
+            Dodaj limit <i class="far fa-stop-circle"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}
