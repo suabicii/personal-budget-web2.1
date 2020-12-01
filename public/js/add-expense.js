@@ -1,4 +1,12 @@
 $(document).ready(function () {
+  // Domyślna data w formularzu - dzisiejsza
+  var date = new Date();
+  var month =
+    date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth() + 1;
+  var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+
+  $("#date").val(date.getFullYear() + "-" + month + "-" + day);
+
   $("form").submit(function (event) {
     event.preventDefault();
     var payment = $("#payment").val();
