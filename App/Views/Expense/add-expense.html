@@ -5,6 +5,13 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
 %}{% block main %}
 <script>
   $(document).ready(function () {
+    function deleteMessages() {
+      setTimeout(function () {
+        $(".alert").remove();
+        $(".errors").remove();
+      }, 4000);
+    }
+
     $("#add-limit").submit(function (event) {
       event.preventDefault();
 
@@ -16,6 +23,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
       })
         .done(function (data, status) {
           $("#messages").html(data);
+          deleteMessages();
           $("#add-limit").off("submit");
           console.log(status);
         })
@@ -30,7 +38,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
     <div class="container-custom border rounded bg-white mt-2 py-2">
       <div id="messages"></div>
       <div class="row justify-content-center">
-        <form action="expense/add" method="post">
+        <form action="expense/add" method="post" id="add-expense">
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text pr-2">

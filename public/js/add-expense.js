@@ -7,7 +7,15 @@ $(document).ready(function () {
 
   $("#date").val(date.getFullYear() + "-" + month + "-" + day);
 
-  $("form").submit(function (event) {
+  // Usuń alerty i komunikaty o błędach
+  function deleteMessages() {
+    setTimeout(function () {
+      $(".alert").remove();
+      $(".errors").remove();
+    }, 4000);
+  }
+
+  $("#add-expense").submit(function (event) {
     event.preventDefault();
     var payment = $("#payment").val();
     var amount = $("#amount").val();
@@ -24,10 +32,7 @@ $(document).ready(function () {
     })
       .done(function (data, status) {
         $("#messages").html(data);
-        setTimeout(function () {
-          $(".alert").remove();
-          $(".errors").remove();
-        }, 4000);
+        deleteMessages();
         console.log(status);
       })
       .fail(function (status) {
