@@ -15,14 +15,16 @@ $(document).ready(function () {
     }, 4000);
   }
 
-  $("#add-expense").submit(function (event) {
-    event.preventDefault();
-    var payment = $("#payment").val();
-    var amount = $("#amount").val();
-    var category = $("#category").val();
-    var date = $("#date").val();
-    var comment = $("#comment").val();
-
+  /** Zapisz wydatek w bazie danych
+   * @param string payment  Sposób płatności
+   * @param float amount  Kwota
+   * @param string category  Kategoria wydatku
+   * @param string date  Data wydania pieniędzy
+   * @param comment string  Komentarz
+   *
+   * @return void
+   */
+  function saveExpenseInDatabase(payment, amount, category, date, comment) {
     $.post("expense/add", {
       payment: payment,
       amount: amount,
@@ -34,10 +36,33 @@ $(document).ready(function () {
         $("#messages").html(data);
         deleteMessages();
         console.log(status);
+        $("#payment, #amount, #category, #date, #comment").val(null);
       })
       .fail(function (status) {
         console.log(status);
       });
-    $("#payment, #amount, #category, #date, #comment").val(null);
+  }
+
+  $("#add-expense").submit(function (event) {
+    event.preventDefault();
+    var payment = $("#payment").val();
+    var amount = $("#amount").val();
+    var category = $("#category").val();
+    var date = $("#date").val();
+    var comment = $("#comment").val();
+
+    // Sprawdź, czy dany wydatek przekracza wyznaczony limit
+    if ($("#amount-limit-fetched").length) {
+      $("#amount-limit-warning").html($("#amount-limit-fetched").text());
+      $("#warningModal").modal("show");
+
+      $("#add-expense-over-limit").submit(function (event) {
+        event.preventDefault();
+        saveExpenseInDatabase(payment, amount, category, date, comment);
+        $("#warningModal").modal("hide");
+      });
+    } else {
+      saveExpenseInDatabase(payment, amount, category, date, comment);
+    }
   });
 });

@@ -518,4 +518,26 @@ class Finances extends \Core\Model
 
         return $query->execute();
     }
+
+    /**
+     * Pobierz, jeśli istnieje, kwotę limitu
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param string $category  Nazwa kategorii
+     * 
+     * @return mixed  Kwota limitu lub null, jeśli limit nie został ustalony
+     */
+    public function getExpenseLimit($user_id, $category)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("SELECT limitation FROM expenses_category_assigned_to_users
+            WHERE user_id = {$user_id} AND name = '{$category}'
+        ");
+        $query->execute();
+
+        $row = $query->fetch();
+
+        return $row['limitation'];
+    }
 }

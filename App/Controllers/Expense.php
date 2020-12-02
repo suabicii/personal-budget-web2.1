@@ -83,7 +83,7 @@ class Expense extends \Core\Controller
      * 
      * @return void
      */
-    public function limitAction()
+    public function setLimitAction()
     {
         $expense =  new Finances;
 
@@ -103,6 +103,24 @@ class Expense extends \Core\Controller
             foreach ($messages as $message) {
                 echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
             }
+        }
+    }
+
+    /**
+     * Pobierz, jeśli istnieje, kwotę limitu w danej kategorii
+     * 
+     * @return void
+     */
+    public function getLimitAction()
+    {
+        $expense = new Finances;
+
+        $limit = $expense->getExpenseLimit($_SESSION['user_id'], $_GET['category']);
+
+        if ($limit != null) {
+            echo "<small>Limit: <strong class='text-danger' id='amount-limit-fetched'>{$limit}</strong></small>";
+        } else {
+            echo "";
         }
     }
 }

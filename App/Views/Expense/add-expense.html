@@ -12,19 +12,31 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
       }, 4000);
     }
 
+    // Sprawdź, czy na daną kategorię jest przypisany limit
+    $("#category").change(function () {
+      $.get("expense/get-limit", {
+        category: $("#category option:selected").val(),
+      })
+        .done(function (data, status) {
+          $("#limitation").html(data);
+        })
+        .fail(function (status) {
+          console.log(status);
+        });
+    });
+
     $("#add-limit").submit(function (event) {
       event.preventDefault();
 
       $("#limitModal").modal("hide");
 
-      $.post("expense/limit", {
+      $.post("expense/set-limit", {
         category_limit: $("#category-limit").val(),
         amount_limit: $("#amount-limit").val(),
       })
         .done(function (data, status) {
           $("#messages").html(data);
           deleteMessages();
-          $("#add-limit").off("submit");
           console.log(status);
         })
         .fail(function (status) {
@@ -88,6 +100,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
               {% endfor %}
             </select>
           </div>
+          <div id="limitation"></div>
           <div class="input-group mt-2">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -113,7 +126,9 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
               placeholder="Komentarz (opcjonalnie)"
             ></textarea>
           </div>
-          <button type="submit" class="btn btn-some">Dodaj</button>
+          <button type="submit" class="btn btn-some">
+            Dodaj <i class="fas fa-plus"></i>
+          </button>
           <button
             type="button"
             class="btn btn-warning"
@@ -126,7 +141,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
           <a href="/home" class="btn btn-danger">Anuluj</a>
         </form>
         {% if errors is not empty %}
-        <div>
+        <div class="errors">
           <p class="text-danger text-center mt-2 mb-0">Lista błędów:</p>
           <ul>
             {% for error in errors %}
@@ -164,7 +179,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="expense/limit" method="post" id="add-limit">
+      <form action="expense/set-limit" method="post" id="add-limit">
         <div class="modal-body">
           <div class="input-group mt-2">
             <div class="input-group-prepend">
@@ -211,6 +226,48 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
           </button>
           <button type="submit" class="btn btn-warning">
             Dodaj limit <i class="far fa-stop-circle"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal z ostrzeżeniem dla użytkownika, jeśli kwota, którą podał przekracza wyznaczony limit -->
+<div
+  class="modal fade"
+  id="warningModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="warningModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel">UWAGA!</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="expense/add" method="post" id="add-expense-over-limit">
+        <div class="modal-body">
+          <p class="text-center">
+            Czy na pewno chcesz dodać wydatek przekraczający limit wynoszący
+            <strong id="amount-limit-warning"></strong> zł?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">
+            Tak <i class="fas fa-plus"></i>
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Nie
           </button>
         </div>
       </form>
