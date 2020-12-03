@@ -85,14 +85,18 @@ $(document).ready(function () {
 
     // Sprawdź, czy dany wydatek przekracza wyznaczony limit
     if ($("#amount-limit-fetched").length) {
-      $("#amount-limit-warning").html($("#amount-limit-fetched").text());
-      $("#warningModal").modal("show");
+      if (amount > $("#amount-limit-fetched").text()) {
+        $("#amount-limit-warning").html($("#amount-limit-fetched").text());
+        $("#warningModal").modal("show");
 
-      $("#add-expense-over-limit").submit(function (event) {
-        event.preventDefault();
+        $("#add-expense-over-limit").submit(function (event) {
+          event.preventDefault();
+          saveExpenseInDatabase(payment, amount, category, date, comment);
+          $("#warningModal").modal("hide");
+        });
+      } else {
         saveExpenseInDatabase(payment, amount, category, date, comment);
-        $("#warningModal").modal("hide");
-      });
+      }
     } else {
       saveExpenseInDatabase(payment, amount, category, date, comment);
     }
