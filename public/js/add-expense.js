@@ -43,6 +43,38 @@ $(document).ready(function () {
       });
   }
 
+  // Sprawdź, czy na daną kategorię jest przypisany limit
+  $("#category").change(function () {
+    $.get("expense/get-limit", {
+      category: $("#category option:selected").val(),
+    })
+      .done(function (data, status) {
+        $("#limitation").html(data);
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+  });
+
+  $("#add-limit").submit(function (event) {
+    event.preventDefault();
+
+    $("#limitModal").modal("hide");
+
+    $.post("expense/set-limit", {
+      category_limit: $("#category-limit").val(),
+      amount_limit: $("#amount-limit").val(),
+    })
+      .done(function (data, status) {
+        $("#messages").html(data);
+        deleteMessages();
+        console.log(status);
+      })
+      .fail(function (status) {
+        console.log(status);
+      });
+  });
+
   $("#add-expense").submit(function (event) {
     event.preventDefault();
     var payment = $("#payment").val();

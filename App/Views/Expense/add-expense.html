@@ -3,48 +3,6 @@
 {% endblock %} {% block title %}Dodawanie wydatku{% endblock %} {% block
 subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
 %}{% block main %}
-<script>
-  $(document).ready(function () {
-    function deleteMessages() {
-      setTimeout(function () {
-        $(".alert").remove();
-        $(".errors").remove();
-      }, 4000);
-    }
-
-    // Sprawdź, czy na daną kategorię jest przypisany limit
-    $("#category").change(function () {
-      $.get("expense/get-limit", {
-        category: $("#category option:selected").val(),
-      })
-        .done(function (data, status) {
-          $("#limitation").html(data);
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
-    });
-
-    $("#add-limit").submit(function (event) {
-      event.preventDefault();
-
-      $("#limitModal").modal("hide");
-
-      $.post("expense/set-limit", {
-        category_limit: $("#category-limit").val(),
-        amount_limit: $("#amount-limit").val(),
-      })
-        .done(function (data, status) {
-          $("#messages").html(data);
-          deleteMessages();
-          console.log(status);
-        })
-        .fail(function (status) {
-          console.log(status);
-        });
-    });
-  });
-</script>
 <main>
   <section class="adding-expenses">
     <div class="container-custom border rounded bg-white mt-2 py-2">
