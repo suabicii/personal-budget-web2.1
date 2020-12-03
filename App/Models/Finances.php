@@ -382,7 +382,11 @@ class Finances extends \Core\Model
     {
         $db = static::getDB();
 
-        $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+        if ($tableName == "expenses_category_assigned_to_users") {
+            $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}', NULL)");
+        } else {
+            $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+        }
 
         return $query->execute();
     }
