@@ -331,16 +331,26 @@ class Finances extends \Core\Model
      * @param string $oldName  Aktualna nazwa kategorii
      * @param string $newName  Nowa nazwa kategorii
      * @param string $tableName  Nazwa tabeli z nazwami kategorii
+     * @param mixed  $limit  Kwota wyznaczonego przez użytkownika limitu,
+     * jeśli jest edytowana kategoria wydatku
      * 
      * @return boolean  True, jeśli edycja się powiodła, false w przeciwnym wypadku
      */
-    public function editCategory($user_id, $oldName, $newName, $tableName)
+    public function editCategory($user_id, $oldName, $newName, $tableName, $limit = null)
     {
         $db = static::getDB();
 
-        $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
-            WHERE name = '{$oldName}' AND user_id = {$user_id}
-        ");
+        if ($tableName == "expenses_category_assigned_to_users") {
+            if ($limit == "") $limit = null;
+            $query = $db->prepare("UPDATE {$tableName} 
+                SET name = '{$newName}', limitation = {$limit} 
+                WHERE name = '{$oldName}' AND user_id = {$user_id}
+            ");
+        } else {
+            $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
+                WHERE name = '{$oldName}' AND user_id = {$user_id}
+            ");
+        }
 
         return $query->execute();
     }
@@ -494,34 +504,6 @@ class Finances extends \Core\Model
     }
 
     /** LIMITY WYDATKÓW */
-
-    /**
-     * Ustal limit wydatków w danej kategorii
-     * 
-     * @param int $user_id  Id zalogowanego użytkownika
-     * @param string $category  Nazwa kategorii
-     * @param float $amount  Kwota limitu
-     * 
-     * @return boolean  True, jeśli pomyślnie dodano limit, false w przeciwnym
-     * wypadku
-     */
-    public function setExpenseLimit($user_id, $category, $amount)
-    {
-        $db = static::getDB();
-
-        // Znajdź id kategorii powiązanej z danym użytkownikiem
-        $query = $db->prepare("SELECT id FROM expenses_category_assigned_to_users
-            WHERE user_id = {$user_id} AND name = '{$category}'
-        ");
-        $query->execute();
-        $categoryId = $query->fetch();
-
-        $query = $db->prepare("UPDATE expenses_category_assigned_to_users 
-            SET limitation = {$amount} WHERE id = {$categoryId['id']}
-        ");
-
-        return $query->execute();
-    }
 
     /**
      * Pobierz, jeśli istnieje, kwotę limitu
