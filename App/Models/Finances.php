@@ -341,11 +341,20 @@ class Finances extends \Core\Model
         $db = static::getDB();
 
         if ($tableName == "expenses_category_assigned_to_users") {
-            if ($limit == "") $limit = null;
-            $query = $db->prepare("UPDATE {$tableName} 
-                SET name = '{$newName}', limitation = {$limit} 
-                WHERE name = '{$oldName}' AND user_id = {$user_id}
-            ");
+            if ($limit == "") {
+                $query = $db->prepare("UPDATE {$tableName} 
+                    SET name = '{$newName}', limitation = NULL 
+                    WHERE name = '{$oldName}' AND user_id = {$user_id}
+                ");
+            } else {
+                // Tak, wiem, że to łamanie zasady DRY (Don't repeat yourself),
+                // ale gdy zapiszę tylko jedną kwerendę, taką jak poniżej,
+                // to wyskuje mi błąd składniowy
+                $query = $db->prepare("UPDATE {$tableName} 
+                    SET name = '{$newName}', limitation = {$limit}
+                    WHERE name = '{$oldName}' AND user_id = {$user_id}
+                ");
+            }
         } else {
             $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
                 WHERE name = '{$oldName}' AND user_id = {$user_id}
