@@ -116,7 +116,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editModalLabel">UWAGA!</h5>
+        <h5 class="modal-title" id="warningModalLabel">UWAGA!</h5>
         <button
           type="button"
           class="close"
@@ -129,8 +129,10 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
       <form action="expense/add" method="post" id="add-expense-over-limit">
         <div class="modal-body">
           <p class="text-center">
-            Czy na pewno chcesz dodać wydatek przekraczający limit wynoszący
-            <strong id="amount-limit-warning"></strong> zł?
+            Dodając wydatek o takiej wysokości, miesięczna suma wydatków w
+            wybranej przez Ciebie kategorii przekroczy kwotę limitu wynoszącą
+            <strong id="amount-limit-warning"></strong> zł. Czy chcesz
+            kontynuować?
           </p>
         </div>
         <div class="modal-footer">

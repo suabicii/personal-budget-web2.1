@@ -4,8 +4,9 @@ $(document).ready(function () {
   var month =
     date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth() + 1;
   var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+  var today = date.getFullYear() + "-" + month + "-" + day;
 
-  $("#date").val(date.getFullYear() + "-" + month + "-" + day);
+  $("#date").val(today);
 
   // Usuń alerty i komunikaty o błędach
   function deleteMessages() {
@@ -20,7 +21,7 @@ $(document).ready(function () {
    * @param float amount  Kwota
    * @param string category  Kategoria wydatku
    * @param string date  Data wydania pieniędzy
-   * @param comment string  Komentarz
+   * @param string comment  Komentarz
    *
    * @return void
    */
@@ -37,6 +38,7 @@ $(document).ready(function () {
         deleteMessages();
         console.log(status);
         $("#payment, #amount, #category, #date, #comment").val(null);
+        $("#limitation").html("");
       })
       .fail(function (status) {
         console.log(status);
@@ -56,25 +58,6 @@ $(document).ready(function () {
       });
   });
 
-  $("#add-limit").submit(function (event) {
-    event.preventDefault();
-
-    $("#limitModal").modal("hide");
-
-    $.post("expense/set-limit", {
-      category_limit: $("#category-limit").val(),
-      amount_limit: $("#amount-limit").val(),
-    })
-      .done(function (data, status) {
-        $("#messages").html(data);
-        deleteMessages();
-        console.log(status);
-      })
-      .fail(function (status) {
-        console.log(status);
-      });
-  });
-
   $("#add-expense").submit(function (event) {
     event.preventDefault();
     var payment = $("#payment").val();
@@ -85,10 +68,14 @@ $(document).ready(function () {
 
     // Sprawdź, czy dany wydatek przekracza wyznaczony limit
     if ($("#amount-limit-fetched").length) {
-      if (amount > $("#amount-limit-fetched").text()) {
+      if (
+        parseFloat(amount) + parseFloat($("#expense-sum").text()) >
+        parseFloat($("#amount-limit-fetched").text())
+      ) {
         $("#amount-limit-warning").html($("#amount-limit-fetched").text());
         $("#warningModal").modal("show");
 
+        $("#add-expense-over-limit").off("submit");
         $("#add-expense-over-limit").submit(function (event) {
           event.preventDefault();
           saveExpenseInDatabase(payment, amount, category, date, comment);

@@ -6,6 +6,7 @@ use Core\View;
 use App\Models\Finances;
 use App\Flash;
 use App\Categories;
+use DateTime;
 
 /**
  * Kontroler do dodawania wydatków
@@ -33,7 +34,6 @@ class Expense extends \Core\Controller
         $expenseCategories = $expense->getexpensesCategories($_SESSION['user_id']);
         $paymentMethods = $expense->getPaymentMethods($_SESSION['user_id']);
         $translatedCategories = [];
-        $optionValues = [];
 
         foreach ($expenseCategories as $category) {
             $translatedCategories[$category['name']] = Categories::translateCategory($category['name']);
@@ -90,9 +90,42 @@ class Expense extends \Core\Controller
         $limit = $expense->getExpenseLimit($_SESSION['user_id'], $_GET['category']);
 
         if ($limit != null) {
-            echo "<small>Limit: <strong class='text-danger' id='amount-limit-fetched'>{$limit}</strong></small>";
+            $expenseSum = $this->getExpenseSumInCategory($_GET['category']);
+
+            if ($expenseSum == null) $expenseSum = 0;
+
+            echo <<<END
+            <div id='limitation' class='d-flex justify-content-between'>
+                <small>Limit: <strong class='text-danger' id='amount-limit-fetched'>{$limit}</strong></small>
+                <small>Dotychczas wydano: <strong class='text-danger' id='expense-sum'>{$expenseSum}</strong></small>
+            </div>
+END;
         } else {
             echo "";
+        }
+    }
+
+    /**
+     * Pobierz sumę wydatków w danej kategorii z bieżącego miesiąca
+     * 
+     * @param string $category  Kategoria wydatku
+     * 
+     * @return mixed  Ilość pieniędzy, które do tej pory wydał użytkownik w danej kategorii
+     * lub null
+     */
+    private function getExpenseSumInCategory($category)
+    {
+        $expense = new Finances;
+
+        $today = new DateTime();
+        $firstDayOfMonth = new DateTime($today->format('Y-m') . "-01");
+
+        $summedExpenses = $expense->getSummedExpenses($firstDayOfMonth->format("Y-m-d"), $today->format("Y-m-d"), $_SESSION['user_id']);
+
+        foreach ($summedExpenses as $summedExpense) {
+            if ($summedExpense['name'] == $category) {
+                return $summedExpense['amount'];
+            }
         }
     }
 }
