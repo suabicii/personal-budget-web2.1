@@ -119,15 +119,12 @@ class Balance extends \Core\Controller
         $paymentMethods = $finances->getPaymentMethods($_SESSION['user_id']);
 
         $translatedCategoriesEditMode = [];
-        $optionValues = [];
 
         $translatedCategoriesEditMode = array_merge(static::translateCategoriesForEditForm($incomeCategories), static::translateCategoriesForEditForm($expenseCategories), static::translateCategoriesForEditForm($paymentMethods));
-        $optionValues = array_merge(static::getValuesForSelectInputs($incomeCategories), static::getValuesForSelectInputs($expenseCategories), static::getValuesForSelectInputs($paymentMethods));
 
         View::renderTemplate("Balance/tables.html", [
             'translated_categories' => $translatedCategories,
             'translated_categories_edit' => $translatedCategoriesEditMode,
-            'option_values' => $optionValues,
             'classesForJS' => $classesForJS,
             'income_categories' => $incomeCategories,
             'expense_categories' => $expenseCategories,
@@ -396,24 +393,5 @@ class Balance extends \Core\Controller
         }
 
         return $translatedCategories;
-    }
-
-    /**
-     * Przetwórz nazwy kategorii na odpowiedni format dla pól select w formularzach
-     * 
-     * @param array $categories  Kategorie powiązane z danym użytkownikiem
-     * pobrane z bazy danych (tablica asocjacyjna)
-     * 
-     * @return array  Tablica asocjacyjna ze sformatowanymi kategoriami
-     */
-    private static function getValuesForSelectInputs($categories)
-    {
-        $optionValues = [];
-
-        foreach ($categories as $category) {
-            $optionValues[$category['name']] = preg_replace('/\s/', '-', $category['name']);
-        }
-
-        return $optionValues;
     }
 }

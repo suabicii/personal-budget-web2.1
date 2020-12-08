@@ -105,7 +105,7 @@ class Settings extends \Core\Controller
     {
         $finances = new Finances;
 
-        if ($finances->editCategory($_SESSION['user_id'], $_POST['old_name'], $_POST['new_name'], $_POST['table_name'])) {
+        if ($finances->editCategory($_SESSION['user_id'], $_POST['old_name'], $_POST['new_name'], $_POST['table_name'], $_POST['limit'])) {
             Flash::addMessage('Kategoria została zmieniona');
 
             $messages = Flash::getMessages();
@@ -121,6 +121,24 @@ class Settings extends \Core\Controller
             foreach ($messages as $message) {
                 echo "<div class='alert alert-{$message['type']}'>{$message['body']}</div>";
             }
+        }
+    }
+
+    /**
+     * Pobierz limit wydatków w danej kategorii
+     * 
+     * @return void
+     */
+    public function getLimitAction()
+    {
+        $expense = new Finances;
+
+        $limit = $expense->getExpenseLimit($_SESSION['user_id'], $_GET['category']);
+
+        if ($limit != null) {
+            echo "<input type='hidden' id='amount-limit-fetched' value='{$limit}'>";
+        } else {
+            echo "";
         }
     }
 

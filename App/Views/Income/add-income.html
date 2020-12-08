@@ -73,7 +73,9 @@ subtitle %}Dodaj przychód{% endblock %}{% block secondOption %}active{% endbloc
               placeholder="Komentarz (opcjonalnie)"
             ></textarea>
           </div>
-          <button type="submit" class="btn btn-some">Dodaj</button>
+          <button type="submit" class="btn btn-some">
+            Dodaj <i class="fas fa-plus"></i>
+          </button>
           <a href="home" class="btn btn-danger">Anuluj</a>
         </form>
         {% if errors is not empty %}

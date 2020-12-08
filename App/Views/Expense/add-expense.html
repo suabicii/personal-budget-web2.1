@@ -8,7 +8,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
     <div class="container-custom border rounded bg-white mt-2 py-2">
       <div id="messages"></div>
       <div class="row justify-content-center">
-        <form action="expense/add" method="post">
+        <form action="expense/add" method="post" id="add-expense">
           <div class="input-group">
             <div class="input-group-prepend">
               <div class="input-group-text pr-2">
@@ -58,6 +58,7 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
               {% endfor %}
             </select>
           </div>
+          <div id="limitation"></div>
           <div class="input-group mt-2">
             <div class="input-group-prepend">
               <div class="input-group-text">
@@ -83,11 +84,13 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
               placeholder="Komentarz (opcjonalnie)"
             ></textarea>
           </div>
-          <button type="submit" class="btn btn-some">Dodaj</button>
+          <button type="submit" class="btn btn-some">
+            Dodaj <i class="fas fa-plus"></i>
+          </button>
           <a href="/home" class="btn btn-danger">Anuluj</a>
         </form>
         {% if errors is not empty %}
-        <div>
+        <div class="errors">
           <p class="text-danger text-center mt-2 mb-0">Lista błędów:</p>
           <ul>
             {% for error in errors %}
@@ -100,4 +103,48 @@ subtitle %}Dodaj wydatek{% endblock %}{% block thirdOption %}active{% endblock
     </div>
   </section>
 </main>
+<!-- Modal z ostrzeżeniem dla użytkownika, jeśli kwota, którą podał przekracza wyznaczony limit -->
+<div
+  class="modal fade"
+  id="warningModal"
+  data-backdrop="static"
+  data-keyboard="false"
+  tabindex="-1"
+  aria-labelledby="warningModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="warningModalLabel">UWAGA!</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Zamknij"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="expense/add" method="post" id="add-expense-over-limit">
+        <div class="modal-body">
+          <p class="text-center">
+            Dodając wydatek o takiej wysokości, miesięczna suma wydatków w
+            wybranej przez Ciebie kategorii przekroczy kwotę limitu wynoszącą
+            <strong id="amount-limit-warning"></strong> zł. Czy chcesz
+            kontynuować?
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger">
+            Tak <i class="fas fa-plus"></i>
+          </button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Nie
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

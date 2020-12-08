@@ -15,25 +15,63 @@ $(document).ready(function () {
     route,
     settingsCategory
   ) {
-    $("#send-delete").off("submit");
+    $("#send-edit").off("submit");
     $("#category-edit").val(translatedName);
     $("#old-name").val(originalName);
+
+    var limit = null;
+
+    // Ujawnij inputa do ustawiania limitów, jeśli użytkownik edytuje
+    // kategorię wydatku
+    if ($("#is-expense-edited").val() == "true") {
+      $("#limit").removeClass("d-none");
+      $("#limit").addClass("d-block");
+
+      $("#limit-on").change(function () {
+        if ($("#limit-on").prop("checked")) {
+          $("#limit-amount").prop("disabled", false);
+          $.get("settings/get-limit", {
+            category: originalName,
+          })
+            .done(function (data, status) {
+              $("#limit-fetched").html(data);
+              $("#limit-amount").val($("#amount-limit-fetched").val());
+            })
+            .fail(function (status) {
+              console.log(status);
+            });
+        } else {
+          $("#limit-amount").prop("disabled", true);
+          $("#limit-amount").val(null);
+        }
+      });
+    } else {
+      $("#limit").addClass("d-none");
+      $("#limit").removeClass("d-block");
+    }
 
     $("#send-edit").submit(function (event) {
       event.preventDefault();
 
       $("#editModal").modal("hide");
 
+      if ($("#limit-amount").val() == "") {
+        limit = null;
+      } else {
+        limit = $("#limit-amount").val();
+      }
+
       $.post("settings/edit", {
         table_name: tableName,
         old_name: originalName,
         new_name: $("#category-edit").val(),
+        limit: limit,
       })
         .done(function (data, status) {
           $(".messages-finances").html(data);
           deleteMessages();
           getTable(route, settingsCategory, tableName);
-          $("#send-delete").off("submit");
+          $("#send-edit").off("submit");
         })
         .fail(function (status) {
           console.log(status);
@@ -109,6 +147,11 @@ $(document).ready(function () {
         // Edycja/dodawanie/usuwanie kategorii
         $(".edit-" + settingsCategory).submit(function (event) {
           event.preventDefault();
+          if (settingsCategory == "expense") {
+            $("#is-expense-edited").val("true");
+          } else {
+            $("#is-expense-edited").val("false");
+          }
           var translatedName = event.target[0].defaultValue;
           var originalName = event.target[1].defaultValue;
           editCategory(

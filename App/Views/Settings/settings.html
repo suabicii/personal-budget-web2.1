@@ -175,7 +175,7 @@ main %}
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editModalLabel">Zmiana kategorii</h5>
+          <h5 class="modal-title" id="editModalLabel">Edycja kategorii</h5>
           <button
             type="button"
             class="close"
@@ -196,6 +196,12 @@ main %}
               <label class="sr-only" for="name">Kategoria</label>
               <input type="hidden" name="old_name" id="old-name" value="" />
               <input
+                type="hidden"
+                name="is-expense-edited"
+                id="is-expense-edited"
+                value="false"
+              />
+              <input
                 type="text"
                 name="new_name"
                 id="category-edit"
@@ -203,6 +209,41 @@ main %}
                 value=""
                 required
               />
+            </div>
+            <div id="limit" class="d-none">
+              <div class="form-check mt-2">
+                <label class="form-check-label" for="limit-on">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="limit-on"
+                  />
+                  Ustal miesięczny limit dla kategorii
+                </label>
+              </div>
+              <div class="input-group mt-2">
+                <div class="input-group-prepend">
+                  <div class="input-group-text pr-3">
+                    <i class="fas fa-dollar-sign"></i>
+                  </div>
+                </div>
+                <div id="limit-fetched"></div>
+                <label class="sr-only" for="limit-amount">Kwota limitu</label>
+                <input
+                  type="number"
+                  name="limit-amount"
+                  id="limit-amount"
+                  class="form-control"
+                  placeholder="Kwota limitu"
+                  step="0.01"
+                  disabled
+                  required
+                />
+              </div>
+              <small class="text-muted mt-2"
+                >Aby usunąć limit, wystarczy odznaczyć opcję, a następnie
+                kliknąć na przycisk "Zmień"</small
+              >
             </div>
           </div>
           <div class="modal-footer">

@@ -331,16 +331,35 @@ class Finances extends \Core\Model
      * @param string $oldName  Aktualna nazwa kategorii
      * @param string $newName  Nowa nazwa kategorii
      * @param string $tableName  Nazwa tabeli z nazwami kategorii
+     * @param mixed  $limit  Kwota wyznaczonego przez użytkownika limitu,
+     * jeśli jest edytowana kategoria wydatku
      * 
      * @return boolean  True, jeśli edycja się powiodła, false w przeciwnym wypadku
      */
-    public function editCategory($user_id, $oldName, $newName, $tableName)
+    public function editCategory($user_id, $oldName, $newName, $tableName, $limit = null)
     {
         $db = static::getDB();
 
-        $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
-            WHERE name = '{$oldName}' AND user_id = {$user_id}
-        ");
+        if ($tableName == "expenses_category_assigned_to_users") {
+            if ($limit == "") {
+                $query = $db->prepare("UPDATE {$tableName} 
+                    SET name = '{$newName}', limitation = NULL 
+                    WHERE name = '{$oldName}' AND user_id = {$user_id}
+                ");
+            } else {
+                // Tak, wiem, że to łamanie zasady DRY (Don't repeat yourself),
+                // ale gdy zapiszę tylko jedną kwerendę, taką jak poniżej,
+                // to wyskuje mi błąd składniowy
+                $query = $db->prepare("UPDATE {$tableName} 
+                    SET name = '{$newName}', limitation = {$limit}
+                    WHERE name = '{$oldName}' AND user_id = {$user_id}
+                ");
+            }
+        } else {
+            $query = $db->prepare("UPDATE {$tableName} SET name = '{$newName}'
+                WHERE name = '{$oldName}' AND user_id = {$user_id}
+            ");
+        }
 
         return $query->execute();
     }
@@ -382,7 +401,11 @@ class Finances extends \Core\Model
     {
         $db = static::getDB();
 
-        $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+        if ($tableName == "expenses_category_assigned_to_users") {
+            $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}', NULL)");
+        } else {
+            $query = $db->prepare("INSERT INTO {$tableName} VALUES (NULL, {$user_id}, '{$category}')");
+        }
 
         return $query->execute();
     }
@@ -487,5 +510,29 @@ class Finances extends \Core\Model
         $query = $db->prepare("DELETE FROM {$tableName} WHERE id = {$idToDelete}");
 
         return $query->execute();
+    }
+
+    /** LIMITY WYDATKÓW */
+
+    /**
+     * Pobierz, jeśli istnieje, kwotę limitu
+     * 
+     * @param int $user_id  Id zalogowanego użytkownika
+     * @param string $category  Nazwa kategorii
+     * 
+     * @return mixed  Kwota limitu lub null, jeśli limit nie został ustalony
+     */
+    public function getExpenseLimit($user_id, $category)
+    {
+        $db = static::getDB();
+
+        $query = $db->prepare("SELECT limitation FROM expenses_category_assigned_to_users
+            WHERE user_id = {$user_id} AND name = '{$category}'
+        ");
+        $query->execute();
+
+        $row = $query->fetch();
+
+        return $row['limitation'];
     }
 }
