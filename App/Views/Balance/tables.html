@@ -23,7 +23,7 @@
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="income-category">
-              {{ translated_categories[income.name] }}
+              <span>{{ translated_categories[income.name] }}</span>
             </td>
             <td>{{ income.amount }}</td>
             {% set sumOfIncomes = sumOfIncomes + income.amount %}
@@ -58,7 +58,7 @@
             {% set i = i + 1 %}
             <th scope="row">{{ i }}</th>
             <td class="expense-category">
-              {{ translated_categories[expense.name] }}
+              <span>{{ translated_categories[expense.name] }}</span>
             </td>
             <td>{{ expense.amount }}</td>
             {% set sumOfExpenses = sumOfExpenses + expense.amount %}

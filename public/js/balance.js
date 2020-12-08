@@ -18,9 +18,9 @@
 
   /** Zapisywanie do tablic przychodów i wydatków */
 
-  let rowsWithIncomes = document.querySelectorAll(".income");
+  let rowsWithIncomes = [...document.querySelectorAll(".income")];
   let incomes = [];
-  let rowsWithExpenses = document.querySelectorAll(".expense");
+  let rowsWithExpenses = [...document.querySelectorAll(".expense")];
   let expenses = [];
 
   // Sumowanie przychodów/wydatków przy widoku szczegółowym
@@ -47,7 +47,7 @@
   if (!particularView) {
     for (let i = 0; i < rowsWithIncomes.length; i++) {
       incomes.push({
-        name: rowsWithIncomes[i].children[1].textContent,
+        name: rowsWithIncomes[i].children[1].children[0].textContent,
         amount: parseFloat(rowsWithIncomes[i].children[2].textContent), // zamiana string
         // na liczbę (float)
       });
@@ -55,13 +55,28 @@
 
     for (let i = 0; i < rowsWithExpenses.length; i++) {
       expenses.push({
-        name: rowsWithExpenses[i].children[1].textContent,
+        name: rowsWithExpenses[i].children[1].children[0].textContent,
         amount: parseFloat(rowsWithExpenses[i].children[2].textContent),
       });
     }
   } else {
+    // Sortowanie wierszy z tabeli z przychodami wg kategorii
+    rowsWithIncomes.sort((a, b) => {
+      let nameA = a.children[1].textContent.toUpperCase();
+      let nameB = b.children[1].textContent.toUpperCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    });
+
     incomes.push({
-      name: rowsWithIncomes[0].children[1].textContent,
+      name: rowsWithIncomes[0].children[1].children[0].textContent,
       amount: sumIncomes(
         document.querySelectorAll(
           "." + rowsWithIncomes[0].children[3].className
@@ -75,7 +90,7 @@
         rowsWithIncomes[i - 1].children[1].textContent
       ) {
         incomes.push({
-          name: rowsWithIncomes[i].children[1].textContent,
+          name: rowsWithIncomes[i].children[1].children[0].textContent,
           amount: sumIncomes(
             document.querySelectorAll(
               "." + rowsWithIncomes[i].children[3].className
@@ -85,8 +100,23 @@
       }
     }
 
+    // Sortowanie wierszy z tabeli z wydatkami wg kategorii
+    rowsWithExpenses.sort((a, b) => {
+      let nameA = a.children[1].textContent.toUpperCase();
+      let nameB = b.children[1].textContent.toUpperCase();
+
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+
+      return 0;
+    });
+
     expenses.push({
-      name: rowsWithExpenses[0].children[1].textContent,
+      name: rowsWithExpenses[0].children[1].children[0].textContent,
       amount: sumExpenses(
         document.querySelectorAll(
           "." + rowsWithExpenses[0].children[4].className
@@ -100,7 +130,7 @@
         rowsWithExpenses[i - 1].children[1].textContent
       ) {
         expenses.push({
-          name: rowsWithExpenses[i].children[1].textContent,
+          name: rowsWithExpenses[i].children[1].children[0].textContent,
           amount: sumExpenses(
             document.querySelectorAll(
               "." + rowsWithExpenses[i].children[4].className
